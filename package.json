@@ -1,10 +1,10 @@
 {
-  "name": "blockchain-integration-examples",
+  "name": "collateral-contract-integration-examples",
   "version": "1.0.0",
-  "description": "Multi-blockchain integration examples for Solana, EVM, Tron and more",
+  "description": "Collateral contract integration examples for Solana, EVM, and more",
   "main": "dist/index.js",
-  "repository": "https://github.com/SignifyHQ/blockchain-integration-examples",
-  "author": "Rain",
+  "repository": "https://github.com/SignifyHQ/collateral-contract-integration-examples",
+  "author": "Signify",
   "license": "MIT",
   "packageManager": "yarn@1.22.0",
   "scripts": {
