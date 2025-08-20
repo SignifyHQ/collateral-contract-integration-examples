@@ -1,0 +1,53 @@
+{
+  "name": "blockchain-integration-examples",
+  "version": "1.0.0",
+  "description": "Multi-blockchain integration examples for Solana, EVM, Tron and more",
+  "main": "dist/index.js",
+  "repository": "https://github.com/SignifyHQ/blockchain-integration-examples",
+  "author": "Rain",
+  "license": "MIT",
+  "packageManager": "yarn@1.22.0",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "clean": "rm -rf dist",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit",
+    "solana:collateral-transfer": "ts-node src/solana/examples/collateralTeamTransfer/index.ts",
+    "solana:withdraw": "ts-node src/solana/examples/withdrawal/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "blockchain",
+    "solana",
+    "ethereum",
+    "tron",
+    "web3",
+    "crypto",
+    "defi"
+  ],
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.30.1",
+    "@solana/spl-token": "^0.4.9",
+    "@solana/web3.js": "^1.95.4",
+    "axios": "^1.7.2",
+    "bs58": "^6.0.0",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.4.5",
+    "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "@types/node": "^20.14.9",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
+    "eslint": "^8.57.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
