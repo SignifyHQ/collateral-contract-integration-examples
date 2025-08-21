@@ -203,6 +203,7 @@ function getProgram(programAddress: string, signer: Keypair): Program<Main> {
   // Return typed interface to the smart contract
   return new Program<Main>(idl, provider);
 }
+
 /**
  * Monitors transaction confirmation status on Solana blockchain
  *
