@@ -27,6 +27,53 @@ The script runs a **secure two-step flow**:
 
 This ensures that **only the current, legitimate admin** can transfer control.
 
+## 🔄 Transfer Flow Overview
+
+The collateral team transfer process follows a secure multi-step flow designed to ensure only authorized admins can transfer control while working within Solana's transaction size limitations. Here's how the script works:
+
+### Step 1: Load Private Keys (Lines 719-722)
+The script loads the private keys of the current collateral admin and the fee payer account from environment variables. While this example uses Solana private keys, **any mechanism capable of signing Solana transactions and string messages can be used**, including Privy, hardware wallets, or other wallet providers.
+
+### Step 2: Fetch Current Collateral State (Lines 728-736)
+The script retrieves the current information of the collateral account to be transferred. This step is **mandatory** because it must know the current nonce to generate the authorization for the team transfer. The nonce is a numerical value that identifies each individual operation against the collateral (add_admin, remove_admin, transfer_team) and helps prevent replay attacks by ensuring each action can only be executed once.
+
+### Step 3: Generate Transfer Request (Lines 739-744)
+The script creates the transfer request containing:
+- **New name**: A string identifier for the collateral account (doesn't affect logic, just for naming)
+- **New admins list**: Array of public keys for the new administrative team
+- **New admin threshold**: Number of admins required to approve future operations
+
+**Important restrictions:**
+- The name cannot be empty
+- The admin threshold cannot exceed the length of the new admins list
+- Solana has a transaction size limit of 1232 bytes, so we recommend to transfer to a maximum of 5 admins to avoid breaking the transaction.
+
+### Step 4: Generate and Submit Admin Signatures (Lines 747-755)
+The current admins create cryptographic signatures authorizing the transfer. This is a **two-instruction transaction**:
+1. **Ed25519 Solana instruction**: Verifies the cryptographic signatures
+2. **SubmitSignatures instruction**: Stores the verified signatures in a PDA (Program Derived Address).
+
+Notice the admins are not required to sign the transaction itself but a encoded payload of the transaction that includes the arguments of the operation defined in step 3.
+
+This step requires the capability to sign with the current admins of the collateral contract as mentioned in the step 1.
+
+**Note:**  The signature example uses the nacl package to sign the message at line 593 while the submit_signatures transaction is sent at line 627.
+
+### Step 5: Execute Transfer Transaction
+Once signatures are submitted and verified, the transfer can be executed. The script invokes the transfer transaction with the same arguments from Step 3 and the signatures from Step 4. Since the transaction is pre-authorized with specific arguments, any current admin can send the transaction.
+
+**Note:** After the signatures are consumed and the operation completes, the rent for creating the signatures storage account is returned to the admin who called the transferTeam function under the `sender` roles specified in the accounts definition of the transaction using the provided IDL..
+
+## 🏗️ Design Considerations
+
+### Why This Two-Step Flow?
+
+**Authorization Mechanism**: The authorization is provided by admins signing a message that includes the operation arguments (new name, list of admins, and threshold value). This signature is submitted to the chain for verification and stored in an account that holds the authorization until consumed during transfer execution. Verification occurs by:
+1. Checking that the signature generated using the Ed25519 curve belongs to a current admin of the collateral
+2. Verifying that the signed message matches the expected one corresponding to the transfer invocation arguments
+
+**Two-Step Signature Submission**: Signatures are submitted in two steps due to Solana's transaction size limitation of 1232 bytes. Each signature takes 160 bytes of transaction space for verification, which for some operations allows only 2 signatures per transaction. By submitting signatures to a storage account first, we unlock the admin limit by sending signatures in batches of 4-5 per transaction, then executing the transfer with the pre-verified signatures.
+
 ## 📋 Prerequisites
 
 Before you start, make sure you have:
