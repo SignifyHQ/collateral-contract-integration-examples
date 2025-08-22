@@ -37,13 +37,14 @@
 import { AnchorProvider, IdlAccounts, Program, Wallet } from "@coral-xyz/anchor";
 import { Connection, Ed25519Program, Keypair, PublicKey, TransactionInstruction } from "@solana/web3.js";
 import { randomBytes } from "crypto";
-import crypto from "crypto-js";
 import nacl from "tweetnacl";
 import dotenv from "dotenv";
 import MainIdl from "../../idl/main.json";
 import { Main } from "../../types/main";
 import bs58 from "bs58";
 import path from "path";
+import { Base58SecretKey, SignatureVerificationData, TransferCollateralTeamParams, TransferCollateralTeamRequest } from "./types";
+import { DomainSeparatorMessage, PaddingBytesMessage, SignatureMessageBuilder, TransferCollateralTeamMessage } from "./messageGenerator";
 
 // Load environment-specific configuration
 const nodeEnv = process.env.NODE_ENV || 'local';
@@ -60,118 +61,6 @@ const SIGNATURE_DATA_PLUS_STRUCTURE_SIZE = SIGNATURE_STRUCTURE_SIZE + SIGNATURE_
 
 const MAX_TRANSACTION_RETRIES = 10;
 const POLL_INTERVAL = 2000;
-
-// ---------------------TYPES---------------------
-type Base58SecretKey = string;
-type Base58PublicKey = string;
-
-type SignatureVerificationData = {
-  signer: PublicKey;
-  signature: Buffer;
-  message: Buffer;
-};
-
-type TransferCollateralTeamRequest = {
-  newName: string;
-  newAdmins: PublicKey[];
-  newAdminThreshold: number;
-};
-
-type TransferCollateralTeamParams = {
-  collateralAddress: Base58PublicKey;
-  programId: Base58PublicKey;
-  newAdminAddress: Base58PublicKey;
-};
-
-interface ISignatureMessage {
-  encode(): string;
-}
-
-// ---------------------CRYPTOGRAPHIC UTILITIES---------------------
-/**
- * Cryptographic hashing utilities for EIP-712 style message signing
- *
- * This class provides Keccak-256 hashing functions required for creating
- * EIP-712 structured data signatures. These signatures ensure the integrity
- * and authenticity of transfer requests.
- */
-class HashUtils {
-  /**
-   * Converts hex-encoded data to Keccak-256 hash
-   * Used for hashing already hex-encoded structured data
-   */
-  static keccak256Hex(data: string): string {
-    const wordArray = crypto.enc.Hex.parse(data);
-    const hash = crypto.SHA3(wordArray, { outputLength: 256 });
-    return hash.toString();
-  }
-
-  /**
-   * Converts string data to Keccak-256 hash
-   * Used for hashing plain string data like domain names and field values
-   */
-  static keccak256(data: string): string {
-    const hash = crypto.SHA3(data, { outputLength: 256 });
-    return hash.toString();
-  }
-
-  /**
-   * Encodes the given string using the Keccak-256 algorithm and returns the result as a hex string
-   * @param value - The string to encode
-   * @returns The encoded string as a hex string
-   */
-  static encodeString(value: string): string {
-    return HashUtils.keccak256(value);
-  }
-
-  /**
-   * Encodes the given address as a hex string
-   * @param value - The address to encode
-   * @returns The encoded address as a hex string
-   */
-  static encodeAddress(value: PublicKey): string {
-    return value.toBuffer().toString("hex");
-  }
-
-  /**
-   * Encodes the given unsigned integer as a hex string
-   * @param value - The unsigned integer to encode
-   * @returns The encoded unsigned integer as a hex string
-   */
-  static encodeUInt32(value: bigint | number): string {
-    return value.toString(16).padStart(8, "0");
-  }
-
-  /**
-   * Encodes the given unsigned integer as a hex string
-   * @param value - The unsigned integer to encode
-   * @returns The encoded unsigned integer as a hex string
-   */
-  static encodeUInt64(value: bigint): string {
-    return value.toString(16).padStart(16, "0");
-  }
-
-  /**
-   * Encodes the given bytes as a hex string
-   * @param value - The bytes to encode
-   * @returns The encoded bytes as a hex string
-   */
-  static encodeBytes(value: Uint8Array): string {
-    return Array.from(value)
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-  }
-
-  /**
-   * Encodes an array of addresses to a keccak256 hash.
-   * @param value - The array of addresses to encode.
-   * @returns The keccak256 hash of the array of addresses.
-   */
-  static encodeAddressArray(value: PublicKey[]): string {
-    const hexAddresses = value.map((address) => address.toBuffer().toString("hex"));
-    return HashUtils.keccak256Hex(hexAddresses.join(""));
-  }
-}
 
 // ---------------------BLOCKCHAIN CONNECTION UTILITIES---------------------
 
@@ -350,99 +239,6 @@ class Ed25519ExtendedProgram extends Ed25519Program {
       programId: super.programId,
       data: dataBuffer,
     });
-  }
-}
-
-// ---------------------MESSAGES---------------------
-
-/**
- * Message that represents the transfer collateral team request.
- */
-class TransferCollateralTeamMessage {
-  static TRANSFER_TEAM_TYPE_HASH = HashUtils.encodeString(
-    "TransferTeam(address[] addingAdmins,string newName,uint256 nonce)"
-  );
-
-  readonly newAdmins: PublicKey[];
-  readonly newName: string;
-  readonly nonce: number;
-
-  constructor(request: TransferCollateralTeamRequest, nonce: number) {
-    this.newAdmins = request.newAdmins;
-    this.newName = request.newName;
-    // This nonce is the current nonce value of the collateral admin data account.
-    this.nonce = nonce;
-  }
-
-  encode(): string {
-    // Encode the structure
-    const encodedStructure = [
-      TransferCollateralTeamMessage.TRANSFER_TEAM_TYPE_HASH,
-      HashUtils.encodeAddressArray(this.newAdmins),
-      HashUtils.encodeString(this.newName),
-      HashUtils.encodeUInt32(this.nonce),
-    ].join("");
-    // Hash and return the structure
-    const hashedStructure = HashUtils.keccak256Hex(encodedStructure);
-    return hashedStructure;
-  }
-}
-
-// ---------------------SIGNATURES MESSAGE BUILDER---------------------
-
-class SignatureMessageBuilder {
-  buildMessage(messageStructures: ISignatureMessage[]): Buffer {
-    const encodedData = messageStructures
-      .map((structure) => {
-        return structure.encode();
-      })
-      .join("");
-
-    const encodedDataHash = HashUtils.keccak256Hex(encodedData);
-    return Buffer.from(encodedDataHash, "hex");
-  }
-}
-
-class PaddingBytesMessage implements ISignatureMessage {
-  encode(): string {
-    const encoded = HashUtils.encodeBytes(new Uint8Array(Buffer.from("\x19\x01", "latin1")));
-    return encoded;
-  }
-}
-
-class DomainSeparatorMessage implements ISignatureMessage {
-  static DOMAIN_TYPE_HASH = HashUtils.encodeString(
-    "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)"
-  );
-
-  readonly name: string;
-  readonly version: string;
-  readonly chainId: bigint;
-  readonly verifyingContract: PublicKey;
-  readonly salt: Uint8Array;
-
-  constructor(name: string, version: string, chainId: bigint, verifyingContract: PublicKey, salt: Uint8Array) {
-    this.name = name;
-    this.version = version;
-    this.chainId = chainId;
-    this.verifyingContract = verifyingContract;
-    this.salt = salt;
-  }
-
-  encode(): string {
-    // Encode the domain separator message structure
-    const encodedStructure = [
-      DomainSeparatorMessage.DOMAIN_TYPE_HASH,
-      HashUtils.encodeString(this.name),
-      HashUtils.encodeString(this.version),
-      HashUtils.encodeUInt64(this.chainId),
-      HashUtils.encodeAddress(this.verifyingContract),
-      HashUtils.encodeBytes(this.salt),
-    ].join("");
-
-    // Hash and return the domain separator message
-    const hashedStructure = HashUtils.keccak256Hex(encodedStructure);
-    return hashedStructure;
   }
 }
 

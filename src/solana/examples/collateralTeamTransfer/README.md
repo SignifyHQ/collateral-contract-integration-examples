@@ -1,5 +1,171 @@
 # Solana Collateral Admin Transfer Script
 
+The general flow of the Collateral transfer_team flow is described as follows:
+
+![alt text](../../../../out/src/solana/examples/collateralTeamTransfer/diagrams/sequence/Transfer%20collateral%20team%20sequence.png "Title")
+
+Where:
+* **Admin:** Are you, who wants to transfer your collateral to a different administrative team without losing the funds stored into it.
+* **Admin Signer:** is your Solana account set as admin into the Collateral that you must have access to sign both transactions and Buffers of information. It can be a custodial wallet like Phantom Wallet, a non-custodial like Privy, a smart account or a multi-sign account.
+* **Message Generator:** Is a utility included in this example at the file `messageGenerator.ts` that helps to generate the message that must be signed by your **Admin Signer** to authorize the transference of your **Collateral**.
+* **Solana RPC:** A Solana node connected to the network on either Mainnet, Devnet or Localnet.
+* **Collateral:** Is the Collateral account stored in the Solana network that you want to transfer.
+* **Collateral Admin Signatures:** Is a support account that will helps to temporary store the autorization given by you **Admin Signer** to transfer the **Collateral** account.
+
+This flow is implemented under the example at the file `index.ts` using a Keypair of the **Admin Signer** to sign the authorization message and send the transaction to the chain. If you want to go deep into the example jump to the [What This Script Does](#-what-this-script-does) section. Otherwise, continue reading the [How to Create Your Own Integration](#-how-to-create-your-own-integration) section.
+
+## 🔧 How to Create Your Own Integration
+
+This section provides a step-by-step guide for creating your own integration to transfer collateral team ownership. It is assumed that you have your own way to load the signer in your environment.
+
+### Step 1: Generate the Request
+
+First, import the types and create a `TransferCollateralTeamRequest` with the new information for the collateral:
+
+```typescript
+import { TransferCollateralTeamRequest } from "./types";
+import { PublicKey } from "@solana/web3.js";
+
+// Create the transfer request
+const transferRequest: TransferCollateralTeamRequest = {
+  newName: "New Team Name", // The new name for the collateral
+  newAdmins: [
+    new PublicKey("NewAdmin1PublicKeyHere"),
+    new PublicKey("NewAdmin2PublicKeyHere")
+  ], // Array of new admin public keys
+  newAdminThreshold: 2 // Number of admins required to approve future operations
+};
+```
+
+### Step 2: Generate and Sign the Message
+
+Import the message generator and create a `TransferCollateralTeamMessage` to generate the message that needs to be signed:
+
+```typescript
+import { TransferCollateralTeamMessage } from "./messageGenerator";
+
+// Get the current admin data nonce from the collateral account
+const currentNonce = collateralAccount.adminDataNonce;
+
+// Create the message to sign
+const transferMessage = new TransferCollateralTeamMessage(transferRequest, currentNonce);
+
+// Generate the message buffer that needs to be signed
+const messageBuffer = Buffer.from(transferMessage.encode(), "hex");
+
+// Sign the message with your admin signer
+// Note: This is where you would use your own signer implementation
+const signature = await signer.signMessage(messageBuffer);
+```
+
+### Step 3: Upload the Signatures
+
+Create a transaction with two instructions to upload the signatures:
+
+#### 3.1: Ed25519 Instruction
+
+For collaterals with a single admin, use the standard `Ed25519Program`:
+
+```typescript
+import { Ed25519Program } from "@solana/web3.js";
+
+// Create Ed25519 instruction for single admin
+const ed25519Instruction = Ed25519Program.createInstruction({
+  publicKey: signer.publicKey.toBytes(),
+  message: messageBuffer,
+  signature: signature
+});
+```
+
+For collaterals with multiple admins, use the extended program:
+
+```typescript
+import { Ed25519ExtendedProgram } from "../utils/ed25519.program";
+
+// Create Ed25519 instruction for multiple admins
+const signatureData = {
+  signer: signer.publicKey,
+  signature: signature,
+  message: messageBuffer
+};
+
+const ed25519Instruction = Ed25519ExtendedProgram.createSignatureVerificationInstruction([signatureData]);
+```
+
+#### 3.2: Submit Signatures Instruction
+
+Create the submit signatures instruction using the Rain program:
+
+```typescript
+import { Program } from "@coral-xyz/anchor";
+import { Main } from "../types/main";
+
+// Create the signature submission request
+const signatureRequest = {
+  targetNonce: currentNonce,
+  signatureSubmissionType: {
+    transferCollateralTeam: {
+      "0": transferRequest
+    }
+  },
+  salts: [Array.from(crypto.randomBytes(32))] // Random salt for each signature
+};
+
+// Create the submit signatures instruction
+const submitSignaturesIx = await program.methods
+  .submitSignatures(signatureRequest as any)
+  .accounts({
+    rentPayer: feePayer.publicKey,
+    collateral: collateralAddress,
+    collateralAdminSignatures: signaturesAccountAddress,
+  })
+  .instruction();
+
+// Send the transaction with both instructions
+const transaction = new Transaction()
+  .add(ed25519Instruction)
+  .add(submitSignaturesIx);
+
+const txSignature = await sendAndConfirmTransaction(connection, transaction, [feePayer]);
+console.log("Signatures uploaded:", txSignature);
+```
+
+### Step 4: Send the Transfer Team Transaction
+
+Finally, invoke the `transfer_collateral_team` transaction using the Anchor program:
+
+```typescript
+// Generate the PDA for the signatures account
+const signaturesAccountAddress = CollateralAdminSignatures.generateTransferCollateralTeamPDA(
+  collateral,
+  transferRequest,
+  program.programId
+);
+
+// Create and send the transfer transaction
+const transferTx = await program.methods
+  .transferCollateralTeam(transferRequest)
+  .accounts({
+    sender: feePayer.publicKey,
+    collateral: collateralAddress,
+    collateralAdminSignatures: signaturesAccountAddress,
+  })
+  .signers([feePayer])
+  .rpc();
+
+console.log("Transfer completed:", transferTx);
+```
+
+### Important Notes
+
+- **Signer Implementation**: You must implement your own way to load and use the signer in your environment
+- **Transaction Size Limits**: Solana has a 1232-byte transaction size limit, so keep the number of admins reasonable (recommended max: 5)
+- **Nonce Management**: Always use the current `adminDataNonce` from the collateral account to prevent replay attacks
+- **Error Handling**: Implement proper error handling for network issues, insufficient funds, and invalid signatures
+- **Testing**: Always test on devnet before deploying to mainnet
+
+# Ready to use example
+
 ## 🎯 What This Script Does
 
 This script **transfers administrative control** of a Solana collateral account from the current admin to a new admin. Think of it like changing the ownership of a digital safe - you need the current key holder to authorize the transfer to the new key holder.
@@ -31,7 +197,7 @@ This ensures that **only the current, legitimate admin** can transfer control.
 
 The collateral team transfer process follows a secure multi-step flow designed to ensure only authorized admins can transfer control while working within Solana's transaction size limitations. Here's how the script works:
 
-### Step 1: Load Private Keys (Lines 719-722)
+### Step 1: Load Private Keys (Lines 515-519)
 The script loads the private keys of the current collateral admin and the fee payer account from environment variables. While this example uses Solana private keys, **any mechanism capable of signing Solana transactions and string messages can be used**, including Privy, hardware wallets, or other wallet providers.
 
 ```typescript
@@ -59,7 +225,7 @@ console.log(`Current admin: ${currentAdmin.publicKey.toBase58()}`);
 console.log(`Fee payer: ${feePayer.publicKey.toBase58()}`);
 ```
 
-### Step 2: Fetch Current Collateral State (Lines 728-736)
+### Step 2: Fetch Current Collateral State (Lines 521-533)
 The script retrieves the current information of the collateral account to be transferred. This step is **mandatory** because it must know the current nonce to generate the authorization for the team transfer. The nonce is a numerical value that identifies each individual operation against the collateral (add_admin, remove_admin, transfer_team) and helps prevent replay attacks by ensuring each action can only be executed once.
 
 ```typescript
@@ -104,7 +270,7 @@ const collateralAccount = await program.account.collateral.fetch(collateralPubli
 const collateral: Collateral = new Collateral(collateralPublicKey, collateralAccount);
 ```
 
-### Step 3: Generate Transfer Request (Lines 739-744)
+### Step 3: Generate Transfer Request (Lines 535-541)
 The script creates the transfer request containing:
 - **New name**: A string identifier for the collateral account (doesn't affect logic, just for naming)
 - **New admins list**: Array of public keys for the new administrative team
@@ -124,7 +290,7 @@ const transferCollateralTeam = {
 console.log(`New admin will be: ${newAdminAddress}`);
 ```
 
-### Step 4: Generate and Submit Admin Signatures (Lines 747-755)
+### Step 4: Generate and Submit Admin Signatures (Lines 543-553)
 The current admins create cryptographic signatures authorizing the transfer. This is a **two-instruction transaction**:
 1. **Ed25519 Solana instruction**: Verifies the cryptographic signatures
 2. **SubmitSignatures instruction**: Stores the verified signatures in a PDA (Program Derived Address).
@@ -263,7 +429,7 @@ console.log(`Signature transaction: ${signatureTx}`);
 await waitForTransaction([signatureTx], program.provider.connection);
 ```
 
-**Note:**  The signature example uses the nacl package to sign the message at line 593 while the submit_signatures transaction is sent at line 627.
+**Note:**  The signature example uses the nacl package to sign the message at line 593 while the submit_signatures transaction is sent at line 390.
 
 ### Step 5: Execute Transfer Transaction
 Once signatures are submitted and verified, the transfer can be executed. The script invokes the transfer transaction with the same arguments from Step 3 and the signatures from Step 4. Since the transaction is pre-authorized with specific arguments, any current admin can send the transaction.
@@ -289,7 +455,7 @@ const tx = await program.methods
 console.log(`Transfer transaction: ${tx}`);
 ```
 
-**Note:** After the signatures are consumed and the operation completes, the rent for creating the signatures storage account is returned to the admin who called the transferTeam function under the `sender` roles specified in the accounts definition of the transaction using the provided IDL..
+**Note:** After the signatures are consumed and the operation completes, the rent for creating the signatures storage account is returned to the admin who called the transferTeam function under the `sender` roles specified in the accounts definition of the transaction using the provided IDL.
 
 ## 🏗️ Design Considerations
 

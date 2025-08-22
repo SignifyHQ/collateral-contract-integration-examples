@@ -1,0 +1,82 @@
+@startuml "Transfer collateral team sequence"
+
+!pragma teoz true
+
+' Lines style
+skinparam linetype ortho
+skinparam defaultFontColor black
+' Define the sequence's style
+skinparam SequenceArrowColor black
+' Define the actor's style
+skinparam Actor {
+    BackgroundColor white
+    BorderColor black
+    Padding 15
+}
+' Define the box's style
+skinparam SequenceBox {
+  BackgroundColor LightBlue
+  BorderColor black
+  FontSize 21
+  Padding 20
+}
+' Define the participant's style
+skinparam SequenceParticipant {
+    ArrowColor black
+    BackgroundColor white
+    BorderColor black
+    Padding 15
+}
+' Define the life line's style
+skinparam SequenceLifeLine {
+    BackgroundColor LightGray
+    BorderColor black
+}
+
+title Collateral Team Transfer Flow
+
+actor "Admin" as Admin
+participant "Admin Signer" as AdminSigner
+participant "Message Generator" as Gen
+
+box "Solana Network"
+participant "Solana RPC" as RPC
+participant "Collateral" as Collateral
+participant "Collateral Admin Signatures" as CollateralAdminSignatures
+end box
+
+activate Admin
+Admin -> AdminSigner ++: Initialize signer
+Admin <-- AdminSigner --: 
+
+Admin -> RPC ++: Get Collateral account info
+Admin <-- RPC --: Return collateral account info
+
+Admin -> Admin : Create transfer_team request
+
+Admin -> Gen ++: Create transfer_team message
+Admin <-- Gen --: Return transfer_team encoded message
+
+Admin -> AdminSigner ++: Sign transfer_team message
+Admin <-- AdminSigner --: Return transfer_team signature
+
+Admin -> RPC ++: Submit admin signatures
+RPC -> CollateralAdminSignatures ++: Submit signatures
+CollateralAdminSignatures -> CollateralAdminSignatures : Validate and store signatures
+RPC <-- CollateralAdminSignatures --: Return success
+Admin <-- RPC --: Return tx
+
+Admin -> Admin : Wait for transaction
+
+Admin -> RPC ++: Send transfer_team transaction
+RPC -> Collateral ++: Transfer team
+Collateral -> CollateralAdminSignatures ++: Compare arguments with signatures
+Collateral <-- CollateralAdminSignatures --: Arguments validated with signatures
+Collateral -> Collateral : Transfer team
+RPC <-- Collateral --: Team transferred
+Admin <-- RPC --: Return tx
+
+Admin -> Admin : Wait for transaction
+deactivate Admin
+
+@enduml
