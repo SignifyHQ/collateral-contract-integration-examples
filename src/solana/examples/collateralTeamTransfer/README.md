@@ -5,8 +5,8 @@ The general flow of the Collateral transfer_team flow is described as follows:
 ![alt text](../../../../out/src/solana/examples/collateralTeamTransfer/diagrams/sequence/Transfer%20collateral%20team%20sequence.png "Title")
 
 Where:
-* **Admin:** Are you, who wants to transfer your collateral to a different administrative team without losing the funds stored into it.
-* **Admin Signer:** is your Solana account set as admin into the Collateral that you must have access to sign both transactions and Buffers of information. It can be a custodial wallet like Phantom Wallet, a non-custodial like Privy, a smart account or a multi-sign account.
+* **Admin:** Is the admin of the Collateral account that wants to transfer it to either a new admin or group of admins.
+* **Admin Signer:** is the Solana account set as admin into the Collateral account that you must have access to sign both transactions and Buffers of information. It can be a custodial wallet like Phantom Wallet, a non-custodial like Privy, a smart account or a multi-sign account.
 * **Message Generator:** Is a utility included in this example at the file `messageGenerator.ts` that helps to generate the message that must be signed by your **Admin Signer** to authorize the transference of your **Collateral**.
 * **Solana RPC:** A Solana node connected to the network on either Mainnet, Devnet or Localnet.
 * **Collateral:** Is the Collateral account stored in the Solana network that you want to transfer.
@@ -20,7 +20,7 @@ This section provides a step-by-step guide for creating your own integration to 
 
 ### Step 1: Generate the Request
 
-First, import the types and create a `TransferCollateralTeamRequest` with the new information for the collateral:
+First, import the types and create a `TransferCollateralTeamRequest` with the new information for the collateral account:
 
 ```typescript
 import { TransferCollateralTeamRequest } from "./types";
@@ -28,7 +28,7 @@ import { PublicKey } from "@solana/web3.js";
 
 // Create the transfer request
 const transferRequest: TransferCollateralTeamRequest = {
-  newName: "New Team Name", // The new name for the collateral
+  newName: "New Team Name", // The new name for the collateral account
   newAdmins: [
     new PublicKey("NewAdmin1PublicKeyHere"),
     new PublicKey("NewAdmin2PublicKeyHere")
@@ -64,7 +64,7 @@ Create a transaction with two instructions to upload the signatures:
 
 #### 3.1: Ed25519 Instruction
 
-For collaterals with a single admin, use the standard `Ed25519Program`:
+For collateral accounts with a single admin, use the standard `Ed25519Program`:
 
 ```typescript
 import { Ed25519Program } from "@solana/web3.js";
@@ -77,7 +77,7 @@ const ed25519Instruction = Ed25519Program.createInstruction({
 });
 ```
 
-For collaterals with multiple admins, use the extended program:
+For collateral accounts with multiple admins, use the extended program:
 
 ```typescript
 import { Ed25519ExtendedProgram } from "../utils/ed25519.program";
@@ -226,7 +226,7 @@ console.log(`Fee payer: ${feePayer.publicKey.toBase58()}`);
 ```
 
 ### Step 2: Fetch Current Collateral State (Lines 521-533)
-The script retrieves the current information of the collateral account to be transferred. This step is **mandatory** because it must know the current nonce to generate the authorization for the team transfer. The nonce is a numerical value that identifies each individual operation against the collateral (add_admin, remove_admin, transfer_team) and helps prevent replay attacks by ensuring each action can only be executed once.
+The script retrieves the current information of the collateral account to be transferred. This step is **mandatory** because it must know the current nonce to generate the authorization for the team transfer. The nonce is a numerical value that identifies each individual operation against the collateral account (add_admin, remove_admin, transfer_team) and helps prevent replay attacks by ensuring each action can only be executed once.
 
 ```typescript
 /**
