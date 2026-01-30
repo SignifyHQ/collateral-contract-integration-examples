@@ -39,8 +39,8 @@ import { Connection, Ed25519Program, Keypair, PublicKey, TransactionInstruction 
 import { randomBytes } from "crypto";
 import nacl from "tweetnacl";
 import dotenv from "dotenv";
-import MainIdl from "../../idl/main.json";
-import { Main } from "../../types/main";
+import MainIdl from "../../idl/mainV1.json";
+import { Main } from "../../types/mainV1";
 import bs58 from "bs58";
 import path from "path";
 import { Base58SecretKey, SignatureVerificationData, TransferCollateralTeamParams, TransferCollateralTeamRequest } from "./types";

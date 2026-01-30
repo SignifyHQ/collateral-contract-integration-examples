@@ -82,7 +82,7 @@
  * }
  * 
  * Command Line Usage:
- * node dist/scripts/solanaV2SignatureExample.js userId token amount adminAddress recipientAddress chainId
+ * node dist/solana/examples/withdrawal/index.js userId token amount adminAddress recipientAddress chainId
  * 
  * Arguments:
  * - userId: The unique identifier for the user requesting the withdrawal
@@ -125,9 +125,9 @@ import {
   TOKEN_PROGRAM_ID,
   Account
 } from "@solana/spl-token";
-import MainIdl from "../../idl/main.json";
-import { Main } from "../../types/main";
-import { Ed25519ExtendedProgram } from "../../utils/ed25519.program";
+import MainIdl from "../../../idl/mainV2.json";
+import { Main } from "../../../types/mainV2";
+import { Ed25519ExtendedProgram } from "../../../utils/ed25519.program";
 import path from "path";
 
 // Load environment-specific configuration
@@ -544,7 +544,7 @@ async function submitCollateralSignature(
     program.programId
   );
 
-  const collateralSignatureAccount = await program.account.collateralAdminSignatures.fetchNullable(collateralSignatureAddress);
+  const collateralSignatureAccount = await program.account.collateralAdminSignaturesV2.fetchNullable(collateralSignatureAddress);
   if (!collateralSignatureAccount || collateralSignatureAccount.signers.every(signer => !signer.equals(sender.publicKey))) {
     // Create the instruction to submit the admin signature to the signatures account 
     const signatureVereficationInstruction = Ed25519ExtendedProgram.createSignatureVerificationInstruction([{
@@ -662,7 +662,7 @@ async function executeWithdrawal(
     coordinatorSignatureSalt: coordinatorMessageSalt,
   };
 
-  const collateralAccount = await program.account.collateral.fetch(collateral)
+  const collateralAccount = await program.account.collateralV2.fetch(collateral)
 
   // Get the source token account for the collateral to withdraw from
   const collateralTokenAccount = await getSourceTokenAccount(depositAddress, mintAddress)
@@ -717,6 +717,7 @@ async function executeWithdrawal(
       // Withdraw the collateral asset instruction
       await program.methods.withdrawCollateralAsset(withdrawRequest)
         .accounts({
+          rentReceiver: sender.publicKey,
           sender: sender.publicKey,
           receiver: recipientAddress,
           asset: mintAddress,
@@ -725,6 +726,7 @@ async function executeWithdrawal(
           coordinator: collateralAccount.coordinator,
           collateral: collateral,
           collateralAdminSignatures: collateralSignatureAddress,
+          tokenProgram: TOKEN_PROGRAM_ID
         })
         .instruction()
     ),
