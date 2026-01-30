@@ -5,7 +5,12 @@ This folder contains withdrawal integration examples for different versions of t
 - **withdrawalV1** — Example for version 1 of the contract.
 - **withdrawalV2** — Example for version 2 of the contract.
 
-## What version to use
+## Content
+
+1. [What version to use](#what-version-to-use)
+2. [Migrating from V1 to V2](#migrating-from-v1-to-v2)
+
+## 1. What version to use
 
 Use the **version selector** script to determine which withdrawal example (V1 or V2) matches your collateral account. The script reads the account’s on-chain discriminator and tells you which version to use.
 
@@ -32,7 +37,7 @@ yarn run solana:withdraw:select-version
 
 The script prints which withdrawal example to follow: **withdrawalV1** or **withdrawalV2**. Use the corresponding example in this folder (`withdrawalV1/` or `withdrawalV2/`) to perform your withdrawal.
 
-## Migrating from V1 to V2
+## 2. Migrating from V1 to V2
 
 If you already have a withdrawal implementation based on the V1 collateral contract and want to support the V2 contract, follow these steps. The overall flow (API calls, message encoding, signature submission, then withdraw instruction) stays the same; only the program interface and some account references change.
 
