@@ -9,6 +9,7 @@
   "packageManager": "yarn@1.22.0",
   "scripts": {
     "build": "tsc",
+    "prebuild": "yarn clean",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
     "clean": "rm -rf dist",
@@ -16,7 +17,9 @@
     "lint:fix": "eslint src/**/*.ts --fix",
     "type-check": "tsc --noEmit",
     "solana:collateral-transfer": "ts-node src/solana/examples/collateralTeamTransfer/index.ts",
-    "solana:withdraw": "ts-node src/solana/examples/withdrawal/index.ts",
+    "solana:withdraw:v1": "ts-node src/solana/examples/withdrawal/withdrawalV1/index.ts",
+    "solana:withdraw:v2": "ts-node src/solana/examples/withdrawal/withdrawalV2/index.ts",
+    "solana:withdraw:select-version": "ts-node src/solana/examples/withdrawal/versionSelector.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -36,10 +39,12 @@
     "bs58": "^6.0.0",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
+    "inquirer": "^8.2.6",
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
+    "@types/inquirer": "^8.2.10",
     "@types/node": "^20.14.9",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
