@@ -77,16 +77,16 @@ Create your environment file with the required variables (see Prerequisites abov
 ### Step 3: Run the Script
 ```bash
 # Using default environment (.env.local)
-yarn solana:withdraw-v2-2 <userId> <token> <amount> <ownerAddress> <recipientAddress> <chainId>
+yarn solana:withdraw:v2-02 <userId> <token> <amount> <ownerAddress> <recipientAddress> <chainId>
 
 # Using specific environment file
-NODE_ENV=example yarn solana:withdraw-v2-2 <userId> <token> <amount> <ownerAddress> <recipientAddress> <chainId>
+NODE_ENV=example yarn solana:withdraw:v2-02 <userId> <token> <amount> <ownerAddress> <recipientAddress> <chainId>
 ```
 
 ### Example
 ```bash
 # Default environment
-yarn solana:withdraw-v2-2 \
+yarn solana:withdraw:v2-02 \
   b5cba353-0459-483a-bbff-3033f864ef7b \
   4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU \
   100 \
@@ -95,7 +95,7 @@ yarn solana:withdraw-v2-2 \
   901
 
 # With specific environment
-NODE_ENV=example yarn solana:withdraw-v2-2 \
+NODE_ENV=example yarn solana:withdraw:v2-02 \
   b5cba353-0459-483a-bbff-3033f864ef7b \
   4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU \
   1000 \
@@ -206,6 +206,7 @@ curl --location 'https://api-dev.raincards.xyz/v1/issuing/users/YOUR_USER_ID/con
 
 ## 🔗 Related Documentation
 
+- [CODING_GUIDELINES.md](../../../../CODING_GUIDELINES.md) — `@rain/program` imports and program version comparison
 - [Solana Web3.js Documentation](https://solana-labs.github.io/solana-web3.js/)
 - [Anchor Framework Documentation](https://www.anchor-lang.com/)
 - [Solana CLI Documentation](https://docs.solana.com/cli)

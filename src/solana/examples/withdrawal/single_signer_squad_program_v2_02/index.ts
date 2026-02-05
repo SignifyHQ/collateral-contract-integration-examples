@@ -97,10 +97,8 @@ import {
   Account
 } from "@solana/spl-token";
 
-import MainIdl from "./idl/main.json";
-import { Main } from "./idl/main";
-import { Ed25519ExtendedProgram } from "../../utils/ed25519.program";
 import path from "path";
+import { Ed25519ExtendedProgram, IdlV2_02, MainV2_02 } from "@rain/program";
 
 // Load environment-specific configuration
 const nodeEnv = process.env.NODE_ENV || 'local';
@@ -318,7 +316,7 @@ async function getSourceTokenAccount(depositAddress: PublicKey, mintAddress: Pub
  * @returns Object with ed25519Instruction, withdrawalInstruction, and coordinatorExecutor
  */
 async function buildWithdrawalInstructions(
-  program: Program<Main>,
+  program: Program<MainV2_02>,
   collateral: PublicKey,
   depositAddress: PublicKey,
   vaultPda: PublicKey,
@@ -615,8 +613,8 @@ const baseUrl = process.env.RAIN_API_URL || DEFAULT_BASE_URL;
   console.log("Deposit:", contract.depositAddress);
 
   // Load Rain program
-  const idl: any = Object.assign(MainIdl, { address: contract.programAddress });
-  const program = new Program<Main>(
+  const idl: any = Object.assign(IdlV2_02, { address: contract.programAddress });
+  const program = new Program<MainV2_02>(
     idl, new AnchorProvider(connection, new Wallet(payer), AnchorProvider.defaultOptions()));
 
   // Derive the vault PDA (this will be the actual owner/signer)

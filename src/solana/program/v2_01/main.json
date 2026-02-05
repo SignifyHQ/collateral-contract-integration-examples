@@ -1,20 +1,14 @@
-/**
- * Program IDL in camelCase format in order to be used in JS/TS.
- *
- * Note that this is only a type helper and is not the actual IDL. The original
- * IDL can be found at `target/idl/main.json`.
- */
-export type Main = {
+{
   "address": "",
   "metadata": {
     "name": "main",
-    "version": "2.2.0",
-    "spec": "2.2.0",
+    "version": "2.01",
+    "spec": "2.01",
     "description": "Created with Anchor"
   },
   "instructions": [
     {
-      "name": "addCollateralAdmin",
+      "name": "add_collateral_admin",
       "docs": [
         "Adds a new admin to a Collateral account"
       ],
@@ -38,7 +32,7 @@ export type Main = {
           "signer": true
         },
         {
-          "name": "rentReceiver",
+          "name": "rent_receiver",
           "docs": [
             "The receiver of the rent for the CollateralAdminSignatures account."
           ],
@@ -52,14 +46,14 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "collateralAdminSignatures",
+          "name": "collateral_admin_signatures",
           "docs": [
             "The CollateralAdminSignatures account to get the submitted signatures."
           ],
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -68,13 +62,13 @@ export type Main = {
       ],
       "args": [
         {
-          "name": "newAdmin",
+          "name": "new_admin",
           "type": "pubkey"
         }
       ]
     },
     {
-      "name": "addCoordinatorExecutor",
+      "name": "add_coordinator_executor",
       "docs": [
         "Adds a new executor to a Coordinator account"
       ],
@@ -106,7 +100,7 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program account"
           ],
@@ -115,13 +109,13 @@ export type Main = {
       ],
       "args": [
         {
-          "name": "newExecutor",
+          "name": "new_executor",
           "type": "pubkey"
         }
       ]
     },
     {
-      "name": "addCoordinatorPublisher",
+      "name": "add_coordinator_publisher",
       "docs": [
         "Adds a new publisher to a Coordinator account"
       ],
@@ -153,7 +147,7 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program account"
           ],
@@ -162,13 +156,13 @@ export type Main = {
       ],
       "args": [
         {
-          "name": "newPublisher",
+          "name": "new_publisher",
           "type": "pubkey"
         }
       ]
     },
     {
-      "name": "addSupportedAsset",
+      "name": "add_supported_asset",
       "docs": [
         "Adds a new supported asset to the context of the Coordinator"
       ],
@@ -193,7 +187,7 @@ export type Main = {
           "signer": true
         },
         {
-          "name": "rentPayer",
+          "name": "rent_payer",
           "docs": [
             "The payer of the rent for the new Supported Asset account. It does not require a particular",
             "role."
@@ -208,7 +202,7 @@ export type Main = {
           ]
         },
         {
-          "name": "mintToken",
+          "name": "mint_token",
           "docs": [
             "The mint token of the asset to support. The default Pubkey is used to represent the native",
             "asset but any other address must belong to the token program."
@@ -223,7 +217,7 @@ export type Main = {
           ]
         },
         {
-          "name": "supportedAsset",
+          "name": "supported_asset",
           "docs": [
             "The supported asset account to initialize. The PDA will use the following seeds:",
             "- `SUPPORTED_ASSET_SEED`: Is a constant value equal to \"SupportedAsset\"",
@@ -259,13 +253,13 @@ export type Main = {
               },
               {
                 "kind": "account",
-                "path": "mintToken"
+                "path": "mint_token"
               }
             ]
           }
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program account"
           ],
@@ -274,17 +268,109 @@ export type Main = {
       ],
       "args": [
         {
-          "name": "newSupportedAsset",
+          "name": "new_supported_asset",
           "type": {
             "defined": {
-              "name": "newSupportedAsset"
+              "name": "NewSupportedAsset"
             }
           }
         }
       ]
     },
     {
-      "name": "createCollateral",
+      "name": "close_old_collateral_signatures",
+      "docs": [
+        "Closes an old CollateralAdminSignatures account and sends rent to collateral authority"
+      ],
+      "discriminator": [
+        229,
+        161,
+        137,
+        95,
+        131,
+        53,
+        127,
+        253
+      ],
+      "accounts": [
+        {
+          "name": "sender",
+          "docs": [
+            "The sender of the instruction. Must be a coordinator's collateral creator."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "coordinator",
+          "docs": [
+            "The coordinator account that validates the sender."
+          ]
+        },
+        {
+          "name": "collateral",
+          "docs": [
+            "The collateral account related to the signatures. It must belong to the coordinator."
+          ]
+        },
+        {
+          "name": "collateral_authority",
+          "docs": [
+            "The collateral authority account that will receive the rent."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "collateral"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collateral_admin_signatures",
+          "docs": [
+            "The CollateralAdminSignatures account to close."
+          ],
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "docs": [
+            "The system program."
+          ],
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_collateral",
       "docs": [
         "Creates a new Collateral account to the context of the Coordinator"
       ],
@@ -308,7 +394,7 @@ export type Main = {
           "signer": true
         },
         {
-          "name": "rentPayer",
+          "name": "rent_payer",
           "docs": [
             "The payer of the rent for the new Collateral account. It does not require a particular role."
           ],
@@ -357,7 +443,7 @@ export type Main = {
           }
         },
         {
-          "name": "collateralAuthority",
+          "name": "collateral_authority",
           "docs": [
             "The new CollateralAuthority account that will be created. The collateral authority is the",
             "account responsible for managing the assets of the Collateral."
@@ -396,7 +482,7 @@ export type Main = {
           }
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -405,17 +491,17 @@ export type Main = {
       ],
       "args": [
         {
-          "name": "newCollateral",
+          "name": "new_collateral",
           "type": {
             "defined": {
-              "name": "newCollateral"
+              "name": "NewCollateral"
             }
           }
         }
       ]
     },
     {
-      "name": "createCoordinator",
+      "name": "create_coordinator",
       "docs": [
         "Creates a new Coordinator account"
       ],
@@ -431,7 +517,7 @@ export type Main = {
       ],
       "accounts": [
         {
-          "name": "rentPayer",
+          "name": "rent_payer",
           "docs": [
             "The payer of the rent for the new Coordinator account."
           ],
@@ -472,7 +558,7 @@ export type Main = {
           }
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program account"
           ],
@@ -481,17 +567,17 @@ export type Main = {
       ],
       "args": [
         {
-          "name": "newCoordinator",
+          "name": "new_coordinator",
           "type": {
             "defined": {
-              "name": "newCoordinator"
+              "name": "NewCoordinator"
             }
           }
         }
       ]
     },
     {
-      "name": "createOldCollateral",
+      "name": "create_old_collateral",
       "docs": [
         "Creates a new old collateral account"
       ],
@@ -515,7 +601,7 @@ export type Main = {
           "signer": true
         },
         {
-          "name": "rentPayer",
+          "name": "rent_payer",
           "docs": [
             "The payer of the rent for the new Collateral account. It does not require a particular role."
           ],
@@ -564,7 +650,7 @@ export type Main = {
           }
         },
         {
-          "name": "collateralAuthority",
+          "name": "collateral_authority",
           "docs": [
             "The new CollateralAuthority account that will be created. The collateral authority is the",
             "account responsible for managing the assets of the Collateral."
@@ -603,7 +689,7 @@ export type Main = {
           }
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -612,131 +698,17 @@ export type Main = {
       ],
       "args": [
         {
-          "name": "newCollateral",
+          "name": "new_collateral",
           "type": {
             "defined": {
-              "name": "newCollateral"
+              "name": "NewCollateral"
             }
           }
         }
       ]
     },
     {
-      "name": "createSingleSignerCollateral",
-      "docs": [
-        "Creates a new SingleSignerCollateral account with single owner model"
-      ],
-      "discriminator": [
-        238,
-        164,
-        222,
-        237,
-        137,
-        207,
-        13,
-        187
-      ],
-      "accounts": [
-        {
-          "name": "sender",
-          "docs": [
-            "Must be coordinator's collateral_creator (Rain's KMS)"
-          ],
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "rentPayer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "coordinator"
-        },
-        {
-          "name": "collateral",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  67,
-                  111,
-                  108,
-                  108,
-                  97,
-                  116,
-                  101,
-                  114,
-                  97,
-                  108
-                ]
-              },
-              {
-                "kind": "arg",
-                "path": "new_collateral.id"
-              },
-              {
-                "kind": "account",
-                "path": "coordinator"
-              }
-            ]
-          }
-        },
-        {
-          "name": "collateralAuthority",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  67,
-                  111,
-                  108,
-                  108,
-                  97,
-                  116,
-                  101,
-                  114,
-                  97,
-                  108,
-                  65,
-                  117,
-                  116,
-                  104,
-                  111,
-                  114,
-                  105,
-                  116,
-                  121
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "collateral"
-              }
-            ]
-          }
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "newCollateral",
-          "type": {
-            "defined": {
-              "name": "newSingleSignerCollateral"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "increaseFundsNonce",
+      "name": "increase_funds_nonce",
       "docs": [
         "Increases the funds nonce of a Collateral account"
       ],
@@ -769,12 +741,12 @@ export type Main = {
         {
           "name": "collateral",
           "docs": [
-            "The Collateral account to increase the funds nonce (supports V1 and SingleSignerCollateral)."
+            "The Collateral account to increase the funds nonce."
           ],
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -784,7 +756,7 @@ export type Main = {
       "args": []
     },
     {
-      "name": "liquidateAssets",
+      "name": "liquidate_assets",
       "docs": [
         "Liquidates the assets of a Collateral account to pay a Statement"
       ],
@@ -817,12 +789,12 @@ export type Main = {
         {
           "name": "collateral",
           "docs": [
-            "The Collateral Account the Statement is associated to (V1 or SingleSignerCollateral). Must be related with the coordinator."
+            "The Collateral Account the Statement is associated to. Must be related with the coordinator."
           ],
           "writable": true
         },
         {
-          "name": "collateralAuthority",
+          "name": "collateral_authority",
           "docs": [
             "The Collateral Authority account where the assets are held."
           ],
@@ -875,21 +847,21 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "docs": [
             "The SPL Token program."
           ],
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "token2022Program",
+          "name": "token2022_program",
           "docs": [
             "The token2022 program."
           ],
           "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -899,7 +871,7 @@ export type Main = {
       "args": []
     },
     {
-      "name": "makePaymentFromCollateral",
+      "name": "make_payment_from_collateral",
       "docs": [
         "Makes a payment from a Collateral account"
       ],
@@ -931,18 +903,17 @@ export type Main = {
         {
           "name": "collateral",
           "docs": [
-            "The collateral account that must be owned by the coordinator (V1 or SingleSignerCollateral)."
-          ],
-          "writable": true
+            "The collateral account that must be owned by the coordinator."
+          ]
         },
         {
-          "name": "supportedAsset",
+          "name": "supported_asset",
           "docs": [
             "The supported asset account to validate if the asset to pay is supported by the coordinator."
           ]
         },
         {
-          "name": "collateralAuthority",
+          "name": "collateral_authority",
           "docs": [
             "The collateral authority account that custody the funds to pay."
           ],
@@ -1002,7 +973,7 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "collateralTokenAccount",
+          "name": "collateral_token_account",
           "docs": [
             "The collateral token account to transfer the SPL assets from the collateral."
           ],
@@ -1010,7 +981,7 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "treasuryTokenAccount",
+          "name": "treasury_token_account",
           "docs": [
             "The treasury token account to transfer the SPL assets to the treasury."
           ],
@@ -1018,20 +989,20 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "docs": [
             "The token program to transfer the SPL assets."
           ]
         },
         {
-          "name": "instructionSysvar",
+          "name": "instruction_sysvar",
           "docs": [
             "The instruction sysvar to get the signatures data."
           ],
           "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -1043,14 +1014,14 @@ export type Main = {
           "name": "request",
           "type": {
             "defined": {
-              "name": "makePaymentFromCollateralRequest"
+              "name": "MakePaymentFromCollateralRequest"
             }
           }
         }
       ]
     },
     {
-      "name": "makePaymentFromCollateralForStatement",
+      "name": "make_payment_from_collateral_for_statement",
       "docs": [
         "Makes a payment from a Collateral account for a specific Statement"
       ],
@@ -1082,12 +1053,11 @@ export type Main = {
         {
           "name": "collateral",
           "docs": [
-            "The collateral account that custody the funds to pay (V1 or SingleSignerCollateral)."
-          ],
-          "writable": true
+            "The collateral account that custody the funds to pay."
+          ]
         },
         {
-          "name": "supportedAsset",
+          "name": "supported_asset",
           "docs": [
             "The supported asset account to validate if the asset to pay is supported by the coordinator."
           ]
@@ -1100,7 +1070,7 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "collateralAuthority",
+          "name": "collateral_authority",
           "docs": [
             "The collateral authority account that custody the funds to pay."
           ],
@@ -1160,7 +1130,7 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "collateralTokenAccount",
+          "name": "collateral_token_account",
           "docs": [
             "The collateral token account to transfer the SPL assets from the collateral."
           ],
@@ -1168,7 +1138,7 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "treasuryTokenAccount",
+          "name": "treasury_token_account",
           "docs": [
             "The treasury token account to transfer the SPL assets to the treasury."
           ],
@@ -1176,20 +1146,20 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "docs": [
             "The token program required to transfer the SPL assets."
           ]
         },
         {
-          "name": "instructionSysvar",
+          "name": "instruction_sysvar",
           "docs": [
             "The instruction sysvar to get the signatures data."
           ],
           "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -1201,14 +1171,14 @@ export type Main = {
           "name": "request",
           "type": {
             "defined": {
-              "name": "makePaymentFromCollateralRequest"
+              "name": "MakePaymentFromCollateralRequest"
             }
           }
         }
       ]
     },
     {
-      "name": "makePaymentFromUserAccount",
+      "name": "make_payment_from_user_account",
       "docs": [
         "Makes a payment transferring the assets from the transaction sender"
       ],
@@ -1238,7 +1208,7 @@ export type Main = {
           ]
         },
         {
-          "name": "supportedAsset",
+          "name": "supported_asset",
           "docs": [
             "The supported asset account to validate if the asset to pay is supported by the coordinator."
           ]
@@ -1265,7 +1235,7 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "senderTokenAccount",
+          "name": "sender_token_account",
           "docs": [
             "The sender token account to transfer the SPL assets from the sender."
           ],
@@ -1273,7 +1243,7 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "treasuryTokenAccount",
+          "name": "treasury_token_account",
           "docs": [
             "The treasury token account to transfer the SPL assets to the treasury."
           ],
@@ -1281,13 +1251,13 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "docs": [
             "The token program to transfer the SPL assets."
           ]
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program"
           ],
@@ -1299,14 +1269,14 @@ export type Main = {
           "name": "request",
           "type": {
             "defined": {
-              "name": "makePaymentFromUserAccountRequest"
+              "name": "MakePaymentFromUserAccountRequest"
             }
           }
         }
       ]
     },
     {
-      "name": "makePaymentFromUserAccountForStatement",
+      "name": "make_payment_from_user_account_for_statement",
       "docs": [
         "Makes a payment transferring the assets from the transaction sender for a specific Statement"
       ],
@@ -1336,7 +1306,7 @@ export type Main = {
           ]
         },
         {
-          "name": "supportedAsset",
+          "name": "supported_asset",
           "docs": [
             "The supported asset account to validate if the asset to pay is supported by the coordinator."
           ]
@@ -1370,7 +1340,7 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "senderTokenAccount",
+          "name": "sender_token_account",
           "docs": [
             "The sender token account to transfer the SPL assets from the sender."
           ],
@@ -1378,7 +1348,7 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "treasuryTokenAccount",
+          "name": "treasury_token_account",
           "docs": [
             "The treasury token account to transfer the SPL assets to the treasury."
           ],
@@ -1386,13 +1356,13 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "docs": [
             "The token program to transfer the SPL assets."
           ]
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -1404,14 +1374,14 @@ export type Main = {
           "name": "request",
           "type": {
             "defined": {
-              "name": "makePaymentFromUserAccountRequest"
+              "name": "MakePaymentFromUserAccountRequest"
             }
           }
         }
       ]
     },
     {
-      "name": "markStatementPaid",
+      "name": "mark_statement_paid",
       "docs": [
         "Marks an specific amount of a Statement as paid"
       ],
@@ -1448,7 +1418,7 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -1460,16 +1430,16 @@ export type Main = {
           "name": "request",
           "type": {
             "defined": {
-              "name": "markStatementPaidRequest"
+              "name": "MarkStatementPaidRequest"
             }
           }
         }
       ]
     },
     {
-      "name": "migrateCollateralInfo",
+      "name": "migrate_collateral_info",
       "docs": [
-        "Migrates the collateral info from the old format to the current format"
+        "Migrates the collateral info from the v1 to the v2"
       ],
       "discriminator": [
         140,
@@ -1491,7 +1461,7 @@ export type Main = {
           "signer": true
         },
         {
-          "name": "rentPayer",
+          "name": "rent_payer",
           "docs": [
             "The rent payer for the account reallocation. It might receive the rent back after the",
             "reallocation."
@@ -1513,7 +1483,7 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -1523,65 +1493,7 @@ export type Main = {
       "args": []
     },
     {
-      "name": "migrateToSingleSignerCollateral",
-      "docs": [
-        "Migrates a Collateral (multi-admin) to SingleSignerCollateral (single-owner) using multi-admin consensus"
-      ],
-      "discriminator": [
-        119,
-        54,
-        24,
-        43,
-        18,
-        165,
-        203,
-        187
-      ],
-      "accounts": [
-        {
-          "name": "sender",
-          "docs": [
-            "Sender of the instruction (does not need to be admin)"
-          ],
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "rentReceiver",
-          "docs": [
-            "Receives excess rent when account shrinks"
-          ],
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "collateral",
-          "docs": [
-            "The V1 collateral to migrate - will be rewritten as SingleSignerCollateral"
-          ],
-          "writable": true
-        },
-        {
-          "name": "collateralAdminSignatures",
-          "docs": [
-            "The CollateralAdminSignatures account with threshold signatures approving migration"
-          ],
-          "writable": true
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "newOwner",
-          "type": "pubkey"
-        }
-      ]
-    },
-    {
-      "name": "publishStatement",
+      "name": "publish_statement",
       "docs": [
         "Publishes a new Statement for a Collateral account into the context of the Coordinator"
       ],
@@ -1605,7 +1517,7 @@ export type Main = {
           "signer": true
         },
         {
-          "name": "rentPayer",
+          "name": "rent_payer",
           "docs": [
             "The payer of the rent for the new Statement account. It does not require a particular role."
           ],
@@ -1621,7 +1533,7 @@ export type Main = {
         {
           "name": "collateral",
           "docs": [
-            "The collateral account the statement belongs to (V1 or SingleSignerCollateral). It must belong to the given coordinator."
+            "The collateral account the statement belongs to. It must belong to the given coordinator."
           ]
         },
         {
@@ -1635,7 +1547,7 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -1644,17 +1556,17 @@ export type Main = {
       ],
       "args": [
         {
-          "name": "newStatement",
+          "name": "new_statement",
           "type": {
             "defined": {
-              "name": "upsertStatement"
+              "name": "UpsertStatement"
             }
           }
         }
       ]
     },
     {
-      "name": "removeCollateralAdmin",
+      "name": "remove_collateral_admin",
       "docs": [
         "Removes an admin from a Collateral account"
       ],
@@ -1678,7 +1590,7 @@ export type Main = {
           "signer": true
         },
         {
-          "name": "rentReceiver",
+          "name": "rent_receiver",
           "docs": [
             "The receiver of the rent for the CollateralAdminSignatures account."
           ],
@@ -1692,14 +1604,14 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "collateralAdminSignatures",
+          "name": "collateral_admin_signatures",
           "docs": [
             "The CollateralAdminSignatures account to get the submitted signatures."
           ],
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -1708,13 +1620,13 @@ export type Main = {
       ],
       "args": [
         {
-          "name": "adminToRemove",
+          "name": "admin_to_remove",
           "type": "pubkey"
         }
       ]
     },
     {
-      "name": "removeCoordinatorExecutor",
+      "name": "remove_coordinator_executor",
       "docs": [
         "Removes an executor from a Coordinator account"
       ],
@@ -1746,7 +1658,7 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program account"
           ],
@@ -1761,7 +1673,7 @@ export type Main = {
       ]
     },
     {
-      "name": "removeCoordinatorPublisher",
+      "name": "remove_coordinator_publisher",
       "docs": [
         "Removes a publisher from a Coordinator account"
       ],
@@ -1793,7 +1705,7 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program account."
           ],
@@ -1808,7 +1720,7 @@ export type Main = {
       ]
     },
     {
-      "name": "removeSupportedAsset",
+      "name": "remove_supported_asset",
       "docs": [
         "Removes a supported asset from the context of the Coordinator"
       ],
@@ -1833,7 +1745,7 @@ export type Main = {
           "signer": true
         },
         {
-          "name": "rentReceiver",
+          "name": "rent_receiver",
           "docs": [
             "The reciever of the rent lamports. It does not require a particular role.",
             "information is neither read nor written."
@@ -1847,7 +1759,7 @@ export type Main = {
           ]
         },
         {
-          "name": "supportedAsset",
+          "name": "supported_asset",
           "docs": [
             "The supported asset account to close. Add the close macro to close the account and return",
             "the rent lamports to the sender."
@@ -1887,7 +1799,7 @@ export type Main = {
           }
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program account"
           ],
@@ -1902,7 +1814,71 @@ export type Main = {
       ]
     },
     {
-      "name": "submitSignatures",
+      "name": "submit_old_collateral_signatures",
+      "docs": [
+        "Submits signatures to an old Collateral account"
+      ],
+      "discriminator": [
+        57,
+        159,
+        18,
+        159,
+        163,
+        119,
+        166,
+        246
+      ],
+      "accounts": [
+        {
+          "name": "rent_payer",
+          "docs": [
+            "The signer of the transaction and the payer of the rent for the CollateralAdminSignatures",
+            "account. They do not require a specific role."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "collateral",
+          "docs": [
+            "The Collateral account the signature will allow the action to be performed."
+          ]
+        },
+        {
+          "name": "collateral_admin_signatures",
+          "docs": [
+            "The CollateralAdminSignatures account to push/update the signature."
+          ],
+          "writable": true
+        },
+        {
+          "name": "instruction_sysvar",
+          "docs": [
+            "The instruction sysvar to get the signatures."
+          ],
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "system_program",
+          "docs": [
+            "The system program."
+          ],
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "request",
+          "type": {
+            "defined": {
+              "name": "SignatureSubmissionRequest"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "submit_signatures",
       "docs": [
         "Upsert a collateral admin signature into a Collateral account"
       ],
@@ -1918,7 +1894,7 @@ export type Main = {
       ],
       "accounts": [
         {
-          "name": "rentPayer",
+          "name": "rent_payer",
           "docs": [
             "The signer of the transaction and the payer of the rent for the CollateralAdminSignatures",
             "account. They do not require a specific role."
@@ -1933,21 +1909,21 @@ export type Main = {
           ]
         },
         {
-          "name": "collateralAdminSignatures",
+          "name": "collateral_admin_signatures",
           "docs": [
             "The CollateralAdminSignatures account to push/update the signature."
           ],
           "writable": true
         },
         {
-          "name": "instructionSysvar",
+          "name": "instruction_sysvar",
           "docs": [
             "The instruction sysvar to get the signatures."
           ],
           "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -1959,14 +1935,14 @@ export type Main = {
           "name": "request",
           "type": {
             "defined": {
-              "name": "signatureSubmissionRequest"
+              "name": "SignatureSubmissionRequest"
             }
           }
         }
       ]
     },
     {
-      "name": "transferCollateralTeam",
+      "name": "transfer_collateral_team",
       "docs": [
         "Transfer a Collateral Account to a new team"
       ],
@@ -1990,7 +1966,7 @@ export type Main = {
           "signer": true
         },
         {
-          "name": "rentReceiver",
+          "name": "rent_receiver",
           "docs": [
             "The receiver of the rent for the CollateralAdminSignatures account."
           ],
@@ -2004,14 +1980,14 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "collateralAdminSignatures",
+          "name": "collateral_admin_signatures",
           "docs": [
             "The CollateralAdminSignatures account to get the submitted signatures."
           ],
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -2023,14 +1999,14 @@ export type Main = {
           "name": "request",
           "type": {
             "defined": {
-              "name": "transferCollateralTeamRequest"
+              "name": "TransferCollateralTeamRequest"
             }
           }
         }
       ]
     },
     {
-      "name": "transferOwnership",
+      "name": "transfer_ownership",
       "docs": [
         "Transfers the ownership of a Coordinator account"
       ],
@@ -2062,7 +2038,7 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program account"
           ],
@@ -2071,49 +2047,13 @@ export type Main = {
       ],
       "args": [
         {
-          "name": "newOwner",
+          "name": "new_owner",
           "type": "pubkey"
         }
       ]
     },
     {
-      "name": "transferSingleSignerCollateralOwnership",
-      "docs": [
-        "Transfers ownership of a SingleSignerCollateral account"
-      ],
-      "discriminator": [
-        15,
-        3,
-        166,
-        229,
-        43,
-        123,
-        85,
-        181
-      ],
-      "accounts": [
-        {
-          "name": "owner",
-          "docs": [
-            "Current owner must sign"
-          ],
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "collateral",
-          "writable": true
-        }
-      ],
-      "args": [
-        {
-          "name": "newOwner",
-          "type": "pubkey"
-        }
-      ]
-    },
-    {
-      "name": "updateCollateralAdminThreshold",
+      "name": "update_collateral_admin_threshold",
       "docs": [
         "Updates the admin threshold of a Collateral account"
       ],
@@ -2137,7 +2077,7 @@ export type Main = {
           "signer": true
         },
         {
-          "name": "rentReceiver",
+          "name": "rent_receiver",
           "docs": [
             "The receiver of the rent for the CollateralAdminSignatures account."
           ],
@@ -2151,14 +2091,14 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "collateralAdminSignatures",
+          "name": "collateral_admin_signatures",
           "docs": [
             "The CollateralAdminSignatures account to get the submitted signatures."
           ],
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -2167,13 +2107,13 @@ export type Main = {
       ],
       "args": [
         {
-          "name": "newThreshold",
+          "name": "new_threshold",
           "type": "u8"
         }
       ]
     },
     {
-      "name": "updateCollateralCreator",
+      "name": "update_collateral_creator",
       "docs": [
         "Updates a Coordinator account collateral creator"
       ],
@@ -2205,7 +2145,7 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program account."
           ],
@@ -2214,13 +2154,13 @@ export type Main = {
       ],
       "args": [
         {
-          "name": "collateralCreator",
+          "name": "collateral_creator",
           "type": "pubkey"
         }
       ]
     },
     {
-      "name": "updateCoordinatorTreasury",
+      "name": "update_coordinator_treasury",
       "docs": [
         "Updates a Coordinator account supported asset treasury"
       ],
@@ -2252,7 +2192,7 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program account."
           ],
@@ -2267,7 +2207,7 @@ export type Main = {
       ]
     },
     {
-      "name": "updateStatement",
+      "name": "update_statement",
       "docs": [
         "Updates a Statement for a Collateral account into the context of the Coordinator"
       ],
@@ -2299,7 +2239,7 @@ export type Main = {
         {
           "name": "collateral",
           "docs": [
-            "The collateral account the statement will belong to (V1 or SingleSignerCollateral). It must belong to the given coordinator."
+            "The collateral account the statement will belong to. It must belong to the given coordinator."
           ]
         },
         {
@@ -2313,7 +2253,7 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -2322,17 +2262,17 @@ export type Main = {
       ],
       "args": [
         {
-          "name": "updateStatement",
+          "name": "update_statement",
           "type": {
             "defined": {
-              "name": "upsertStatement"
+              "name": "UpsertStatement"
             }
           }
         }
       ]
     },
     {
-      "name": "withdrawCollateralAsset",
+      "name": "withdraw_collateral_asset",
       "docs": [
         "Withdraws a Collateral asset from a Collateral account"
       ],
@@ -2356,7 +2296,7 @@ export type Main = {
           "signer": true
         },
         {
-          "name": "rentReceiver",
+          "name": "rent_receiver",
           "docs": [
             "The receiver of the rent for the CollateralAdminSignatures account."
           ],
@@ -2377,7 +2317,7 @@ export type Main = {
           "writable": true
         },
         {
-          "name": "collateralAuthority",
+          "name": "collateral_authority",
           "docs": [
             "The collateral authority account that holds the assets to be withdrawn."
           ],
@@ -2416,7 +2356,7 @@ export type Main = {
           }
         },
         {
-          "name": "collateralAdminSignatures",
+          "name": "collateral_admin_signatures",
           "docs": [
             "The CollateralAdminSignatures account to get the submitted signatures."
           ],
@@ -2437,7 +2377,7 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "collateralTokenAccount",
+          "name": "collateral_token_account",
           "docs": [
             "The token account of the collateral that holds the asset to be withdrawn."
           ],
@@ -2445,7 +2385,7 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "receiverTokenAccount",
+          "name": "receiver_token_account",
           "docs": [
             "The token account of the receiver that will receive the asset."
           ],
@@ -2453,20 +2393,20 @@ export type Main = {
           "optional": true
         },
         {
-          "name": "tokenProgram",
+          "name": "token_program",
           "docs": [
             "The token program."
           ]
         },
         {
-          "name": "instructionSysvar",
+          "name": "instruction_sysvar",
           "docs": [
             "The instruction sysvar to get the signatures."
           ],
           "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
-          "name": "systemProgram",
+          "name": "system_program",
           "docs": [
             "The system program."
           ],
@@ -2478,115 +2418,7 @@ export type Main = {
           "name": "request",
           "type": {
             "defined": {
-              "name": "withdrawCollateralAssetRequest"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "withdrawSingleSignerCollateralAsset",
-      "docs": [
-        "Withdraws an asset from a SingleSignerCollateral account (owner + coordinator signature)"
-      ],
-      "discriminator": [
-        13,
-        25,
-        64,
-        83,
-        111,
-        184,
-        70,
-        241
-      ],
-      "accounts": [
-        {
-          "name": "owner",
-          "docs": [
-            "Owner must sign (can be Squads PDA invoking via CPI)"
-          ],
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "coordinator"
-        },
-        {
-          "name": "collateral",
-          "writable": true
-        },
-        {
-          "name": "collateralAuthority",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  67,
-                  111,
-                  108,
-                  108,
-                  97,
-                  116,
-                  101,
-                  114,
-                  97,
-                  108,
-                  65,
-                  117,
-                  116,
-                  104,
-                  111,
-                  114,
-                  105,
-                  116,
-                  121
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "collateral"
-              }
-            ]
-          }
-        },
-        {
-          "name": "destination",
-          "writable": true
-        },
-        {
-          "name": "asset",
-          "optional": true
-        },
-        {
-          "name": "collateralTokenAccount",
-          "writable": true,
-          "optional": true
-        },
-        {
-          "name": "destinationTokenAccount",
-          "writable": true,
-          "optional": true
-        },
-        {
-          "name": "tokenProgram"
-        },
-        {
-          "name": "instructionSysvar",
-          "address": "Sysvar1nstructions1111111111111111111111111"
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "request",
-          "type": {
-            "defined": {
-              "name": "withdrawSingleSignerCollateralAssetRequest"
+              "name": "WithdrawCollateralAssetRequest"
             }
           }
         }
@@ -2595,7 +2427,7 @@ export type Main = {
   ],
   "accounts": [
     {
-      "name": "collateral",
+      "name": "Collateral",
       "discriminator": [
         123,
         130,
@@ -2608,7 +2440,7 @@ export type Main = {
       ]
     },
     {
-      "name": "collateralAdminSignatures",
+      "name": "CollateralAdminSignatures",
       "discriminator": [
         10,
         242,
@@ -2621,20 +2453,33 @@ export type Main = {
       ]
     },
     {
-      "name": "collateralOld",
+      "name": "CollateralAdminSignaturesV2",
       "discriminator": [
-        98,
-        184,
-        62,
-        45,
-        226,
-        190,
-        222,
-        180
+        194,
+        102,
+        185,
+        168,
+        0,
+        177,
+        70,
+        136
       ]
     },
     {
-      "name": "coordinator",
+      "name": "CollateralV2",
+      "discriminator": [
+        165,
+        86,
+        67,
+        157,
+        199,
+        120,
+        39,
+        111
+      ]
+    },
+    {
+      "name": "Coordinator",
       "discriminator": [
         234,
         133,
@@ -2647,7 +2492,7 @@ export type Main = {
       ]
     },
     {
-      "name": "priceUpdateV2",
+      "name": "PriceUpdateV2",
       "discriminator": [
         34,
         241,
@@ -2660,20 +2505,7 @@ export type Main = {
       ]
     },
     {
-      "name": "singleSignerCollateral",
-      "discriminator": [
-        19,
-        45,
-        99,
-        29,
-        196,
-        50,
-        228,
-        117
-      ]
-    },
-    {
-      "name": "statement",
+      "name": "Statement",
       "discriminator": [
         202,
         2,
@@ -2686,7 +2518,7 @@ export type Main = {
       ]
     },
     {
-      "name": "supportedAsset",
+      "name": "SupportedAsset",
       "discriminator": [
         129,
         27,
@@ -2701,7 +2533,7 @@ export type Main = {
   ],
   "events": [
     {
-      "name": "collateralAccountCreated",
+      "name": "CollateralAccountCreated",
       "discriminator": [
         205,
         133,
@@ -2714,7 +2546,7 @@ export type Main = {
       ]
     },
     {
-      "name": "collateralAdminAdded",
+      "name": "CollateralAdminAdded",
       "discriminator": [
         86,
         225,
@@ -2727,7 +2559,7 @@ export type Main = {
       ]
     },
     {
-      "name": "collateralAdminRemoved",
+      "name": "CollateralAdminRemoved",
       "discriminator": [
         168,
         2,
@@ -2740,7 +2572,7 @@ export type Main = {
       ]
     },
     {
-      "name": "collateralAdminSignaturesSubmitted",
+      "name": "CollateralAdminSignaturesSubmitted",
       "discriminator": [
         48,
         143,
@@ -2753,7 +2585,7 @@ export type Main = {
       ]
     },
     {
-      "name": "collateralAdminThresholdUpdated",
+      "name": "CollateralAdminThresholdUpdated",
       "discriminator": [
         135,
         91,
@@ -2766,7 +2598,7 @@ export type Main = {
       ]
     },
     {
-      "name": "collateralCreatorUpdated",
+      "name": "CollateralCreatorUpdated",
       "discriminator": [
         118,
         89,
@@ -2779,7 +2611,7 @@ export type Main = {
       ]
     },
     {
-      "name": "collateralFundsNonceIncreased",
+      "name": "CollateralFundsNonceIncreased",
       "discriminator": [
         66,
         123,
@@ -2792,20 +2624,7 @@ export type Main = {
       ]
     },
     {
-      "name": "collateralMigratedToSingleSigner",
-      "discriminator": [
-        127,
-        110,
-        69,
-        184,
-        227,
-        54,
-        187,
-        134
-      ]
-    },
-    {
-      "name": "collateralTeamTransferred",
+      "name": "CollateralTeamTransferred",
       "discriminator": [
         114,
         255,
@@ -2818,7 +2637,7 @@ export type Main = {
       ]
     },
     {
-      "name": "collateralWithdrawal",
+      "name": "CollateralWithdrawal",
       "discriminator": [
         228,
         99,
@@ -2831,7 +2650,7 @@ export type Main = {
       ]
     },
     {
-      "name": "executorAdded",
+      "name": "ExecutorAdded",
       "discriminator": [
         41,
         10,
@@ -2844,7 +2663,7 @@ export type Main = {
       ]
     },
     {
-      "name": "executorRemoved",
+      "name": "ExecutorRemoved",
       "discriminator": [
         13,
         84,
@@ -2857,7 +2676,7 @@ export type Main = {
       ]
     },
     {
-      "name": "liquidation",
+      "name": "Liquidation",
       "discriminator": [
         253,
         18,
@@ -2870,7 +2689,7 @@ export type Main = {
       ]
     },
     {
-      "name": "newTreasury",
+      "name": "NewTreasury",
       "discriminator": [
         206,
         3,
@@ -2883,7 +2702,7 @@ export type Main = {
       ]
     },
     {
-      "name": "ownershipTransferred",
+      "name": "OwnershipTransferred",
       "discriminator": [
         172,
         61,
@@ -2896,7 +2715,7 @@ export type Main = {
       ]
     },
     {
-      "name": "paymentFromCollateral",
+      "name": "PaymentFromCollateral",
       "discriminator": [
         72,
         100,
@@ -2909,7 +2728,7 @@ export type Main = {
       ]
     },
     {
-      "name": "paymentFromCollateralForStatement",
+      "name": "PaymentFromCollateralForStatement",
       "discriminator": [
         88,
         89,
@@ -2922,7 +2741,7 @@ export type Main = {
       ]
     },
     {
-      "name": "paymentFromUserAccount",
+      "name": "PaymentFromUserAccount",
       "discriminator": [
         101,
         161,
@@ -2935,7 +2754,7 @@ export type Main = {
       ]
     },
     {
-      "name": "paymentFromUserAccountForStatement",
+      "name": "PaymentFromUserAccountForStatement",
       "discriminator": [
         246,
         245,
@@ -2948,7 +2767,7 @@ export type Main = {
       ]
     },
     {
-      "name": "publisherAdded",
+      "name": "PublisherAdded",
       "discriminator": [
         121,
         240,
@@ -2961,7 +2780,7 @@ export type Main = {
       ]
     },
     {
-      "name": "publisherRemoved",
+      "name": "PublisherRemoved",
       "discriminator": [
         171,
         116,
@@ -2974,46 +2793,7 @@ export type Main = {
       ]
     },
     {
-      "name": "singleSignerCollateralCreated",
-      "discriminator": [
-        96,
-        253,
-        95,
-        146,
-        66,
-        114,
-        11,
-        235
-      ]
-    },
-    {
-      "name": "singleSignerCollateralOwnershipTransferred",
-      "discriminator": [
-        105,
-        48,
-        137,
-        202,
-        109,
-        156,
-        108,
-        198
-      ]
-    },
-    {
-      "name": "singleSignerCollateralWithdrawal",
-      "discriminator": [
-        50,
-        203,
-        238,
-        151,
-        46,
-        249,
-        77,
-        108
-      ]
-    },
-    {
-      "name": "statementMarkedPaid",
+      "name": "StatementMarkedPaid",
       "discriminator": [
         170,
         115,
@@ -3026,7 +2806,7 @@ export type Main = {
       ]
     },
     {
-      "name": "statementPublished",
+      "name": "StatementPublished",
       "discriminator": [
         39,
         64,
@@ -3039,7 +2819,7 @@ export type Main = {
       ]
     },
     {
-      "name": "statementUpdated",
+      "name": "StatementUpdated",
       "discriminator": [
         7,
         222,
@@ -3052,7 +2832,7 @@ export type Main = {
       ]
     },
     {
-      "name": "supportedAssetAdded",
+      "name": "SupportedAssetAdded",
       "discriminator": [
         180,
         12,
@@ -3065,7 +2845,7 @@ export type Main = {
       ]
     },
     {
-      "name": "supportedAssetRemoved",
+      "name": "SupportedAssetRemoved",
       "discriminator": [
         107,
         209,
@@ -3081,56 +2861,66 @@ export type Main = {
   "errors": [
     {
       "code": 6000,
-      "name": "invalidSupportedAssetAccount",
+      "name": "InvalidSupportedAssetAccount",
       "msg": "Invalid supported asset account"
     },
     {
       "code": 6001,
-      "name": "invalidFeeBps",
+      "name": "InvalidFeeBPS",
       "msg": "Invalid Fee BPS"
     },
     {
       "code": 6002,
-      "name": "invalidFeedId",
+      "name": "InvalidFeedId",
       "msg": "Feed ID length must be 66"
     },
     {
       "code": 6003,
-      "name": "feedIdRequired",
-      "msg": "Feed ID is required when the oracle is not the default address"
+      "name": "InvalidStaleThreshold",
+      "msg": "Invalid stale threshold"
     },
     {
       "code": 6004,
-      "name": "defaultKeysNotAllowed",
-      "msg": "Oracle and asset pubkeys cannot be both default keys"
+      "name": "FeedIdRequired",
+      "msg": "Feed ID is required when the oracle is not the default address"
     },
     {
       "code": 6005,
-      "name": "invalidPriceOracleAccount",
-      "msg": "Invalid price oracle account"
+      "name": "DefaultKeysNotAllowed",
+      "msg": "Oracle and asset pubkeys cannot be both default keys"
     },
     {
       "code": 6006,
-      "name": "supportedAssetDoesNotBelongToCoordinator",
-      "msg": "Supported asset does not belong to the coordinator"
+      "name": "InvalidPriceOracleAccount",
+      "msg": "Invalid price oracle account"
     },
     {
       "code": 6007,
-      "name": "mintTokenDoesNotBelongToSupportedAsset",
-      "msg": "Mint token does not belong to the supported asset"
+      "name": "UnsupportedMintExtension",
+      "msg": "Unsupported mint extension"
     },
     {
       "code": 6008,
-      "name": "priceOracleMismatch",
+      "name": "SupportedAssetDoesNotBelongToCoordinator",
+      "msg": "Supported asset does not belong to the coordinator"
+    },
+    {
+      "code": 6009,
+      "name": "MintTokenDoesNotBelongToSupportedAsset",
+      "msg": "Mint token does not belong to the supported asset"
+    },
+    {
+      "code": 6010,
+      "name": "PriceOracleMismatch",
       "msg": "Price oracle does not match the supported asset"
     }
   ],
   "types": [
     {
-      "name": "collateral",
+      "name": "Collateral",
       "docs": [
-        "Represents the SingleSignerCollateral account stored in the blockchain. It is dynamically sized depending",
-        "on the size of the admins list."
+        "Represents the V1 Collateral account stored in the blockchain. The account is owned by a",
+        "Coordinator account and is used to store the information and assets owned by a borrower."
       ],
       "type": {
         "kind": "struct",
@@ -3144,7 +2934,7 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "authorityBump",
+            "name": "authority_bump",
             "type": "u8"
           },
           {
@@ -3152,35 +2942,28 @@ export type Main = {
             "type": "string"
           },
           {
-            "name": "adminThreshold",
-            "type": "u8"
-          },
-          {
-            "name": "adminDataNonce",
-            "type": "u32"
-          },
-          {
-            "name": "adminFundsNonce",
-            "type": "u32"
-          },
-          {
-            "name": "adminsCapacity",
-            "docs": [
-              "The capacity of the admins array"
-            ],
-            "type": "u8"
-          },
-          {
             "name": "admins",
             "type": {
               "vec": "pubkey"
             }
+          },
+          {
+            "name": "admin_threshold",
+            "type": "u8"
+          },
+          {
+            "name": "admin_data_nonce",
+            "type": "u32"
+          },
+          {
+            "name": "admin_funds_nonce",
+            "type": "u32"
           }
         ]
       }
     },
     {
-      "name": "collateralAccountCreated",
+      "name": "CollateralAccountCreated",
       "docs": [
         "Represents the information of a new Collateral account:",
         "- `coordinator_account`: The address of the Coordinator account the Collateral account belongs to",
@@ -3195,21 +2978,21 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "coordinatorAccount",
+            "name": "coordinator_account",
             "docs": [
               "The address of the Coordinator account the Collateral account belongs to"
             ],
             "type": "pubkey"
           },
           {
-            "name": "collateralAccount",
+            "name": "collateral_account",
             "docs": [
               "The address where the Collateral account was created"
             ],
             "type": "pubkey"
           },
           {
-            "name": "authorityAddress",
+            "name": "authority_address",
             "docs": [
               "The address of the Collateral authority that will manage the funds"
             ],
@@ -3233,7 +3016,7 @@ export type Main = {
       }
     },
     {
-      "name": "collateralAdminAdded",
+      "name": "CollateralAdminAdded",
       "docs": [
         "Represent the information to emit when an admin is added to a Collateral account",
         "- `collateral_account`: The address of the Collateral account where the admin was added",
@@ -3243,7 +3026,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "collateralAccount",
+            "name": "collateral_account",
             "docs": [
               "The address of the Collateral account where the admin was added"
             ],
@@ -3260,7 +3043,7 @@ export type Main = {
       }
     },
     {
-      "name": "collateralAdminRemoved",
+      "name": "CollateralAdminRemoved",
       "docs": [
         "Represents the information to emit when an admin is removed from a Collateral account",
         "- `collateral_account`: The address of the Collateral account where the admin was removed",
@@ -3270,7 +3053,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "collateralAccount",
+            "name": "collateral_account",
             "docs": [
               "The address of the Collateral account where the admin was removed"
             ],
@@ -3287,7 +3070,112 @@ export type Main = {
       }
     },
     {
-      "name": "collateralAdminSignatures",
+      "name": "CollateralAdminSignatures",
+      "docs": [
+        "owned by a Collateral account and is used to store the signatures of the admins of the",
+        "collateral account to avoid the transaction size limit.",
+        "- `id`: The hash of the allowed parameters that works as account id.",
+        "- `bump`: The bump of the CollateralAdminSignatures account.",
+        "- `collateral`: The address of the collateral account that owns the signatures.",
+        "- `is_in_progress`: The flag to indicate in a request if in progress or not, e.i., at least one",
+        "admin has signed the request with a specific parameters.",
+        "- `signers`: The list of admins that have signed the request.",
+        "- `action_message_hash`: The hash of the allowed parameters."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "docs": [
+              "The hash of the allowed parameters that works as account id"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "collateral",
+            "type": "pubkey"
+          },
+          {
+            "name": "is_in_progress",
+            "docs": [
+              "The flag to indicate in a request if in progress or not."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "signers",
+            "docs": [
+              "The list of admins that have signed the request"
+            ],
+            "type": {
+              "vec": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CollateralAdminSignaturesSubmitted",
+      "docs": [
+        "Represents the information to emit when the signatures are submitted to the CollateralAdminSignatures",
+        "account",
+        "- `collateral_account`: The address of the Collateral account where the admin signature was added",
+        "- `signatures_account`: The address of the CollateralAdminSignatures account where the admin signature was added",
+        "- `signers`: The address of the admins that submitted the signatures",
+        "- `action`: The action that was signed"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateral_account",
+            "docs": [
+              "The address of the Collateral account where the admin signature was added"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "signatures_account",
+            "docs": [
+              "The address of the CollateralAdminSignatures account where the admin signature was added"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "signers",
+            "docs": [
+              "The address of the admin that submitted the signatures"
+            ],
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "action",
+            "docs": [
+              "The action that was signed"
+            ],
+            "type": {
+              "defined": {
+                "name": "SignatureSubmissionType"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CollateralAdminSignaturesV2",
       "docs": [
         "Represents the CollateralAdminSignatures account stored in the blockchain. The account is",
         "owned by a Collateral account and is used to store the signatures of the admins of the",
@@ -3325,14 +3213,14 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "rentPayer",
+            "name": "rent_payer",
             "docs": [
               "The address of the account rent payer"
             ],
             "type": "pubkey"
           },
           {
-            "name": "isInProgress",
+            "name": "is_in_progress",
             "docs": [
               "The flag to indicate in a request if in progress or not."
             ],
@@ -3351,57 +3239,7 @@ export type Main = {
       }
     },
     {
-      "name": "collateralAdminSignaturesSubmitted",
-      "docs": [
-        "Represents the information to emit when the signatures are submitted to the CollateralAdminSignatures",
-        "account",
-        "- `collateral_account`: The address of the Collateral account where the admin signature was added",
-        "- `signatures_account`: The address of the CollateralAdminSignatures account where the admin signature was added",
-        "- `signers`: The address of the admins that submitted the signatures",
-        "- `action`: The action that was signed"
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "collateralAccount",
-            "docs": [
-              "The address of the Collateral account where the admin signature was added"
-            ],
-            "type": "pubkey"
-          },
-          {
-            "name": "signaturesAccount",
-            "docs": [
-              "The address of the CollateralAdminSignatures account where the admin signature was added"
-            ],
-            "type": "pubkey"
-          },
-          {
-            "name": "signers",
-            "docs": [
-              "The address of the admin that submitted the signatures"
-            ],
-            "type": {
-              "vec": "pubkey"
-            }
-          },
-          {
-            "name": "action",
-            "docs": [
-              "The action that was signed"
-            ],
-            "type": {
-              "defined": {
-                "name": "signatureSubmissionType"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "collateralAdminThresholdUpdated",
+      "name": "CollateralAdminThresholdUpdated",
       "docs": [
         "Represents the information to emit when the admin threshold of a Collateral account is updated",
         "- `collateral_account`: The address of the Collateral account where the admin threshold was updated",
@@ -3411,7 +3249,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "collateralAccount",
+            "name": "collateral_account",
             "docs": [
               "The address of the Collateral account where the admin threshold was updated"
             ],
@@ -3428,7 +3266,7 @@ export type Main = {
       }
     },
     {
-      "name": "collateralCreatorUpdated",
+      "name": "CollateralCreatorUpdated",
       "docs": [
         "Represents the information to emit when a collateral creator is updated into a Coordinator account"
       ],
@@ -3436,21 +3274,21 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "coordinatorAccount",
+            "name": "coordinator_account",
             "docs": [
               "The coordinator account the collateral creator was updated in."
             ],
             "type": "pubkey"
           },
           {
-            "name": "collateralCreator",
+            "name": "collateral_creator",
             "docs": [
               "The Pubkey of the new collateral creator"
             ],
             "type": "pubkey"
           },
           {
-            "name": "oldCollateralCreator",
+            "name": "old_collateral_creator",
             "docs": [
               "The Pubkey of the old collateral creator"
             ],
@@ -3460,7 +3298,7 @@ export type Main = {
       }
     },
     {
-      "name": "collateralFundsNonceIncreased",
+      "name": "CollateralFundsNonceIncreased",
       "docs": [
         "Represents the information to emit when the funds nonce of a Collateral account is increased",
         "- `collateral_account`: The address of the Collateral account where the funds nonce was increased",
@@ -3470,7 +3308,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "collateralAccount",
+            "name": "collateral_account",
             "docs": [
               "The address of the Collateral account where the funds nonce was increased"
             ],
@@ -3487,32 +3325,55 @@ export type Main = {
       }
     },
     {
-      "name": "collateralMigratedToSingleSigner",
+      "name": "CollateralTeamTransferred",
+      "docs": [
+        "Represents the information to emit when a Collateral account is transferred to a new team",
+        "- `collateral_account`: The address of the Collateral account that was transferred",
+        "- `new_name`: The new name assigned to the Collateral account",
+        "- `new_admins`: The new list of admins for the Collateral account",
+        "- `new_threshold`: The new threshold for the Collateral account"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "collateralAccount",
+            "name": "collateral_account",
+            "docs": [
+              "The address of the Collateral account that was transferred"
+            ],
             "type": "pubkey"
           },
           {
-            "name": "previousAdmins",
+            "name": "new_name",
+            "docs": [
+              "The new name assigned to the Collateral account"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "new_admins",
+            "docs": [
+              "The new list of admins for the Collateral account"
+            ],
             "type": {
               "vec": "pubkey"
             }
           },
           {
-            "name": "newOwner",
-            "type": "pubkey"
+            "name": "new_threshold",
+            "docs": [
+              "The new threshold for the Collateral account"
+            ],
+            "type": "u8"
           }
         ]
       }
     },
     {
-      "name": "collateralOld",
+      "name": "CollateralV2",
       "docs": [
-        "Represents the V1 Collateral account stored in the blockchain. The account is owned by a",
-        "Coordinator account and is used to store the information and assets owned by a borrower."
+        "Represents the V2 Collateral account stored in the blockchain. It is dynamically sized depending",
+        "on the size of the admins list."
       ],
       "type": {
         "kind": "struct",
@@ -3526,7 +3387,7 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "authorityBump",
+            "name": "authority_bump",
             "type": "u8"
           },
           {
@@ -3534,73 +3395,35 @@ export type Main = {
             "type": "string"
           },
           {
+            "name": "admin_threshold",
+            "type": "u8"
+          },
+          {
+            "name": "admin_data_nonce",
+            "type": "u32"
+          },
+          {
+            "name": "admin_funds_nonce",
+            "type": "u32"
+          },
+          {
+            "name": "admins_capacity",
+            "docs": [
+              "The capacity of the admins array"
+            ],
+            "type": "u8"
+          },
+          {
             "name": "admins",
             "type": {
               "vec": "pubkey"
             }
-          },
-          {
-            "name": "adminThreshold",
-            "type": "u8"
-          },
-          {
-            "name": "adminDataNonce",
-            "type": "u32"
-          },
-          {
-            "name": "adminFundsNonce",
-            "type": "u32"
           }
         ]
       }
     },
     {
-      "name": "collateralTeamTransferred",
-      "docs": [
-        "Represents the information to emit when a Collateral account is transferred to a new team",
-        "- `collateral_account`: The address of the Collateral account that was transferred",
-        "- `new_name`: The new name assigned to the Collateral account",
-        "- `new_admins`: The new list of admins for the Collateral account",
-        "- `new_threshold`: The new threshold for the Collateral account"
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "collateralAccount",
-            "docs": [
-              "The address of the Collateral account that was transferred"
-            ],
-            "type": "pubkey"
-          },
-          {
-            "name": "newName",
-            "docs": [
-              "The new name assigned to the Collateral account"
-            ],
-            "type": "string"
-          },
-          {
-            "name": "newAdmins",
-            "docs": [
-              "The new list of admins for the Collateral account"
-            ],
-            "type": {
-              "vec": "pubkey"
-            }
-          },
-          {
-            "name": "newThreshold",
-            "docs": [
-              "The new threshold for the Collateral account"
-            ],
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "collateralWithdrawal",
+      "name": "CollateralWithdrawal",
       "docs": [
         "Represents the information to emit when a Collateral asset is withdrawn from a Collateral account",
         "- `collateral_account`: The address of the Collateral account where the asset was withdrawn",
@@ -3612,7 +3435,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "collateralAccount",
+            "name": "collateral_account",
             "docs": [
               "The address of the Collateral account where the asset was withdrawn"
             ],
@@ -3633,7 +3456,7 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "amountOfAsset",
+            "name": "amount_of_asset",
             "docs": [
               "The amount of the asset that was withdrawn"
             ],
@@ -3643,7 +3466,7 @@ export type Main = {
       }
     },
     {
-      "name": "coordinator",
+      "name": "Coordinator",
       "docs": [
         "Represents the coordinator account stored in the blockchain. The coordinator account is owned by",
         "the lender and is used to managed the lending terms and conditions, such as the supported assets,",
@@ -3676,7 +3499,7 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "collateralCreator",
+            "name": "collateral_creator",
             "docs": [
               "Is the account allowed to create Collateral accounts for coordinator borrowers."
             ],
@@ -3711,7 +3534,7 @@ export type Main = {
       }
     },
     {
-      "name": "executorAdded",
+      "name": "ExecutorAdded",
       "docs": [
         "Represents the information to emit when an executor is added into a Coordinator account"
       ],
@@ -3719,7 +3542,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "coordinatorAccount",
+            "name": "coordinator_account",
             "docs": [
               "The coordinator account the executor was added to."
             ],
@@ -3736,7 +3559,7 @@ export type Main = {
       }
     },
     {
-      "name": "executorRemoved",
+      "name": "ExecutorRemoved",
       "docs": [
         "Represents the information to emit when an executor is removed from a Coordinator account"
       ],
@@ -3744,7 +3567,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "coordinatorAccount",
+            "name": "coordinator_account",
             "docs": [
               "The coordinator account the executor was removed from."
             ],
@@ -3761,7 +3584,7 @@ export type Main = {
       }
     },
     {
-      "name": "liquidation",
+      "name": "Liquidation",
       "docs": [
         "Represents the information to emit when a liquidation is made.",
         "- `coordinator_account`: The address of the Coordinator account the Collateral account belongs to.",
@@ -3783,14 +3606,14 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "coordinatorAccount",
+            "name": "coordinator_account",
             "docs": [
               "The address of the Coordinator account the Collateral account belongs to."
             ],
             "type": "pubkey"
           },
           {
-            "name": "collateralAccount",
+            "name": "collateral_account",
             "docs": [
               "The address of the Collateral account were the funds were paid from."
             ],
@@ -3804,7 +3627,7 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "statementId",
+            "name": "statement_id",
             "docs": [
               "The id of the statement that was liquidated."
             ],
@@ -3820,14 +3643,14 @@ export type Main = {
             }
           },
           {
-            "name": "assetDecimals",
+            "name": "asset_decimals",
             "docs": [
               "The decimals of the assets liquidated."
             ],
             "type": "bytes"
           },
           {
-            "name": "amountsInAssets",
+            "name": "amounts_in_assets",
             "docs": [
               "The liquidated amount in assets."
             ],
@@ -3836,7 +3659,7 @@ export type Main = {
             }
           },
           {
-            "name": "amountsInCents",
+            "name": "amounts_in_cents",
             "docs": [
               "The liquidated amounts in cents."
             ],
@@ -3845,7 +3668,7 @@ export type Main = {
             }
           },
           {
-            "name": "feesInAssets",
+            "name": "fees_in_assets",
             "docs": [
               "The fees in asset for each asset liquidated."
             ],
@@ -3854,7 +3677,7 @@ export type Main = {
             }
           },
           {
-            "name": "netAmountInCents",
+            "name": "net_amount_in_cents",
             "docs": [
               "The net amount in cents of the liquidation."
             ],
@@ -3864,7 +3687,7 @@ export type Main = {
       }
     },
     {
-      "name": "makePaymentFromCollateralRequest",
+      "name": "MakePaymentFromCollateralRequest",
       "docs": [
         "Defines the request to make a payment using the funds stored into a collateral account.",
         "- `team_or_statement_id` - The team ID or statement ID to make the payment to.",
@@ -3876,28 +3699,28 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "teamOrStatementId",
+            "name": "team_or_statement_id",
             "docs": [
               "The team ID or statement ID to make the payment to."
             ],
             "type": "string"
           },
           {
-            "name": "amountInAsset",
+            "name": "amount_in_asset",
             "docs": [
               "The amount in asset to make the payment."
             ],
             "type": "u64"
           },
           {
-            "name": "signatureExpirationTime",
+            "name": "signature_expiration_time",
             "docs": [
               "The timestamp when the publisher/executor signature expires."
             ],
             "type": "i64"
           },
           {
-            "name": "signatureSalt",
+            "name": "signature_salt",
             "docs": [
               "The salt used to generate the signature."
             ],
@@ -3912,7 +3735,7 @@ export type Main = {
       }
     },
     {
-      "name": "makePaymentFromUserAccountRequest",
+      "name": "MakePaymentFromUserAccountRequest",
       "docs": [
         "Defines the request to make a payment using the funds stored into a user account.",
         "- `team_or_statement_id` - The team ID or statement ID to make the payment to.",
@@ -3922,14 +3745,14 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "teamOrStatementId",
+            "name": "team_or_statement_id",
             "docs": [
               "The team ID or statement ID to make the payment to."
             ],
             "type": "string"
           },
           {
-            "name": "amountInAsset",
+            "name": "amount_in_asset",
             "docs": [
               "The amount in asset to make the payment."
             ],
@@ -3939,7 +3762,7 @@ export type Main = {
       }
     },
     {
-      "name": "markStatementPaidRequest",
+      "name": "MarkStatementPaidRequest",
       "docs": [
         "Represents the information required to Mark a Statement as Paid.",
         "- `statement_id` - The external ID of the statement to mark as paid.",
@@ -3949,14 +3772,14 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "statementId",
+            "name": "statement_id",
             "docs": [
               "The external ID of the statement to mark as paid."
             ],
             "type": "string"
           },
           {
-            "name": "amountInCents",
+            "name": "amount_in_cents",
             "docs": [
               "The amount of cents to mark as paid."
             ],
@@ -3966,7 +3789,7 @@ export type Main = {
       }
     },
     {
-      "name": "newCollateral",
+      "name": "NewCollateral",
       "docs": [
         "Structure to store the initial information required to initialize a Collateral account.",
         "Including:",
@@ -3992,7 +3815,7 @@ export type Main = {
             "type": "string"
           },
           {
-            "name": "initialAdmin",
+            "name": "initial_admin",
             "docs": [
               "The initial admin of the Collateral account."
             ],
@@ -4002,7 +3825,7 @@ export type Main = {
       }
     },
     {
-      "name": "newCoordinator",
+      "name": "NewCoordinator",
       "docs": [
         "Structure to store the initial information required to initialize a coordinator account."
       ],
@@ -4024,7 +3847,7 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "collateralCreator",
+            "name": "collateral_creator",
             "docs": [
               "The collateral creator account."
             ],
@@ -4038,14 +3861,14 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "initialPublisher",
+            "name": "initial_publisher",
             "docs": [
               "The address of the first publisher account."
             ],
             "type": "pubkey"
           },
           {
-            "name": "initialExecutor",
+            "name": "initial_executor",
             "docs": [
               "The address of the first executor account."
             ],
@@ -4055,30 +3878,7 @@ export type Main = {
       }
     },
     {
-      "name": "newSingleSignerCollateral",
-      "docs": [
-        "Structure to store the initial information required to initialize a SingleSignerCollateral account."
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "id",
-            "type": "pubkey"
-          },
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "owner",
-            "type": "pubkey"
-          }
-        ]
-      }
-    },
-    {
-      "name": "newSupportedAsset",
+      "name": "NewSupportedAsset",
       "docs": [
         "Structure to store the initial information required to initialize a supported asset account.",
         "Including:",
@@ -4093,7 +3893,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "feedId",
+            "name": "feed_id",
             "docs": [
               "An optional feed id corresponding to the price oracle to assign."
             ],
@@ -4102,7 +3902,7 @@ export type Main = {
             }
           },
           {
-            "name": "priceUncertaintyThreshold",
+            "name": "price_uncertainty_threshold",
             "docs": [
               "A percentage value with seven decimals that represent the maximum price uncertainty allowed",
               "for the asset operations. For example, if the price uncertainty threshold is 15000000, the",
@@ -4111,7 +3911,7 @@ export type Main = {
             "type": "u32"
           },
           {
-            "name": "staleThreshold",
+            "name": "stale_threshold",
             "docs": [
               "An stale threshold in seconds indicating the maximum age a price can reach before being",
               "considered to old to be used."
@@ -4119,7 +3919,7 @@ export type Main = {
             "type": "u32"
           },
           {
-            "name": "feeBps",
+            "name": "fee_bps",
             "docs": [
               "The Fee in Basic points to be charged to the borrower when the asset is used for payment or",
               "liquidations."
@@ -4130,7 +3930,7 @@ export type Main = {
       }
     },
     {
-      "name": "newTreasury",
+      "name": "NewTreasury",
       "docs": [
         "Represents the information to emit when a treasury is updated into a Coordinator account"
       ],
@@ -4138,7 +3938,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "coordinatorAccount",
+            "name": "coordinator_account",
             "docs": [
               "The coordinator account the treasury was updated in."
             ],
@@ -4152,7 +3952,7 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "oldTreasury",
+            "name": "old_treasury",
             "docs": [
               "The Pubkey of the old treasury"
             ],
@@ -4162,7 +3962,7 @@ export type Main = {
       }
     },
     {
-      "name": "ownershipTransferred",
+      "name": "OwnershipTransferred",
       "docs": [
         "Represents the information to emit when the ownership of a coordinator account is transferred"
       ],
@@ -4170,21 +3970,21 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "coordinatorAccount",
+            "name": "coordinator_account",
             "docs": [
               "The coordinator account the ownership was transferred from."
             ],
             "type": "pubkey"
           },
           {
-            "name": "newOwner",
+            "name": "new_owner",
             "docs": [
               "The Pubkey of the new owner"
             ],
             "type": "pubkey"
           },
           {
-            "name": "oldOwner",
+            "name": "old_owner",
             "docs": [
               "The Pubkey of the old owner"
             ],
@@ -4194,7 +3994,7 @@ export type Main = {
       }
     },
     {
-      "name": "paymentFromCollateral",
+      "name": "PaymentFromCollateral",
       "docs": [
         "Represents the information to emit when a payment is made from a Collateral account for a team.",
         "- `payer`: The address of the payer.",
@@ -4219,14 +4019,14 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "teamId",
+            "name": "team_id",
             "docs": [
               "The id of the team."
             ],
             "type": "string"
           },
           {
-            "name": "collateralAccount",
+            "name": "collateral_account",
             "docs": [
               "The address of the Collateral account were the funds were paid from."
             ],
@@ -4240,28 +4040,28 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "amountInAsset",
+            "name": "amount_in_asset",
             "docs": [
               "The amount of the asset paid."
             ],
             "type": "u64"
           },
           {
-            "name": "amountInCents",
+            "name": "amount_in_cents",
             "docs": [
               "The amount in cents paid."
             ],
             "type": "u64"
           },
           {
-            "name": "feeInAsset",
+            "name": "fee_in_asset",
             "docs": [
               "The fee in asset."
             ],
             "type": "u64"
           },
           {
-            "name": "assetDecimals",
+            "name": "asset_decimals",
             "docs": [
               "The decimals of the asset."
             ],
@@ -4275,7 +4075,7 @@ export type Main = {
             "type": "u32"
           },
           {
-            "name": "expiresAt",
+            "name": "expires_at",
             "docs": [
               "The expiration date of the given signature to allow the payment from collateral."
             ],
@@ -4285,7 +4085,7 @@ export type Main = {
       }
     },
     {
-      "name": "paymentFromCollateralForStatement",
+      "name": "PaymentFromCollateralForStatement",
       "docs": [
         "Represents the information to emit when a payment is made from a Collateral account for a statement.",
         "- `payer`: The address of the payer.",
@@ -4311,21 +4111,21 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "statementId",
+            "name": "statement_id",
             "docs": [
               "The id of the statement."
             ],
             "type": "string"
           },
           {
-            "name": "teamId",
+            "name": "team_id",
             "docs": [
               "The id of the team."
             ],
             "type": "string"
           },
           {
-            "name": "collateralAccount",
+            "name": "collateral_account",
             "docs": [
               "The address of the Collateral account were the funds are paid from."
             ],
@@ -4339,28 +4139,28 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "amountInAsset",
+            "name": "amount_in_asset",
             "docs": [
               "The amount of the asset paid."
             ],
             "type": "u64"
           },
           {
-            "name": "amountInCents",
+            "name": "amount_in_cents",
             "docs": [
               "The amount in cents paid."
             ],
             "type": "u64"
           },
           {
-            "name": "feeInAsset",
+            "name": "fee_in_asset",
             "docs": [
               "The value of the fee paid in asset."
             ],
             "type": "u64"
           },
           {
-            "name": "assetDecimals",
+            "name": "asset_decimals",
             "docs": [
               "The decimals of the asset."
             ],
@@ -4374,7 +4174,7 @@ export type Main = {
             "type": "u32"
           },
           {
-            "name": "expiresAt",
+            "name": "expires_at",
             "docs": [
               "The expiration date of the given signature to allow the payment from collateral."
             ],
@@ -4384,7 +4184,7 @@ export type Main = {
       }
     },
     {
-      "name": "paymentFromUserAccount",
+      "name": "PaymentFromUserAccount",
       "docs": [
         "Represents the information to emit when a payment is made from a user account for a team.",
         "- `payer`: The address of the payer.",
@@ -4406,7 +4206,7 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "teamId",
+            "name": "team_id",
             "docs": [
               "The id of the team the payment is made to."
             ],
@@ -4420,28 +4220,28 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "amountInAsset",
+            "name": "amount_in_asset",
             "docs": [
               "The amount of the asset paid."
             ],
             "type": "u64"
           },
           {
-            "name": "amountInCents",
+            "name": "amount_in_cents",
             "docs": [
               "The amount in cents paid."
             ],
             "type": "u64"
           },
           {
-            "name": "feeInAsset",
+            "name": "fee_in_asset",
             "docs": [
               "The value of the fee paid in asset."
             ],
             "type": "u64"
           },
           {
-            "name": "assetDecimals",
+            "name": "asset_decimals",
             "docs": [
               "The decimals of the asset."
             ],
@@ -4451,7 +4251,7 @@ export type Main = {
       }
     },
     {
-      "name": "paymentFromUserAccountForStatement",
+      "name": "PaymentFromUserAccountForStatement",
       "docs": [
         "Represents the information to emit when a payment is made from a user account for a statement.",
         "- `payer`: The address of the payer.",
@@ -4474,14 +4274,14 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "statementId",
+            "name": "statement_id",
             "docs": [
               "The id of the statement the payment was made to."
             ],
             "type": "string"
           },
           {
-            "name": "teamId",
+            "name": "team_id",
             "docs": [
               "The id of the team the payment was made to."
             ],
@@ -4495,28 +4295,28 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "amountInAsset",
+            "name": "amount_in_asset",
             "docs": [
               "The amount of the asset paid."
             ],
             "type": "u64"
           },
           {
-            "name": "amountInCents",
+            "name": "amount_in_cents",
             "docs": [
               "The amount in cents paid."
             ],
             "type": "u64"
           },
           {
-            "name": "feeInAsset",
+            "name": "fee_in_asset",
             "docs": [
               "The value of the fee paid in asset."
             ],
             "type": "u64"
           },
           {
-            "name": "assetDecimals",
+            "name": "asset_decimals",
             "docs": [
               "The decimals of the asset."
             ],
@@ -4526,7 +4326,7 @@ export type Main = {
       }
     },
     {
-      "name": "priceFeedMessage",
+      "name": "PriceFeedMessage",
       "repr": {
         "kind": "c"
       },
@@ -4534,7 +4334,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "feedId",
+            "name": "feed_id",
             "docs": [
               "`FeedId` but avoid the type alias because of compatibility issues with Anchor's `idl-build` feature."
             ],
@@ -4558,14 +4358,14 @@ export type Main = {
             "type": "i32"
           },
           {
-            "name": "publishTime",
+            "name": "publish_time",
             "docs": [
               "The timestamp of this price update in seconds"
             ],
             "type": "i64"
           },
           {
-            "name": "prevPublishTime",
+            "name": "prev_publish_time",
             "docs": [
               "The timestamp of the previous price update. This field is intended to allow users to",
               "identify the single unique price update for any moment in time:",
@@ -4583,18 +4383,18 @@ export type Main = {
             "type": "i64"
           },
           {
-            "name": "emaPrice",
+            "name": "ema_price",
             "type": "i64"
           },
           {
-            "name": "emaConf",
+            "name": "ema_conf",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "priceUpdateV2",
+      "name": "PriceUpdateV2",
       "docs": [
         "A price update account. This account is used by the Pyth Receiver program to store a verified price update from a Pyth price feed.",
         "It contains:",
@@ -4607,34 +4407,34 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "writeAuthority",
+            "name": "write_authority",
             "type": "pubkey"
           },
           {
-            "name": "verificationLevel",
+            "name": "verification_level",
             "type": {
               "defined": {
-                "name": "verificationLevel"
+                "name": "VerificationLevel"
               }
             }
           },
           {
-            "name": "priceMessage",
+            "name": "price_message",
             "type": {
               "defined": {
-                "name": "priceFeedMessage"
+                "name": "PriceFeedMessage"
               }
             }
           },
           {
-            "name": "postedSlot",
+            "name": "posted_slot",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "publisherAdded",
+      "name": "PublisherAdded",
       "docs": [
         "Represents the information to emit when a publisher is added into a Coordinator account"
       ],
@@ -4642,7 +4442,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "coordinatorAccount",
+            "name": "coordinator_account",
             "docs": [
               "The coordinator account the publisher was added to."
             ],
@@ -4659,7 +4459,7 @@ export type Main = {
       }
     },
     {
-      "name": "publisherRemoved",
+      "name": "PublisherRemoved",
       "docs": [
         "Represents the information to emit when a publisher is removed from a Coordinator account"
       ],
@@ -4667,7 +4467,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "coordinatorAccount",
+            "name": "coordinator_account",
             "docs": [
               "The coordinator account the publisher was removed from."
             ],
@@ -4684,7 +4484,7 @@ export type Main = {
       }
     },
     {
-      "name": "signatureSubmissionRequest",
+      "name": "SignatureSubmissionRequest",
       "docs": [
         "Represents the model to submit the signatures to the collateral account.",
         "- `id`: The action message hash of the action that the signature will allow to perform.",
@@ -4695,20 +4495,20 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "targetNonce",
+            "name": "target_nonce",
             "docs": [
               "The nonce value that is expected to be used with the signatures"
             ],
             "type": "u32"
           },
           {
-            "name": "signatureSubmissionType",
+            "name": "signature_submission_type",
             "docs": [
               "The type of the signature submission"
             ],
             "type": {
               "defined": {
-                "name": "signatureSubmissionType"
+                "name": "SignatureSubmissionType"
               }
             }
           },
@@ -4730,7 +4530,7 @@ export type Main = {
       }
     },
     {
-      "name": "signatureSubmissionType",
+      "name": "SignatureSubmissionType",
       "docs": [
         "Represent the type of signatures that can be submitted to the collateral account depending on the",
         "action to be performed."
@@ -4739,10 +4539,10 @@ export type Main = {
         "kind": "enum",
         "variants": [
           {
-            "name": "addAdmin",
+            "name": "AddAdmin",
             "fields": [
               {
-                "name": "newAdmin",
+                "name": "new_admin",
                 "docs": [
                   "The address of the new admin to add"
                 ],
@@ -4751,10 +4551,10 @@ export type Main = {
             ]
           },
           {
-            "name": "removeAdmin",
+            "name": "RemoveAdmin",
             "fields": [
               {
-                "name": "adminToRemove",
+                "name": "admin_to_remove",
                 "docs": [
                   "The address of the admin to remove"
                 ],
@@ -4763,10 +4563,10 @@ export type Main = {
             ]
           },
           {
-            "name": "updateThreshold",
+            "name": "UpdateThreshold",
             "fields": [
               {
-                "name": "newThreshold",
+                "name": "new_threshold",
                 "docs": [
                   "The new threshold"
                 ],
@@ -4775,17 +4575,17 @@ export type Main = {
             ]
           },
           {
-            "name": "transferCollateralTeam",
+            "name": "TransferCollateralTeam",
             "fields": [
               {
                 "defined": {
-                  "name": "transferCollateralTeamRequest"
+                  "name": "TransferCollateralTeamRequest"
                 }
               }
             ]
           },
           {
-            "name": "withdrawCollateralAsset",
+            "name": "WithdrawCollateralAsset",
             "fields": [
               {
                 "name": "sender",
@@ -4809,151 +4609,23 @@ export type Main = {
                 "type": "pubkey"
               },
               {
-                "name": "withdrawRequest",
+                "name": "withdraw_request",
                 "docs": [
                   "The additional withdraw information"
                 ],
                 "type": {
                   "defined": {
-                    "name": "withdrawCollateralAssetRequest"
+                    "name": "WithdrawCollateralAssetRequest"
                   }
                 }
               }
             ]
-          },
-          {
-            "name": "migrateToSingleSigner",
-            "fields": [
-              {
-                "name": "newOwner",
-                "docs": [
-                  "The new owner of the SingleSignerCollateral account"
-                ],
-                "type": "pubkey"
-              }
-            ]
           }
         ]
       }
     },
     {
-      "name": "singleSignerCollateral",
-      "docs": [
-        "Single-owner collateral model for smart account support.",
-        "The owner can be any Pubkey including PDAs (Squads, Realms, custom programs)."
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "id",
-            "type": "pubkey"
-          },
-          {
-            "name": "coordinator",
-            "type": "pubkey"
-          },
-          {
-            "name": "authorityBump",
-            "type": "u8"
-          },
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "nonce",
-            "type": "u32"
-          },
-          {
-            "name": "owner",
-            "type": "pubkey"
-          }
-        ]
-      }
-    },
-    {
-      "name": "singleSignerCollateralCreated",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "coordinatorAccount",
-            "type": "pubkey"
-          },
-          {
-            "name": "collateralAccount",
-            "type": "pubkey"
-          },
-          {
-            "name": "authorityAddress",
-            "type": "pubkey"
-          },
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "owner",
-            "type": "pubkey"
-          }
-        ]
-      }
-    },
-    {
-      "name": "singleSignerCollateralOwnershipTransferred",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "collateralAccount",
-            "type": "pubkey"
-          },
-          {
-            "name": "previousOwner",
-            "type": "pubkey"
-          },
-          {
-            "name": "newOwner",
-            "type": "pubkey"
-          }
-        ]
-      }
-    },
-    {
-      "name": "singleSignerCollateralWithdrawal",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "collateralAccount",
-            "type": "pubkey"
-          },
-          {
-            "name": "owner",
-            "type": "pubkey"
-          },
-          {
-            "name": "destination",
-            "type": "pubkey"
-          },
-          {
-            "name": "asset",
-            "type": "pubkey"
-          },
-          {
-            "name": "amountInAsset",
-            "type": "u64"
-          },
-          {
-            "name": "nonce",
-            "type": "u32"
-          }
-        ]
-      }
-    },
-    {
-      "name": "statement",
+      "name": "Statement",
       "docs": [
         "Represents the Statement account stores in the blockchain. The account is owner by a Coordinator",
         "and is related to a Collateral account; it is used to store the information related to the",
@@ -4989,26 +4661,26 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "teamId",
+            "name": "team_id",
             "type": "string"
           },
           {
-            "name": "closingBalanceInCents",
+            "name": "closing_balance_in_cents",
             "type": "u64"
           },
           {
-            "name": "paidAmountInCents",
+            "name": "paid_amount_in_cents",
             "type": "u64"
           },
           {
-            "name": "liquidatableAfter",
+            "name": "liquidatable_after",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "statementMarkedPaid",
+      "name": "StatementMarkedPaid",
       "docs": [
         "Represents the information published when the total/partial debt in the statement has been paid.",
         "- `statement_id`: The id of the statement that has been paid.",
@@ -5018,14 +4690,14 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "statementId",
+            "name": "statement_id",
             "docs": [
               "The id of the statement that has been paid."
             ],
             "type": "string"
           },
           {
-            "name": "amountInCents",
+            "name": "amount_in_cents",
             "docs": [
               "The amount paid in dollar cents."
             ],
@@ -5035,7 +4707,7 @@ export type Main = {
       }
     },
     {
-      "name": "statementPublished",
+      "name": "StatementPublished",
       "docs": [
         "Represents the information published into a Statement Account.",
         "- `coordinator_account`: The coordinator account the statement was published in.",
@@ -5049,42 +4721,42 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "coordinatorAccount",
+            "name": "coordinator_account",
             "docs": [
               "The coordinator account the statement was published in."
             ],
             "type": "pubkey"
           },
           {
-            "name": "collateralAccount",
+            "name": "collateral_account",
             "docs": [
               "The collateral account the statement was published in."
             ],
             "type": "pubkey"
           },
           {
-            "name": "statementId",
+            "name": "statement_id",
             "docs": [
               "The statement id."
             ],
             "type": "string"
           },
           {
-            "name": "teamId",
+            "name": "team_id",
             "docs": [
               "The id of the team the statement belongs to."
             ],
             "type": "string"
           },
           {
-            "name": "closingAccountBalanceCents",
+            "name": "closing_account_balance_cents",
             "docs": [
               "The total value to pay in dollar cents for the statement."
             ],
             "type": "u64"
           },
           {
-            "name": "liquidatableAfter",
+            "name": "liquidatable_after",
             "docs": [
               "The date in seconds after which the statement can be liquidated."
             ],
@@ -5094,7 +4766,7 @@ export type Main = {
       }
     },
     {
-      "name": "statementUpdated",
+      "name": "StatementUpdated",
       "docs": [
         "Represents the information updated in a Statement Account.",
         "- `coordinator_account`: The coordinator account the statement is related to.",
@@ -5108,42 +4780,42 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "coordinatorAccount",
+            "name": "coordinator_account",
             "docs": [
               "The coordinator account the statement is related to."
             ],
             "type": "pubkey"
           },
           {
-            "name": "collateralAccount",
+            "name": "collateral_account",
             "docs": [
               "The collateral account the statement is related to."
             ],
             "type": "pubkey"
           },
           {
-            "name": "statementId",
+            "name": "statement_id",
             "docs": [
               "The statement id."
             ],
             "type": "string"
           },
           {
-            "name": "teamId",
+            "name": "team_id",
             "docs": [
               "The id of the team the statement belongs to."
             ],
             "type": "string"
           },
           {
-            "name": "closingAccountBalanceCents",
+            "name": "closing_account_balance_cents",
             "docs": [
               "The total value to pay in dollar cents for the statement."
             ],
             "type": "u64"
           },
           {
-            "name": "liquidatableAfter",
+            "name": "liquidatable_after",
             "docs": [
               "The date in seconds after which the statement can be liquidated."
             ],
@@ -5153,7 +4825,7 @@ export type Main = {
       }
     },
     {
-      "name": "supportedAsset",
+      "name": "SupportedAsset",
       "docs": [
         "Represents the Stored Asset account stored in the blockchain. The account is owned by a",
         "Coordinator account and is used to store the information related to a asset that is accepted by",
@@ -5194,7 +4866,7 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "feedId",
+            "name": "feed_id",
             "docs": [
               "The price ID to query the token price to the oracle. It the Feed Id stored by the PriceUpdateV2",
               "oracle account and its verified when try to query a price, so it is important the feed id",
@@ -5208,7 +4880,7 @@ export type Main = {
             }
           },
           {
-            "name": "priceUncertaintyThreshold",
+            "name": "price_uncertainty_threshold",
             "docs": [
               "A percentage value with seven decimals that represent the maximum price uncertainty allowed",
               "for the asset operations. For example, if the price uncertainty threshold is 15000000, the",
@@ -5217,7 +4889,7 @@ export type Main = {
             "type": "u32"
           },
           {
-            "name": "staleThreshold",
+            "name": "stale_threshold",
             "docs": [
               "A time in seconds after which a price is considered staled, e.i, too old to be considered",
               "valid or usable."
@@ -5225,7 +4897,7 @@ export type Main = {
             "type": "u32"
           },
           {
-            "name": "feeBps",
+            "name": "fee_bps",
             "docs": [
               "The fee in basic points that will be charged to the borrower when the asset is used for",
               "payment or liquidations. It can take values between 0 and 10000 where 10000 is equivalent to",
@@ -5237,7 +4909,7 @@ export type Main = {
       }
     },
     {
-      "name": "supportedAssetAdded",
+      "name": "SupportedAssetAdded",
       "docs": [
         "Represent the information to emit when a supported asset is added to a coordinator.",
         "- `coordinator_account`: The address of the coordinator that owns the supported asset.",
@@ -5250,7 +4922,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "coordinatorAccount",
+            "name": "coordinator_account",
             "docs": [
               "The address of the coordinator that owns the supported asset."
             ],
@@ -5271,14 +4943,14 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "staleThreshold",
+            "name": "stale_threshold",
             "docs": [
               "The threshold for the oracle to be considered stale."
             ],
             "type": "u32"
           },
           {
-            "name": "feeBps",
+            "name": "fee_bps",
             "docs": [
               "The fee in basis points."
             ],
@@ -5288,7 +4960,7 @@ export type Main = {
       }
     },
     {
-      "name": "supportedAssetRemoved",
+      "name": "SupportedAssetRemoved",
       "docs": [
         "Represent the information to emit when a supported asset is removed from a coordinator.",
         "- `coordinator_account`: The address of the coordinator that not longer owns the supported asset.",
@@ -5301,7 +4973,7 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "coordinatorAccount",
+            "name": "coordinator_account",
             "docs": [
               "The address of the coordinator that not longer owns the supported asset."
             ],
@@ -5322,14 +4994,14 @@ export type Main = {
             "type": "pubkey"
           },
           {
-            "name": "staleThreshold",
+            "name": "stale_threshold",
             "docs": [
               "The threshold for the oracle to be considered stale."
             ],
             "type": "u32"
           },
           {
-            "name": "feeBps",
+            "name": "fee_bps",
             "docs": [
               "The fee in basis points used for the supported asset."
             ],
@@ -5339,7 +5011,7 @@ export type Main = {
       }
     },
     {
-      "name": "transferCollateralTeamRequest",
+      "name": "TransferCollateralTeamRequest",
       "docs": [
         "Structure to store the information required to transfer the Collateral team.",
         "Including:",
@@ -5351,14 +5023,14 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "newName",
+            "name": "new_name",
             "docs": [
               "The new name of the Collateral account."
             ],
             "type": "string"
           },
           {
-            "name": "newAdmins",
+            "name": "new_admins",
             "docs": [
               "The new list of admins of the Collateral account."
             ],
@@ -5367,7 +5039,7 @@ export type Main = {
             }
           },
           {
-            "name": "newAdminThreshold",
+            "name": "new_admin_threshold",
             "docs": [
               "The new admin threshold of the Collateral account."
             ],
@@ -5377,7 +5049,7 @@ export type Main = {
       }
     },
     {
-      "name": "upsertStatement",
+      "name": "UpsertStatement",
       "docs": [
         "Represents the information required to Create or Update an Statement account.",
         "- `statement_id` - The external ID of the statement to create or update.",
@@ -5390,28 +5062,28 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "statementId",
+            "name": "statement_id",
             "docs": [
               "The external ID of the statement to create or update."
             ],
             "type": "string"
           },
           {
-            "name": "teamId",
+            "name": "team_id",
             "docs": [
               "The ID of the team that owns the statement."
             ],
             "type": "string"
           },
           {
-            "name": "closingBalanceInCents",
+            "name": "closing_balance_in_cents",
             "docs": [
               "The total debt that must be paid in the statement by the borrower."
             ],
             "type": "u64"
           },
           {
-            "name": "liquidatableAfter",
+            "name": "liquidatable_after",
             "docs": [
               "The date in seconds after which the collateral is liquidatable."
             ],
@@ -5421,7 +5093,7 @@ export type Main = {
       }
     },
     {
-      "name": "verificationLevel",
+      "name": "VerificationLevel",
       "docs": [
         "Pyth price updates are bridged to all blockchains via Wormhole.",
         "Using the price updates on another chain requires verifying the signatures of the Wormhole guardians.",
@@ -5439,22 +5111,22 @@ export type Main = {
         "kind": "enum",
         "variants": [
           {
-            "name": "partial",
+            "name": "Partial",
             "fields": [
               {
-                "name": "numSignatures",
+                "name": "num_signatures",
                 "type": "u8"
               }
             ]
           },
           {
-            "name": "full"
+            "name": "Full"
           }
         ]
       }
     },
     {
-      "name": "withdrawCollateralAssetRequest",
+      "name": "WithdrawCollateralAssetRequest",
       "docs": [
         "Structure to store the information required to withdraw an asset from a Collateral account.",
         "Including:",
@@ -5467,21 +5139,21 @@ export type Main = {
         "kind": "struct",
         "fields": [
           {
-            "name": "amountOfAsset",
+            "name": "amount_of_asset",
             "docs": [
               "The amount of the asset to withdraw."
             ],
             "type": "u64"
           },
           {
-            "name": "signatureExpirationTime",
+            "name": "signature_expiration_time",
             "docs": [
               "The time when the signature expires."
             ],
             "type": "i64"
           },
           {
-            "name": "coordinatorSignatureSalt",
+            "name": "coordinator_signature_salt",
             "docs": [
               "The salt used to generate the coordinator's signature."
             ],
@@ -5494,34 +5166,6 @@ export type Main = {
           }
         ]
       }
-    },
-    {
-      "name": "withdrawSingleSignerCollateralAssetRequest",
-      "docs": [
-        "Structure for SingleSignerCollateral withdrawal requests (owner-signed, no threshold)."
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "amountInAsset",
-            "type": "u64"
-          },
-          {
-            "name": "signatureExpirationTime",
-            "type": "i64"
-          },
-          {
-            "name": "coordinatorSignatureSalt",
-            "type": {
-              "array": [
-                "u8",
-                32
-              ]
-            }
-          }
-        ]
-      }
     }
   ]
-};
+}

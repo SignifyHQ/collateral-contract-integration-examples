@@ -125,9 +125,7 @@ import {
   TOKEN_PROGRAM_ID,
   Account
 } from "@solana/spl-token";
-import MainIdl from "../../../idl/mainV1.json";
-import { Main } from "../../../types/mainV1";
-import { Ed25519ExtendedProgram } from "../../../utils/ed25519.program";
+import { Ed25519ExtendedProgram, IdlV2_00, MainV2_00 } from "@rain/program";
 import path from "path";
 
 // Load environment-specific configuration
@@ -467,7 +465,7 @@ class Coordinator {
  * @returns The associated token account address for the recipient
  */
 async function getDestinationTokenAccount(
-  program: Program<Main>,
+  program: Program<MainV2_00>,
   sender: Keypair,
   recipientAddress: PublicKey,
   mintAddress: PublicKey,
@@ -517,7 +515,7 @@ async function submitCollateralSignature(
   mintAddress: PublicKey,
   withdrawRequest: WithdrawCollateral,
   adminFundsNonce: number,
-  program: Program<Main>,
+  program: Program<MainV2_00>,
   collateralAddress: PublicKey
 ) {
   // Generate the collateral admin signature
@@ -596,7 +594,7 @@ async function submitCollateralSignature(
  * @param connection - The instance of the connection to the Solana RPC Node
  * @returns A Program instance for interacting with the on-chain program
  */
-function getProgram(programAddress: string, signer: Keypair): Program<Main> {
+function getProgram(programAddress: string, signer: Keypair): Program<MainV2_00> {
   const rpcUrl = process.env.SOLANA_RPC_URL
   if (!rpcUrl) {
     throw new Error("No RPC URL provided");
@@ -606,7 +604,7 @@ function getProgram(programAddress: string, signer: Keypair): Program<Main> {
 
   // Load the program's Interface Description Language (IDL) which defines 
   // the program's account structures and instruction interfaces
-  const idl: any = Object.assign(MainIdl, { address: programAddress })
+  const idl: any = Object.assign(IdlV2_00, { address: programAddress })
 
   // Create an AnchorProvider instance to interact with the Solana network 
   // using the specified RPC endpoint and signer
@@ -619,7 +617,7 @@ function getProgram(programAddress: string, signer: Keypair): Program<Main> {
 
   // Create and return a Program instance that provides an interface to interact
   // with the on-chain program using the IDL definition and provider connection
-  return new Program<Main>(idl, provider)
+  return new Program<MainV2_00>(idl, provider)
 }
 
 /**
@@ -638,7 +636,7 @@ function getProgram(programAddress: string, signer: Keypair): Program<Main> {
  * @param signatureData - The coordinator signature data
  */
 async function executeWithdrawal(
-  program: Program<Main>,
+  program: Program<MainV2_00>,
   collateral: PublicKey,
   depositAddress: PublicKey,
   sender: Keypair,

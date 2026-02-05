@@ -39,8 +39,7 @@ import { Connection, Ed25519Program, Keypair, PublicKey, TransactionInstruction 
 import { randomBytes } from "crypto";
 import nacl from "tweetnacl";
 import dotenv from "dotenv";
-import MainIdl from "../../idl/mainV1.json";
-import { Main } from "../../types/mainV1";
+import { IdlV2_00, MainV2_00 } from "@rain/program";
 import bs58 from "bs58";
 import path from "path";
 import { Base58SecretKey, SignatureVerificationData, TransferCollateralTeamParams, TransferCollateralTeamRequest } from "./types";
@@ -75,7 +74,7 @@ const POLL_INTERVAL = 2000;
  * @returns Configured Program instance for blockchain interactions
  * @throws Error if SOLANA_RPC_URL environment variable is not set
  */
-function getProgram(programAddress: string, signer: Keypair): Program<Main> {
+function getProgram(programAddress: string, signer: Keypair): Program<MainV2_00> {
   const rpcUrl = process.env.SOLANA_RPC_URL;
   if (!rpcUrl) {
     throw new Error("SOLANA_RPC_URL environment variable is required");
@@ -83,14 +82,14 @@ function getProgram(programAddress: string, signer: Keypair): Program<Main> {
 
   // Load the program's IDL (Interface Definition Language) - this is like an ABI
   // that defines the smart contract's methods and data structures
-  const idl: any = Object.assign(MainIdl, { address: programAddress });
+  const idl: any = Object.assign(IdlV2_00, { address: programAddress });
 
   // Create provider with confirmed commitment level for reliability
   const opts = AnchorProvider.defaultOptions();
   const provider = new AnchorProvider(new Connection(rpcUrl, { commitment: "confirmed" }), new Wallet(signer), opts);
 
   // Return typed interface to the smart contract
-  return new Program<Main>(idl, provider);
+  return new Program<MainV2_00>(idl, provider);
 }
 
 /**
@@ -269,16 +268,16 @@ class Collateral {
    */
   readonly adminDataNonce: number;
 
-  constructor(pk: PublicKey, account: IdlAccounts<Main>["collateral"]) {
+  constructor(pk: PublicKey, account: IdlAccounts<MainV2_00>["collateral"]) {
     this.address = pk;
     this.adminDataNonce = account.adminDataNonce;
   }
 
   /**
-   * Derivate Collateral public key using an ID and the Main program ID
+   * Derivate Collateral public key using an ID and the MainV2_00 program ID
    * @param id - The Collateral account ID
    * @param coordinator - The Coordinator account address
-   * @param programId - The Main program ID
+   * @param programId - The MainV2_00 program ID
    * @returns - Collateral account public key
    */
   static generatePDA(id: PublicKey, coordinator: PublicKey, programId: PublicKey): PublicKey {
@@ -315,10 +314,10 @@ class CollateralAdminSignatures {
   static SEED = Buffer.from("CollateralAdminSignatures", "utf-8");
 
   /**
-   * Derivate the account address using the collateral account ID and the Main program ID
+   * Derivate the account address using the collateral account ID and the MainV2_00 program ID
    * @param collateral - The collateral account ID
    * @param id - The action message hash as ID
-   * @param programId - The Main program ID
+   * @param programId - The MainV2_00 program ID
    * @returns - The account address
    */
   static generatePDA(collateral: PublicKey, id: Buffer, programId: PublicKey): PublicKey {
@@ -333,7 +332,7 @@ class CollateralAdminSignatures {
    * Generate the PDA for the TransferCollateralTeam action
    * @param collateral - The collateral account
    * @param request - The request to transfer the collateral team
-   * @param programId - The Main program ID
+   * @param programId - The MainV2_00 program ID
    * @returns The PDA for the TransferCollateralTeam action
    */
   static generateTransferCollateralTeamPDA(
@@ -412,7 +411,7 @@ function createTransferCollateralTeamSignatures(
 async function upsertCollateralAdminSignatures(
   id: Buffer,
   collateral: PublicKey,
-  program: Program<Main>,
+  program: Program<MainV2_00>,
   request: SignaturesSubmissionRequest,
   rentPayer: Keypair,
   ed25519Instruction: TransactionInstruction
@@ -443,7 +442,7 @@ async function upsertCollateralAdminSignatures(
  */
 async function upsertTransferCollateralTeamSignatures(
   collateral: Collateral,
-  program: Program<Main>,
+  program: Program<MainV2_00>,
   request: TransferCollateralTeamRequest,
   currentAdmins: Keypair[],
   rentPayer: Keypair = currentAdmins[0]
@@ -496,7 +495,7 @@ function getSecretKey(secretKeyValue: Base58SecretKey | undefined): Keypair {
 }
 
 /**
- * MAIN EXECUTION FUNCTION
+ * MainV2_00 EXECUTION FUNCTION
  *
  * Orchestrates the complete collateral admin transfer process:
  * 1. Validates environment and connects to blockchain
@@ -509,7 +508,7 @@ function getSecretKey(secretKeyValue: Base58SecretKey | undefined): Keypair {
  * only changing the admin addresses. This is a complete replacement,
  * not an addition to existing admins.
  */
-async function main({ collateralAddress, programId, newAdminAddress }: TransferCollateralTeamParams) {
+async function MainV2_00({ collateralAddress, programId, newAdminAddress }: TransferCollateralTeamParams) {
   console.log("🚀 Starting collateral admin transfer process...");
 
   // Load and validate private keys from environment
@@ -519,7 +518,7 @@ async function main({ collateralAddress, programId, newAdminAddress }: TransferC
   console.log(`Fee payer: ${feePayer.publicKey.toBase58()}`);
 
   // Connect to the Solana program (smart contract)
-  const program: Program<Main> = getProgram(programId, feePayer);
+  const program: Program<MainV2_00> = getProgram(programId, feePayer);
 
   // Fetch current state of the collateral account from blockchain
   console.log("📖 Loading collateral account from blockchain...");
@@ -605,7 +604,7 @@ if (!collateralAddress || !programId || !newAdminAddress) {
 }
 
 // Execute the transfer
-main({
+MainV2_00({
   collateralAddress,
   programId,
   newAdminAddress,

@@ -84,9 +84,7 @@ import {
   Account
 } from "@solana/spl-token";
 
-import MainIdl from "./idl/main.json";
-import { Main } from "./idl/main";
-import { Ed25519ExtendedProgram } from "../../utils/ed25519.program";
+import { Ed25519ExtendedProgram, IdlV2_02, MainV2_02 } from "@rain/program";
 import path from "path";
 
 // Load environment-specific configuration
@@ -297,7 +295,7 @@ class Coordinator {
  * @returns The associated token account address for the recipient
  */
 async function getDestinationTokenAccount(
-  program: Program<Main>,
+  program: Program<MainV2_02>,
   owner: Keypair,
   recipientAddress: PublicKey,
   mintAddress: PublicKey,
@@ -336,7 +334,7 @@ async function getSourceTokenAccount(depositAddress: PublicKey, mintAddress: Pub
  * @param owner - The keypair of the owner
  * @returns A Program instance for interacting with the on-chain program
  */
-function getProgram(programAddress: string, owner: Keypair): Program<Main> {
+function getProgram(programAddress: string, owner: Keypair): Program<MainV2_02> {
   const rpcUrl = process.env.SOLANA_RPC_URL
   if (!rpcUrl) {
     throw new Error("No RPC URL provided");
@@ -345,7 +343,7 @@ function getProgram(programAddress: string, owner: Keypair): Program<Main> {
   const connection = new Connection(rpcUrl, { commitment: 'confirmed' })
 
   // Load the program's Interface Description Language (IDL)
-  const idl: any = Object.assign(MainIdl, { address: programAddress })
+  const idl: any = Object.assign(IdlV2_02, { address: programAddress })
 
   // Create an AnchorProvider instance
   const opts = AnchorProvider.defaultOptions()
@@ -356,7 +354,7 @@ function getProgram(programAddress: string, owner: Keypair): Program<Main> {
   )
 
   // Create and return a Program instance
-  return new Program<Main>(idl, provider)
+  return new Program<MainV2_02>(idl, provider)
 }
 
 /**
@@ -374,7 +372,7 @@ function getProgram(programAddress: string, owner: Keypair): Program<Main> {
  * @param signatureData - The coordinator signature data
  */
 async function executeWithdrawal(
-  program: Program<Main>,
+  program: Program<MainV2_02>,
   collateral: PublicKey,
   depositAddress: PublicKey,
   owner: Keypair,

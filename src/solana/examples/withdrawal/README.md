@@ -1,9 +1,13 @@
 # Withdrawal Examples
 
-This folder contains withdrawal integration examples for different versions of the collateral contract.
+This folder contains withdrawal integration examples for different versions of the collateral contract program.
 
-- **withdrawalV1** — Example for version 1 of the contract.
-- **withdrawalV2** — Example for version 2 of the contract.
+- **multisign_program_v2_00** — V2 multisig withdrawal (program v2.00)
+- **multisign_program_v2_01** — V2 multisig withdrawal (program v2.01)
+- **single_signer_program_v2_02** — V2.2 single-signer withdrawal (program v2.02)
+- **single_signer_squad_program_v2_02** — V2.2 Squads multisig CPI withdrawal (program v2.02)
+
+For program version comparison and `@rain/program` import usage, see [CODING_GUIDELINES.md](../../../CODING_GUIDELINES.md).
 
 ## Content
 
@@ -12,7 +16,7 @@ This folder contains withdrawal integration examples for different versions of t
 
 ## 1. What version to use
 
-Use the **version selector** script to determine which withdrawal example (V1 or V2) matches your collateral account. The script reads the account’s on-chain discriminator and tells you which version to use.
+Use the **version selector** script to determine which withdrawal example matches your collateral account (for program v2.00, v2.01, v2.02 choose the matching folder). The script reads the account’s on-chain discriminator and tells you which version to use.
 
 ### How to run
 
@@ -35,16 +39,17 @@ yarn run solana:withdraw:select-version
 
 ### Result
 
-The script prints which withdrawal example to follow: **withdrawalV1** or **withdrawalV2**. Use the corresponding example in this folder (`withdrawalV1/` or `withdrawalV2/`) to perform your withdrawal.
+The script prints which withdrawal example to follow. Use the corresponding example in this folder (`multisign_program_v2_00/`, `multisign_program_v2_01/`, `single_signer_program_v2_02/`, or `single_signer_squad_program_v2_02/`) to perform your withdrawal.
 
 ## 2. Migrating from V1 to V2
 
 If you already have a withdrawal implementation based on the V1 collateral contract and want to support the V2 contract, follow these steps. The overall flow (API calls, message encoding, signature submission, then withdraw instruction) stays the same; only the program interface and some account references change.
 
-### 1. Switch IDL and types to V2
+### 1. Switch IDL and program to the target version
 
-- **IDL**: Update the content of your IDL `main.json` by the content of the `src/solana/idl/mainV2.json` IDL.
-- **Types**: Update the content of the Types file `main.ts` by the content of the `src/solana/types/mainV2.ts` file.
+- Use the `@rain/program` path alias (see [CODING_GUIDELINES.md](../../../CODING_GUIDELINES.md)).
+- Import the matching version: `IdlV2_XX` and `MainV2_XX` from `@rain/program` or `@rain/v2_XX`.
+- The IDL and types live in `src/solana/program/v2_XX/` (e.g. `main.json`, `main.ts`).
 
 ### 2. Fetch the collateral account with the V2 account type
 
