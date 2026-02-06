@@ -2,17 +2,17 @@
 
 This folder contains withdrawal integration examples for different versions of the collateral contract program.
 
-- **multisign_program_v2_00** — V2 multisig withdrawal (program v2.00)
-- **multisign_program_v2_01** — V2 multisig withdrawal (program v2.01)
-- **single_signer_program_v2_02** — V2.2 single-signer withdrawal (program v2.02)
-- **single_signer_squad_program_v2_02** — V2.2 Squads multisig CPI withdrawal (program v2.02)
+- **multisig_program_v2_00** — Multisig withdrawal (program v2.00)
+- **multisig_program_v2_01** — Multisig withdrawal (program v2.01)
+- **single_signer_program_v2_02** — Single-signer withdrawal (program v2.02)
+- **single_signer_squad_program_v2_02** — Squads single signer withdrawal (program v2.02)
 
 For program version comparison and `@rain/program` import usage, see [CODING_GUIDELINES.md](../../../CODING_GUIDELINES.md).
 
 ## Content
 
 1. [What version to use](#what-version-to-use)
-2. [Migrating from V1 to V2](#migrating-from-v1-to-v2)
+2. [Migrating from v2.00 to v2.01](#2-migrating-from-v201-to-v202)
 
 ## 1. What version to use
 
@@ -41,9 +41,9 @@ yarn run solana:withdraw:select-version
 
 The script prints which withdrawal example to follow. Use the corresponding example in this folder (`multisign_program_v2_00/`, `multisign_program_v2_01/`, `single_signer_program_v2_02/`, or `single_signer_squad_program_v2_02/`) to perform your withdrawal.
 
-## 2. Migrating from V1 to V2
+## 2. Migrating from v2.01 to v2.02
 
-If you already have a withdrawal implementation based on the V1 collateral contract and want to support the V2 contract, follow these steps. The overall flow (API calls, message encoding, signature submission, then withdraw instruction) stays the same; only the program interface and some account references change.
+If you already have a withdrawal implementation based on the v2.01 collateral program and want to support the v2.02 program, follow these steps. The overall flow (API calls, message encoding, signature submission, then withdraw instruction) stays the same; only the program interface and some account references change.
 
 ### 1. Switch IDL and program to the target version
 

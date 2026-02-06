@@ -1,11 +1,11 @@
-# Solana V2.2 Single-Signer Collateral Withdrawal Script
+# Solana V2.02 Single-Signer Collateral Withdrawal Script
 
 ## 🎯 What This Script Does
 
-This script demonstrates **automated token withdrawals** from Solana SingleSignerCollateral accounts using V2.2 signatures from the Rain API. Think of it like withdrawing money from a secured digital vault that requires both your signature and approval from the vault's coordinator.
+This script demonstrates **automated token withdrawals** from Solana SingleSignerCollateral accounts using V2.02 signatures from the Rain API. Think of it like withdrawing money from a secured digital vault that requires both your signature and approval from the vault's coordinator.
 
-### What is V2.2 Single-Signer Withdrawal?
-A V2.2 single-signer withdrawal is a **secure two-party approval system** where:
+### What is V2.02 Single-Signer Withdrawal?
+A V2.02 single-signer withdrawal is a **secure two-party approval system** where:
 - **Owner signature** proves you own the collateral account and approve the withdrawal
 - **Coordinator signature** from Rain API provides additional authorization layer
 - **Smart contract verification** ensures everything is legitimate before releasing funds
