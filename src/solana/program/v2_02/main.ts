@@ -8,8 +8,8 @@ export type Main = {
   "address": "",
   "metadata": {
     "name": "main",
-    "version": "0.1.0",
-    "spec": "0.1.0",
+    "version": "2.02",
+    "spec": "2.02",
     "description": "Created with Anchor"
   },
   "instructions": [
@@ -36,6 +36,13 @@ export type Main = {
           ],
           "writable": true,
           "signer": true
+        },
+        {
+          "name": "rentReceiver",
+          "docs": [
+            "The receiver of the rent for the CollateralAdminSignatures account."
+          ],
+          "writable": true
         },
         {
           "name": "collateral",
@@ -484,6 +491,251 @@ export type Main = {
       ]
     },
     {
+      "name": "createOldCollateral",
+      "docs": [
+        "Creates a new old collateral account"
+      ],
+      "discriminator": [
+        151,
+        6,
+        55,
+        41,
+        115,
+        143,
+        164,
+        146
+      ],
+      "accounts": [
+        {
+          "name": "sender",
+          "docs": [
+            "The sender of the instruction. Must be the collateral creator."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "rentPayer",
+          "docs": [
+            "The payer of the rent for the new Collateral account. It does not require a particular role."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "coordinator",
+          "docs": [
+            "The coordinator account that will own the new collateral account."
+          ]
+        },
+        {
+          "name": "collateral",
+          "docs": [
+            "The old collateral account to be created. The Collateral account is the account responsible",
+            "for storing the information of a borrower."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "new_collateral.id"
+              },
+              {
+                "kind": "account",
+                "path": "coordinator"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collateralAuthority",
+          "docs": [
+            "The new CollateralAuthority account that will be created. The collateral authority is the",
+            "account responsible for managing the assets of the Collateral."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "collateral"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "docs": [
+            "The system program."
+          ],
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "newCollateral",
+          "type": {
+            "defined": {
+              "name": "newCollateral"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "createSingleSignerCollateral",
+      "docs": [
+        "Creates a new SingleSignerCollateral account with single owner model"
+      ],
+      "discriminator": [
+        238,
+        164,
+        222,
+        237,
+        137,
+        207,
+        13,
+        187
+      ],
+      "accounts": [
+        {
+          "name": "sender",
+          "docs": [
+            "Must be coordinator's collateral_creator (Rain's KMS)"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "rentPayer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "coordinator"
+        },
+        {
+          "name": "collateral",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "new_collateral.id"
+              },
+              {
+                "kind": "account",
+                "path": "coordinator"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collateralAuthority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "collateral"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "newCollateral",
+          "type": {
+            "defined": {
+              "name": "newSingleSignerCollateral"
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "increaseFundsNonce",
       "docs": [
         "Increases the funds nonce of a Collateral account"
@@ -517,7 +769,7 @@ export type Main = {
         {
           "name": "collateral",
           "docs": [
-            "The Collateral account to increase the funds nonce."
+            "The Collateral account to increase the funds nonce (supports V1 and SingleSignerCollateral)."
           ],
           "writable": true
         },
@@ -565,7 +817,7 @@ export type Main = {
         {
           "name": "collateral",
           "docs": [
-            "The Collateral Account the Statement is associated to. Must be related with the coordinator."
+            "The Collateral Account the Statement is associated to (V1 or SingleSignerCollateral). Must be related with the coordinator."
           ],
           "writable": true
         },
@@ -630,6 +882,13 @@ export type Main = {
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
+          "name": "token2022Program",
+          "docs": [
+            "The token2022 program."
+          ],
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
           "name": "systemProgram",
           "docs": [
             "The system program."
@@ -672,8 +931,9 @@ export type Main = {
         {
           "name": "collateral",
           "docs": [
-            "The collateral account that must be owned by the coordinator."
-          ]
+            "The collateral account that must be owned by the coordinator (V1 or SingleSignerCollateral)."
+          ],
+          "writable": true
         },
         {
           "name": "supportedAsset",
@@ -761,8 +1021,7 @@ export type Main = {
           "name": "tokenProgram",
           "docs": [
             "The token program to transfer the SPL assets."
-          ],
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          ]
         },
         {
           "name": "instructionSysvar",
@@ -823,8 +1082,9 @@ export type Main = {
         {
           "name": "collateral",
           "docs": [
-            "The collateral account that custody the funds to pay."
-          ]
+            "The collateral account that custody the funds to pay (V1 or SingleSignerCollateral)."
+          ],
+          "writable": true
         },
         {
           "name": "supportedAsset",
@@ -919,8 +1179,7 @@ export type Main = {
           "name": "tokenProgram",
           "docs": [
             "The token program required to transfer the SPL assets."
-          ],
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          ]
         },
         {
           "name": "instructionSysvar",
@@ -1025,8 +1284,7 @@ export type Main = {
           "name": "tokenProgram",
           "docs": [
             "The token program to transfer the SPL assets."
-          ],
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          ]
         },
         {
           "name": "systemProgram",
@@ -1131,8 +1389,7 @@ export type Main = {
           "name": "tokenProgram",
           "docs": [
             "The token program to transfer the SPL assets."
-          ],
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          ]
         },
         {
           "name": "systemProgram",
@@ -1210,6 +1467,120 @@ export type Main = {
       ]
     },
     {
+      "name": "migrateCollateralInfo",
+      "docs": [
+        "Migrates the collateral info from the old format to the current format"
+      ],
+      "discriminator": [
+        140,
+        39,
+        68,
+        234,
+        43,
+        47,
+        199,
+        128
+      ],
+      "accounts": [
+        {
+          "name": "sender",
+          "docs": [
+            "The sender of the instruction. Must be the collateral creator."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "rentPayer",
+          "docs": [
+            "The rent payer for the account reallocation. It might receive the rent back after the",
+            "reallocation."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "coordinator",
+          "docs": [
+            "The coordinator account that owns the collateral."
+          ]
+        },
+        {
+          "name": "collateral",
+          "docs": [
+            "The collateral account to migrate the info."
+          ],
+          "writable": true
+        },
+        {
+          "name": "systemProgram",
+          "docs": [
+            "The system program."
+          ],
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "migrateToSingleSignerCollateral",
+      "docs": [
+        "Migrates a Collateral (multi-admin) to SingleSignerCollateral (single-owner) using multi-admin consensus"
+      ],
+      "discriminator": [
+        119,
+        54,
+        24,
+        43,
+        18,
+        165,
+        203,
+        187
+      ],
+      "accounts": [
+        {
+          "name": "sender",
+          "docs": [
+            "Sender of the instruction (does not need to be admin)"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "rentReceiver",
+          "docs": [
+            "Receives excess rent when account shrinks"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "collateral",
+          "docs": [
+            "The V1 collateral to migrate - will be rewritten as SingleSignerCollateral"
+          ],
+          "writable": true
+        },
+        {
+          "name": "collateralAdminSignatures",
+          "docs": [
+            "The CollateralAdminSignatures account with threshold signatures approving migration"
+          ],
+          "writable": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "newOwner",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
       "name": "publishStatement",
       "docs": [
         "Publishes a new Statement for a Collateral account into the context of the Coordinator"
@@ -1250,7 +1621,7 @@ export type Main = {
         {
           "name": "collateral",
           "docs": [
-            "The collateral account the statement belongs to. It must belong to the given coordinator."
+            "The collateral account the statement belongs to (V1 or SingleSignerCollateral). It must belong to the given coordinator."
           ]
         },
         {
@@ -1305,6 +1676,13 @@ export type Main = {
           ],
           "writable": true,
           "signer": true
+        },
+        {
+          "name": "rentReceiver",
+          "docs": [
+            "The receiver of the rent for the CollateralAdminSignatures account."
+          ],
+          "writable": true
         },
         {
           "name": "collateral",
@@ -1612,6 +1990,13 @@ export type Main = {
           "signer": true
         },
         {
+          "name": "rentReceiver",
+          "docs": [
+            "The receiver of the rent for the CollateralAdminSignatures account."
+          ],
+          "writable": true
+        },
+        {
           "name": "collateral",
           "docs": [
             "The collateral account that shall be transferred."
@@ -1692,6 +2077,42 @@ export type Main = {
       ]
     },
     {
+      "name": "transferSingleSignerCollateralOwnership",
+      "docs": [
+        "Transfers ownership of a SingleSignerCollateral account"
+      ],
+      "discriminator": [
+        15,
+        3,
+        166,
+        229,
+        43,
+        123,
+        85,
+        181
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "docs": [
+            "Current owner must sign"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "collateral",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "newOwner",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
       "name": "updateCollateralAdminThreshold",
       "docs": [
         "Updates the admin threshold of a Collateral account"
@@ -1714,6 +2135,13 @@ export type Main = {
           ],
           "writable": true,
           "signer": true
+        },
+        {
+          "name": "rentReceiver",
+          "docs": [
+            "The receiver of the rent for the CollateralAdminSignatures account."
+          ],
+          "writable": true
         },
         {
           "name": "collateral",
@@ -1871,7 +2299,7 @@ export type Main = {
         {
           "name": "collateral",
           "docs": [
-            "The collateral account the statement will belong to. It must belong to the given coordinator."
+            "The collateral account the statement will belong to (V1 or SingleSignerCollateral). It must belong to the given coordinator."
           ]
         },
         {
@@ -1926,6 +2354,13 @@ export type Main = {
           ],
           "writable": true,
           "signer": true
+        },
+        {
+          "name": "rentReceiver",
+          "docs": [
+            "The receiver of the rent for the CollateralAdminSignatures account."
+          ],
+          "writable": true
         },
         {
           "name": "coordinator",
@@ -2021,8 +2456,7 @@ export type Main = {
           "name": "tokenProgram",
           "docs": [
             "The token program."
-          ],
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          ]
         },
         {
           "name": "instructionSysvar",
@@ -2045,6 +2479,114 @@ export type Main = {
           "type": {
             "defined": {
               "name": "withdrawCollateralAssetRequest"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "withdrawSingleSignerCollateralAsset",
+      "docs": [
+        "Withdraws an asset from a SingleSignerCollateral account (owner + coordinator signature)"
+      ],
+      "discriminator": [
+        13,
+        25,
+        64,
+        83,
+        111,
+        184,
+        70,
+        241
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "docs": [
+            "Owner must sign (can be Squads PDA invoking via CPI)"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "coordinator"
+        },
+        {
+          "name": "collateral",
+          "writable": true
+        },
+        {
+          "name": "collateralAuthority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "collateral"
+              }
+            ]
+          }
+        },
+        {
+          "name": "destination",
+          "writable": true
+        },
+        {
+          "name": "asset",
+          "optional": true
+        },
+        {
+          "name": "collateralTokenAccount",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "destinationTokenAccount",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "tokenProgram"
+        },
+        {
+          "name": "instructionSysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "request",
+          "type": {
+            "defined": {
+              "name": "withdrawSingleSignerCollateralAssetRequest"
             }
           }
         }
@@ -2079,6 +2621,19 @@ export type Main = {
       ]
     },
     {
+      "name": "collateralOld",
+      "discriminator": [
+        98,
+        184,
+        62,
+        45,
+        226,
+        190,
+        222,
+        180
+      ]
+    },
+    {
       "name": "coordinator",
       "discriminator": [
         234,
@@ -2102,6 +2657,19 @@ export type Main = {
         126,
         244,
         205
+      ]
+    },
+    {
+      "name": "singleSignerCollateral",
+      "discriminator": [
+        19,
+        45,
+        99,
+        29,
+        196,
+        50,
+        228,
+        117
       ]
     },
     {
@@ -2221,6 +2789,19 @@ export type Main = {
         220,
         227,
         138
+      ]
+    },
+    {
+      "name": "collateralMigratedToSingleSigner",
+      "discriminator": [
+        127,
+        110,
+        69,
+        184,
+        227,
+        54,
+        187,
+        134
       ]
     },
     {
@@ -2393,6 +2974,45 @@ export type Main = {
       ]
     },
     {
+      "name": "singleSignerCollateralCreated",
+      "discriminator": [
+        96,
+        253,
+        95,
+        146,
+        66,
+        114,
+        11,
+        235
+      ]
+    },
+    {
+      "name": "singleSignerCollateralOwnershipTransferred",
+      "discriminator": [
+        105,
+        48,
+        137,
+        202,
+        109,
+        156,
+        108,
+        198
+      ]
+    },
+    {
+      "name": "singleSignerCollateralWithdrawal",
+      "discriminator": [
+        50,
+        203,
+        238,
+        151,
+        46,
+        249,
+        77,
+        108
+      ]
+    },
+    {
       "name": "statementMarkedPaid",
       "discriminator": [
         170,
@@ -2509,8 +3129,8 @@ export type Main = {
     {
       "name": "collateral",
       "docs": [
-        "Represents the Collateral account stored in the blockchain. The account is owned by a",
-        "Coordinator account and is used to store the information and assets owned by a borrower."
+        "Represents the SingleSignerCollateral account stored in the blockchain. It is dynamically sized depending",
+        "on the size of the admins list."
       ],
       "type": {
         "kind": "struct",
@@ -2532,12 +3152,6 @@ export type Main = {
             "type": "string"
           },
           {
-            "name": "admins",
-            "type": {
-              "vec": "pubkey"
-            }
-          },
-          {
             "name": "adminThreshold",
             "type": "u8"
           },
@@ -2548,6 +3162,19 @@ export type Main = {
           {
             "name": "adminFundsNonce",
             "type": "u32"
+          },
+          {
+            "name": "adminsCapacity",
+            "docs": [
+              "The capacity of the admins array"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "admins",
+            "type": {
+              "vec": "pubkey"
+            }
           }
         ]
       }
@@ -2668,6 +3295,7 @@ export type Main = {
         "- `id`: The hash of the allowed parameters that works as account id.",
         "- `bump`: The bump of the CollateralAdminSignatures account.",
         "- `collateral`: The address of the collateral account that owns the signatures.",
+        "- `rent_payer`: The address of the account rent payer.",
         "- `is_in_progress`: The flag to indicate in a request if in progress or not, e.i., at least one",
         "admin has signed the request with a specific parameters.",
         "- `signers`: The list of admins that have signed the request.",
@@ -2694,6 +3322,13 @@ export type Main = {
           },
           {
             "name": "collateral",
+            "type": "pubkey"
+          },
+          {
+            "name": "rentPayer",
+            "docs": [
+              "The address of the account rent payer"
+            ],
             "type": "pubkey"
           },
           {
@@ -2846,6 +3481,74 @@ export type Main = {
             "docs": [
               "The new value for the funds nonce"
             ],
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "collateralMigratedToSingleSigner",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateralAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "previousAdmins",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "newOwner",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "collateralOld",
+      "docs": [
+        "Represents the V1 Collateral account stored in the blockchain. The account is owned by a",
+        "Coordinator account and is used to store the information and assets owned by a borrower."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "pubkey"
+          },
+          {
+            "name": "coordinator",
+            "type": "pubkey"
+          },
+          {
+            "name": "authorityBump",
+            "type": "u8"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "admins",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "adminThreshold",
+            "type": "u8"
+          },
+          {
+            "name": "adminDataNonce",
+            "type": "u32"
+          },
+          {
+            "name": "adminFundsNonce",
             "type": "u32"
           }
         ]
@@ -3346,6 +4049,29 @@ export type Main = {
             "docs": [
               "The address of the first executor account."
             ],
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "newSingleSignerCollateral",
+      "docs": [
+        "Structure to store the initial information required to initialize a SingleSignerCollateral account."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "owner",
             "type": "pubkey"
           }
         ]
@@ -4094,6 +4820,134 @@ export type Main = {
                 }
               }
             ]
+          },
+          {
+            "name": "migrateToSingleSigner",
+            "fields": [
+              {
+                "name": "newOwner",
+                "docs": [
+                  "The new owner of the SingleSignerCollateral account"
+                ],
+                "type": "pubkey"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "singleSignerCollateral",
+      "docs": [
+        "Single-owner collateral model for smart account support.",
+        "The owner can be any Pubkey including PDAs (Squads, Realms, custom programs)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "pubkey"
+          },
+          {
+            "name": "coordinator",
+            "type": "pubkey"
+          },
+          {
+            "name": "authorityBump",
+            "type": "u8"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "nonce",
+            "type": "u32"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "singleSignerCollateralCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "coordinatorAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "collateralAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "authorityAddress",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "singleSignerCollateralOwnershipTransferred",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateralAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "previousOwner",
+            "type": "pubkey"
+          },
+          {
+            "name": "newOwner",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "singleSignerCollateralWithdrawal",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateralAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "destination",
+            "type": "pubkey"
+          },
+          {
+            "name": "asset",
+            "type": "pubkey"
+          },
+          {
+            "name": "amountInAsset",
+            "type": "u64"
+          },
+          {
+            "name": "nonce",
+            "type": "u32"
           }
         ]
       }
@@ -4631,6 +5485,34 @@ export type Main = {
             "docs": [
               "The salt used to generate the coordinator's signature."
             ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "withdrawSingleSignerCollateralAssetRequest",
+      "docs": [
+        "Structure for SingleSignerCollateral withdrawal requests (owner-signed, no threshold)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amountInAsset",
+            "type": "u64"
+          },
+          {
+            "name": "signatureExpirationTime",
+            "type": "i64"
+          },
+          {
+            "name": "coordinatorSignatureSalt",
             "type": {
               "array": [
                 "u8",
