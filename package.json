@@ -22,7 +22,8 @@
     "solana:withdraw:v2-00": "yarn build && node dist/src/solana/examples/withdrawal/multisign_program_v2_00/index.js",
     "solana:withdraw:v2-01": "yarn build && node dist/src/solana/examples/withdrawal/multisign_program_v2_01/index.js",
     "solana:withdraw:v2-02": "yarn build && node dist/src/solana/examples/withdrawal/single_signer_program_v2_02/index.js",
-    "solana:squads-withdraw:v2-02": "yarn build && node dist/src/solana/examples/withdrawal/single_signer_squad_program_v2_02/index.js"
+    "solana:squads-withdraw:v2-02": "yarn build && node dist/src/solana/examples/withdrawal/single_signer_squad_program_v2_02/index.js",
+    "stellar:withdraw": "yarn build && node dist/src/stellar/examples/withdrawal/index.js"
   },
   "keywords": [
     "blockchain",
@@ -38,6 +39,7 @@
     "@solana/spl-token": "^0.4.9",
     "@solana/web3.js": "^1.95.4",
     "@sqds/multisig": "^2.1.3",
+    "@stellar/stellar-sdk": "^14.4.2",
     "axios": "^1.7.2",
     "bs58": "^6.0.0",
     "crypto-js": "^4.2.0",
@@ -46,8 +48,6 @@
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
-    "tsconfig-paths": "^4.2.0",
-    "tsc-alias": "^1.8.10",
     "@types/crypto-js": "^4.2.2",
     "@types/inquirer": "^8.2.10",
     "@types/node": "^20.14.9",
@@ -55,6 +55,8 @@
     "@typescript-eslint/parser": "^7.13.1",
     "eslint": "^8.57.0",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.2"
   },
   "engines": {

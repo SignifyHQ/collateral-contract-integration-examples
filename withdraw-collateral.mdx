@@ -1,0 +1,1598 @@
+---
+title: "Withdraw Collateral"
+description: "Only an admin wallet on the smart contract can withdraw collateral. However, withdrawals can be made to any address."
+---
+
+### Step 1: Request a withdrawal signature
+
+Use the [get user withdrawal signature](/reference/signatures/get-withdrawal-signature-for-a-user) endpoint.
+
+- Get the `token` info from the[ get issuing user contracts](/reference/contracts/get-smart-contract-information-for-a-user) response.
+- If the response contains an `error`, carefully review the detailed error message provided to determine the cause before retrying the request.
+
+#### Example errors and how to address them:
+
+- *Token address not found*:  
+  Double-check that the token address you provided matches the expected token for this contract and user.
+
+  ```json
+  {
+    "message": "Asset not found: 3zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+    "error": "NotFoundError",
+    "statusCode": 404
+  }
+  ```
+
+- *Validation error – insufficient collateral*:  
+  The requested withdrawal amount exceeds the available collateral balance in the contract. Adjust the amount to the maximum available balance and try again.
+
+  ```json
+  {
+    "message": "Collateral balance of USDC in contract 2JNLDeHhwV9d6XFMt1z8DhBip6hTLCBESp3vAGQgCabc is lower than requested amount. Balance: 0 Requested: 10000000",
+    "error": "UnprocessableEntityError",
+    "statusCode": 422
+  }
+  ```
+
+To see a complete error reference check the [Rain API Reference]()
+
+### Step 2: Execute the withdrawal transaction
+
+Use the `signature` to call `withdrawAsset` on the smart contract controller. You'll need the following parameters:
+
+<CodeGroup>
+
+```javascript parameters
+proxyAddress: string // the proxy address of the user's smart contract
+token: string // the token to be withdrawn
+amount: number // amount of token to be withdrawn
+recipientAddress: string // withdrawal address
+expiresAt: number // value returned from signature endpoint, in unix second format
+salt: Buffer // signature salt
+signature: string // signature
+```
+
+</CodeGroup>
+
+### Step 3: Execute with `ethers.js`
+
+<CodeGroup>
+
+```javascript ethers.js
+const controllerContract = new ethers.Contract(
+  controllerAddress,
+  controllerContractAbi,
+  ethersProvider.getSigner(),
+);
+
+await controllerContract.withdrawAsset(
+  proxyAddress,
+  token,
+  amount,
+  recipientAddress,
+  new Date(expiresAt).getTime() / 1000,
+  new Uint8Array(salt),
+  signature,
+);
+```
+
+</CodeGroup>
+
+## Code examples
+
+### V1 Contracts
+
+This example uses the Issuing API and V1 contracts to request a signature and execute the transaction:
+
+<CodeGroup>
+
+```typescript v1ContractSample.ts
+import axios from "axios";
+import { ethers } from "ethers";
+// ABI Interface for V1 Collateral Controller Contract
+// Can be found at https://etherscan.io/address/0xE5D3d7da4b24bc9D2FDA0e206680CD8A00C0FeBD#code
+import { RainCollateralControllerInterface } from "../lib/utils/abis/v1/RainCollateralController";
+import dotenv from "dotenv";
+import { Services } from "../lib/utils/services";
+dotenv.config();
+
+type FetchV1SignatureOpts = {
+  userId: string; // Must be consumer issuing to use user withdraw endpoint
+  apiKey: string;
+  token: string; // Token to withdraw
+  amount: string; // Who much to withdraw
+  recipientAddress: string; // Who to give the asset to
+  chainId: string; // Which chain the contracts reside
+  controllerAddress: string; // controller contract of collateral contract
+};
+
+const BASE_URL = "https://api-dev.raincards.xyz";
+
+const main = async ({
+  userId,
+  apiKey,
+  token,
+  amount,
+  recipientAddress,
+  chainId,
+  controllerAddress,
+}: FetchV1SignatureOpts) => {
+  // get chain provider - this can be any provider for the requested chain
+  const chain = (await Services.chains()).getById(chainId);
+  /**
+   * Setup signer to send transaction
+   * @dev this should be the admin of the collateral contract
+   */
+  const signerPk = process.env.COLLATERAL_ADMIN_PK;
+  if (!signerPk) {
+    throw new Error("No signer key provided");
+  }
+  const signer = new ethers.Wallet(signerPk).connect(chain.fallbackProvider);
+  const adminAddress = await signer.getAddress();
+
+  //build API request
+  const baseUrl = `${BASE_URL}/v1/issuing/users/${userId}/signatures/withdrawals`;
+
+  const params = {
+    token,
+    amount,
+    recipientAddress,
+    adminAddress,
+    chainId,
+  };
+  // request signature with api key
+  const signatureResponse = await axios.get(baseUrl, {
+    headers: {
+      "Api-Key": apiKey,
+    },
+    params,
+  });
+
+  // setup parameters from response
+  const signature = await signatureResponse.data;
+  const [
+    collateralProxy,
+    assetAddress,
+    amountInCents,
+    recipient,
+    expiresAt,
+    executorPublisherSalt,
+    executorPublisherSig,
+  ] = signature.parameters;
+
+  // Get coordinator & withdrawAsset interface
+  const coordinatorContract = new ethers.Contract(controllerAddress, RainCollateralControllerInterface).connect(signer);
+  const withdrawAsset = coordinatorContract.getFunction("withdrawAsset");
+
+  // build transaction input
+  const functionInputs = [
+    collateralProxy,
+    assetAddress,
+    amountInCents,
+    recipient,
+    expiresAt,
+    Buffer.from(executorPublisherSalt, "base64"),
+    executorPublisherSig,
+  ];
+
+  // send withdrawAsset transaction
+  await withdrawAsset(...functionInputs);
+};
+```
+
+</CodeGroup>
+
+### V2 Contracts - EVM
+
+V2 contracts require an additional `adminSignature` and `adminSalt`, generated by the contract admin: For V2, we renamed the `controllerAddress` contract to `coordinatorAddress` which can be obtained from the [get issuing user contracts](/reference/contracts/get-smart-contract-information-for-a-user) response.
+
+<CodeGroup>
+
+```typescript v2ContractSample.ts
+import axios from "axios";
+import { ethers, randomBytes, Signer } from "ethers";
+// ABI Interface for V2 Collateral Coordinator Contract
+import { CoordinatorInterface } from "../lib/utils/abis/v2/Coordinator";
+// Can be found at https://snowtrace.io/address/0xE09916E8777cf88E634578C3875CF54d20769fAa/contract/43114/code
+import { CollateralInterface } from "../lib/utils/abis/v2/Collateral";
+// Can be found at https://snowtrace.io/address/0xbc2F19427EE4224a561Bc04bF16C829B967beB11/contract/43114/code
+import dotenv from "dotenv";
+import { Services } from "../lib/utils/services";
+dotenv.config();
+
+type FetchV2SignatureOpts = {
+  userId: string; // Must be consumer issuing to use user withdraw endpoint
+  apiKey: string;
+  token: string; // Token to withdraw
+  amount: string; // Who much to withdraw
+  adminAddress: string; // Wallet address that is the collateral contract admin
+  recipientAddress: string; // Who to give the asset to
+  chainId: string; // Which chain the contracts reside
+  coordinatorAddress: string; // coordinator contract of collateral contract
+};
+
+const BASE_URL = "https://api-dev.raincards.xyz";
+
+const main = async ({
+  userId,
+  apiKey,
+  token,
+  amount,
+  adminAddress,
+  recipientAddress,
+  chainId,
+  coordinatorAddress,
+}: FetchV2SignatureOpts) => {
+  // get chain - this can be any provider for the requested chain
+  const chain = (await Services.chains()).getById(chainId);
+  /**
+   * Setup signer to send transaction
+   * @dev this should be the admin of the collateral contract
+   */
+  const signerPk = process.env.COLLATERAL_ADMIN_PK;
+  if (!signerPk) {
+    throw new Error("No signer key provided");
+  }
+  const signer = new ethers.Wallet(signerPk).connect(chain.fallbackProvider);
+
+  //build API request
+  const baseUrl = `${BASE_URL}/v1/issuing/users/${userId}/signatures/withdrawals`;
+  const params = {
+    token,
+    amount,
+    adminAddress,
+    recipientAddress,
+    chainId,
+  };
+  // request signature with api key
+  const signatureResponse = await axios.get(baseUrl, {
+    headers: {
+      "Api-Key": apiKey,
+    },
+    params,
+  });
+
+  // setup parameters from response
+  const signature = await signatureResponse.data;
+  const [
+    collateralProxy,
+    assetAddress,
+    amountInCents,
+    recipient,
+    expiresAt,
+    executorPublisherSalt,
+    executorPublisherSig,
+  ] = signature.parameters;
+
+  // Get coordinator & withdrawAsset interface
+  const coordinatorContract = new ethers.Contract(coordinatorAddress, CoordinatorInterface).connect(signer);
+  const withdrawAsset = coordinatorContract.getFunction("withdrawAsset");
+  
+  // Get Collateral & nonce interface
+  const collateralContract = new ethers.Contract(collateralProxy, CollateralInterface).connect(signer);
+  const adminNonceFunction = collateralContract.getFunction("adminNonce");
+  const nonce = await adminNonceFunction.staticCallResult();
+  
+  // Generate admin signature
+  const { salt: adminSalt, signature: adminSignature } = await getAdminSignature({
+    signer,
+    amount: amountInCents,
+    chainId: Number(chainId),
+    collateralProxyAddress: collateralProxy,
+    recipientAddress: recipient,
+    tokenAddress: assetAddress,
+    nonce: nonce[0],
+  });
+  const directTransfer = true;
+
+  // build transaction input
+  const functionInputs = [
+    collateralProxy,
+    assetAddress,
+    amountInCents,
+    recipient,
+    expiresAt,
+    Buffer.from(executorPublisherSalt, "base64"),
+    executorPublisherSig,
+    [adminSalt], // user generated
+    [adminSignature], // user generated
+    directTransfer,
+  ];
+
+  // send withdrawAsset transaction
+  await withdrawAsset(...functionInputs);
+};
+```
+
+</CodeGroup>
+
+### Generating Admin Signature (V2)
+
+Use this helper to generate the required parameters for the withdrawal transaction:
+
+<CodeGroup>
+
+```typescript withdrawalHelper.ts
+type AdminSignatureOpts = {
+  signer: Signer;
+  chainId: number;
+  collateralProxyAddress: string;
+  recipientAddress: string;
+  amount: number;
+  tokenAddress: string;
+  nonce: number;
+};
+
+/**
+ * Gets admin signature needed to resolve on coordinator contract
+ * @param opts
+ * @returns
+ */
+const getAdminSignature = async (opts: AdminSignatureOpts) => {
+  const { collateralProxyAddress, signer, chainId, tokenAddress, amount, recipientAddress, nonce } = opts;
+
+  const salt = randomBytes(32);
+  const domain = {
+    name: "Collateral",
+    version: "2",
+    chainId: chainId as number,
+    verifyingContract: collateralProxyAddress,
+    salt,
+  };
+  const type = {
+    Withdraw: [
+      { name: "user", type: "address" },
+      { name: "asset", type: "address" },
+      { name: "amount", type: "uint256" },
+      { name: "recipient", type: "address" },
+      { name: "nonce", type: "uint256" },
+    ],
+  };
+  const signerAddress = await signer.getAddress();
+  const data = {
+    user: signerAddress,
+    asset: tokenAddress,
+    amount,
+    recipient: recipientAddress,
+    nonce,
+  };
+  const signature = await signer.signTypedData(domain, type, data);
+  return { salt, signature };
+};
+```
+
+</CodeGroup>
+
+### V2.00 Contracts - Solana
+
+For the imported `main.json` and `main` files, you may download them [here](https://drive.google.com/drive/folders/1YcFJloxkgio13b0rK-n4iMkT-49Tvwz2?usp=sharing).
+
+<CodeGroup>
+
+```typescript v2_00ContractSolanaSample.ts
+/**
+ * This script demonstrates how to interact with the Solana blockchain using the Anchor framework,
+ * specifically focusing on generating and verifying V2 signatures for a withdrawal process.
+ * The withdrawal process is implemented as a custom program instruction that allows a user to
+ * retrieve funds from their collateral account to their personal wallet.
+ *
+ * Environment Variables Required:
+ * 
+ * - RAIN_API_KEY: Your Rain API key for authentication
+ *   Example: RAIN_API_KEY=your_api_key_here
+ * 
+ * - SOLANA_RPC_URL: Solana RPC endpoint URL
+ *   Example: SOLANA_RPC_URL=https://api.devnet.solana.com
+ * 
+ * - COLLATERAL_ADMIN_PK: Base58-encoded private key for collateral admin
+ *   Example: COLLATERAL_ADMIN_PK=your_base58_encoded_private_key
+ * 
+ * Environment Setup:
+ * 1. Create .env.local file in project root
+ * 2. Add the above environment variables
+ * 3. Ensure .env.local is in .gitignore
+ * 
+ * API Documentation:
+ * 
+ * This script interacts with the Rain API for Solana V2 signature withdrawal.
+ * 
+ * Endpoints Used:
+ * 
+ * 1. GET /v1/issuing/users/{userId}/signatures/withdrawals
+ *    Purpose: Retrieve V2 signature for withdrawal
+ *    Headers: Api-Key: {RAIN_API_KEY}
+ *    Query Params: token, amount, adminAddress, recipientAddress, chainId
+ *    Response: { status, parameters[] }
+ *    Schema: IssuingSignatureGetOneWithdrawalSignatureResponse
+ * 
+ * 2. GET /v1/issuing/users/{userId}/contracts
+ *    Purpose: Get user's contracts for the specified network
+ *    Headers: Api-Key: {RAIN_API_KEY}
+ *    Response: Contract[] with proxyAddress, programAddress, depositAddress
+ *    Schema: IssuingUserReadOneParams
+ * 
+ * Authentication:
+ * - All requests require Api-Key header
+ * - API key should be stored in RAIN_API_KEY environment variable
+ * 
+ * Error Handling:
+ * - 401: Invalid API key
+ * - 400: Invalid parameters
+ * - 403: Forbidden (tenant cannot serve consumer)
+ * - 500: Server error
+ * 
+ * Response Format Examples:
+ * 
+ * Success Response (Withdrawal Signature):
+ * {
+ *   "status": "completed",
+ *   "parameters": [
+ *     "collateralProxyAddress",
+ *     "assetAddress", 
+ *     "amountInCents",
+ *     "recipientAddress",
+ *     "expiresAt",
+ *     "executorPublisherSalt",
+ *     "executorPublisherSig"
+ *   ]
+ * }
+ * 
+ * Success Response (User Contracts):
+ * [
+ *   {
+ *     "proxyAddress": "CollateralProxyAddress123...",
+ *     "programAddress": "ProgramAddress123...",
+ *     "depositAddress": "DepositAddress123...",
+ *     "controllerAddress": "CoordinatorAddress123..."
+ *   }
+ * ]
+ * 
+ * Error Response:
+ * {
+ *   "error": "Invalid API key",
+ *   "code": "UNAUTHORIZED"
+ * }
+ * 
+ * Command Line Usage:
+ * node dist/scripts/solanaV2SignatureExample.js userId token amount adminAddress recipientAddress chainId
+ * 
+ * Arguments:
+ * - userId: The unique identifier for the user requesting the withdrawal
+ * - token: The token mint address (as a string) for the SPL token being withdrawn
+ * - amount: The amount of tokens to withdraw (as a string, usually in the smallest unit)
+ * - adminAddress: The collateral admin's Solana public key (as a string)
+ * - recipientAddress: The user's personal Solana public key (as a string) where funds will be sent
+ * - chainId: The identifier for the Solana chain/network (e.g., "devnet", "mainnet-beta")
+ *
+ * Flow & Expectations:
+ * 1. The script loads environment variables and sets up Solana/Anchor connections.
+ * 2. It prepares the necessary accounts and transaction data for the withdrawal instruction.
+ * 3. It requests a V2 signature from the Raincards backend API, passing the required parameters.
+ * 4. The backend returns a signature, which the script then uses to authorize and send the withdrawal transaction on-chain.
+ * 5. The script may also verify the signature and confirm the transaction.
+ *
+ * Expected Outcome:
+ * - If successful, the withdrawal transaction is signed, sent, and confirmed on the Solana blockchain.
+ * - The script outputs transaction details or errors as appropriate.
+ */
+
+import axios from "axios";
+import dotenv from "dotenv";
+import nacl from "tweetnacl";
+import { randomBytes } from "crypto";
+import crypto from 'crypto-js';
+
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  Transaction,
+  sendAndConfirmTransaction
+} from "@solana/web3.js";
+import { AnchorProvider, BN, Program, Wallet } from "@coral-xyz/anchor";
+import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
+import {
+  getOrCreateAssociatedTokenAccount,
+  getAssociatedTokenAddress,
+  TOKEN_PROGRAM_ID,
+  Account
+} from "@solana/spl-token";
+
+import MainIdl from "./solana/idl/main.json";
+import { Main } from "./solana/idl/main";
+import { Ed25519ExtendedProgram } from "./solana/ed25519.program";
+dotenv.config({ path: ".env.local" });
+
+const BASE_URL = "https://api-dev.raincards.xyz";
+
+type FetchV2SignatureOpts = {
+  userId: string;
+  token: string;
+  amount: string;
+  adminAddress: string;
+  recipientAddress: string;
+  chainId: string;
+};
+
+class HashUtils {
+  /**
+   * Hashes the given data using the Keccak-256 algorithm and returns the result as a hex string
+   * @param data - The data to hash
+   * @returns The hash of the data as a hex string
+   */
+  static keccak256Hex(data: string): string {
+    const wordArray = crypto.enc.Hex.parse(data);
+    const hash = crypto.SHA3(wordArray, { outputLength: 256 });
+    return hash.toString();
+  }
+
+  /**
+   * Hashes the given data using the SHA3 hashing algorithm and returns the result as a hex string
+   * @param data - The data to hash
+   * @returns The hash of the data as a hex string
+   */
+  static keccak256(data: string): string {
+    // Hash the data using the SHA3 hashing algorithm
+    const hash = crypto.SHA3(data, { outputLength: 256 });
+    // Return the hash as a hex string
+    return hash.toString();
+  }
+
+  /**
+   * Encodes the given string using the Keccak-256 algorithm and returns the result as a hex string
+   * @param value - The string to encode
+   * @returns The encoded string as a hex string
+   */
+  static encodeString(value: string): string {
+    return HashUtils.keccak256(value);
+  }
+
+  /**
+   * Encodes the given address as a hex string
+   * @param value - The address to encode
+   * @returns The encoded address as a hex string
+   */
+  static encodeAddress(value: PublicKey): string {
+    return value.toBuffer().toString('hex');
+  }
+
+  /**
+   * Encodes the given unsigned integer as a hex string
+   * @param value - The unsigned integer to encode
+   * @returns The encoded unsigned integer as a hex string
+   */
+  static encodeUInt32(value: bigint | number): string {
+    return value.toString(16).padStart(8, '0');
+  }
+
+  /**
+   * Encodes the given unsigned integer as a hex string
+   * @param value - The unsigned integer to encode
+   * @returns The encoded unsigned integer as a hex string
+   */
+  static encodeUInt64(value: bigint): string {
+    return value.toString(16).padStart(16, '0');
+  }
+
+  /**
+   * Encodes the given bytes as a hex string
+   * @param value - The bytes to encode
+   * @returns The encoded bytes as a hex string
+   */
+  static encodeBytes(value: Uint8Array): string {
+    return Array.from(value).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+}
+
+class PaddingBytesMessage {
+  static encode(): string {
+    return HashUtils.encodeBytes(new Uint8Array(Buffer.from('\x19\x01', 'latin1')));
+  }
+}
+
+class DomainSeparatorMessage {
+  private static DOMAIN_TYPE_HASH = HashUtils.encodeString('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)');
+
+  static encode(
+    name: string,
+    version: string,
+    chainId: bigint,
+    verifyingContract: PublicKey,
+    salt: Uint8Array,
+  ): string {
+    // Encode the domain separator message structure
+    const encodedStructure = [
+      DomainSeparatorMessage.DOMAIN_TYPE_HASH,
+      HashUtils.encodeString(name),
+      HashUtils.encodeString(version),
+      HashUtils.encodeUInt64(chainId),
+      HashUtils.encodeAddress(verifyingContract),
+      HashUtils.encodeBytes(salt),
+    ].join('');
+
+    // Hash and return the domain separator message
+    return HashUtils.keccak256Hex(encodedStructure);
+  }
+}
+
+type WithdrawCollateral = {
+  amountOfAsset: BN;
+  signatureExpirationTime: BN;
+  coordinatorSignatureSalt: number[];
+}
+
+class Collateral {
+  private static COLLATERAL_ADMIN_SIGNATURE_SEED = Buffer.from('CollateralAdminSignatures', 'utf-8');
+  private static WITHDRAW_TYPE_HASH = HashUtils.encodeString('Withdraw(address user,address asset,uint256 amount,address recipient,uint256 nonce)');
+
+  /**
+   * Derivate the account address using the collateral account ID and the Main program ID
+   * @param collateral - The collateral account ID
+   * @param id - The action message hash as ID
+   * @param programId - The Main program ID
+   * @returns - The account address
+   */
+  static generateAdminSignaturePDA(collateral: PublicKey, id: Buffer, programId: PublicKey): PublicKey {
+    const [pda] = PublicKey.findProgramAddressSync(
+      [
+        Collateral.COLLATERAL_ADMIN_SIGNATURE_SEED,
+        collateral.toBuffer(),
+        id,
+      ],
+      programId,
+    );
+    return pda;
+  }
+
+  /**
+   * Generate the PDA for the WithdrawCollateral action
+   * @param collateral - The collateral account
+   * @param sender - The sender of the withdrawal
+   * @param receiver - The receiver of the withdrawal
+   * @param asset - The asset to withdraw
+   * @param request - The request to withdraw the collateral
+   * @param adminFundsNonce - The nonce for the admin funds
+   * @param programId - The Main program ID
+   * @returns The PDA for the WithdrawCollateral action
+   */
+  static generateWithdrawCollateralPDA(
+    collateral: PublicKey,
+    sender: PublicKey,
+    receiver: PublicKey,
+    asset: PublicKey,
+    request: WithdrawCollateral,
+    adminFundsNonce: number,
+    programId: PublicKey,
+  ): PublicKey {
+    const withdrawCollateralMessageEncoded = Collateral.encodeWithdrawMessage(
+      collateral,
+      sender,
+      receiver,
+      asset,
+      request,
+      adminFundsNonce
+    );
+
+    const id = Buffer.from(withdrawCollateralMessageEncoded, 'hex');
+    return Collateral.generateAdminSignaturePDA(collateral, id, programId);
+  }
+
+  /**
+   * Gets the withdraw messages
+   * @param sender - The account of the tx sender
+   * @param receiver - The account of the collateral funds receiver
+   * @param asset - The asset to be withdrawn
+   * @param withdraw - The withdraw collateral instruction data
+   * @param salt - The salt for the collateral admins signatures
+   * @returns - The withdraw message as buffer to be signed by the admins
+   */
+  static getWithdrawMessage(
+    collateral: PublicKey,
+    sender: PublicKey,
+    receiver: PublicKey,
+    asset: PublicKey,
+    withdraw: WithdrawCollateral,
+    salt: number[],
+    adminFundsNonce: number,
+  ): Buffer {
+    const encodedData = [
+      PaddingBytesMessage.encode(),
+      DomainSeparatorMessage.encode(
+        'Collateral',
+        '2',
+        900n,
+        collateral,
+        new Uint8Array(salt),
+      ),
+      Collateral.encodeWithdrawMessage(collateral, sender, receiver, asset, withdraw, adminFundsNonce),
+    ].join('');
+
+    const encodedDataHash = HashUtils.keccak256Hex(encodedData);
+    return Buffer.from(encodedDataHash, 'hex');
+  }
+
+  /**
+   * Encodes the withdraw message
+   * @param collateral - The collateral address
+   * @param sender - The sender address of the withdrawal
+   * @param receiver - The receiver address of the withdrawal
+   * @param asset - The asset address to withdraw
+   * @param withdraw - The withdraw collateral instruction data
+   * @param adminFundsNonce - The nonce for the admin funds
+   * @returns The encoded withdraw message
+   */
+  static encodeWithdrawMessage(
+    collateral: PublicKey,
+    sender: PublicKey,
+    receiver: PublicKey,
+    asset: PublicKey,
+    withdraw: WithdrawCollateral,
+    adminFundsNonce: number,
+  ): string {
+    const amount = BigInt(withdraw.amountOfAsset.toString());
+
+    // Encode the structure
+    const encodedStructure = [
+      Collateral.WITHDRAW_TYPE_HASH,
+      HashUtils.encodeAddress(sender),
+      HashUtils.encodeAddress(collateral),
+      HashUtils.encodeAddress(asset),
+      HashUtils.encodeUInt64(amount),
+      HashUtils.encodeAddress(receiver),
+      HashUtils.encodeUInt32(adminFundsNonce),
+    ].join('');
+    // Hash and return the structure
+    const hashedStructure = HashUtils.keccak256Hex(encodedStructure);
+    return hashedStructure;
+  }
+}
+
+class Coordinator {
+  private static WITHDRAW_TYPE_HASH = HashUtils.encodeString('Withdraw(address user,address collateral,address asset,uint256 amount,address recipient,uint256 nonce,uint256 expiresAt)');
+
+  /**
+   * Encodes the coordinator withdraw message
+   * @param collateral - The collateral address
+   * @param sender - The sender address of the withdrawal
+   * @param receiver - The receiver address of the withdrawal
+   * @param asset - The asset address to withdraw
+   * @param withdrawRequest - The withdraw collateral instruction data
+   * @param adminFundsNonce - The nonce for the admin funds
+   * @returns The encoded withdraw message
+   */
+  static encodeWithdrawMessage(
+    collateral: PublicKey,
+    sender: PublicKey,
+    receiver: PublicKey,
+    asset: PublicKey,
+    withdrawRequest: WithdrawCollateral,
+    adminFundsNonce: number,
+  ): string {
+    const amount = BigInt(withdrawRequest.amountOfAsset.toString());
+    const nonce = adminFundsNonce;
+    const expiresAt = BigInt(withdrawRequest.signatureExpirationTime.toString());
+    // Encode the structure
+    const encodedStructure = [
+      Coordinator.WITHDRAW_TYPE_HASH,
+      HashUtils.encodeAddress(sender),
+      HashUtils.encodeAddress(collateral),
+      HashUtils.encodeAddress(asset),
+      HashUtils.encodeUInt64(amount),
+      HashUtils.encodeAddress(receiver),
+      HashUtils.encodeUInt32(nonce),
+      HashUtils.encodeUInt64(expiresAt),
+    ].join('');
+
+    // Hash and return the structure
+    return HashUtils.keccak256Hex(encodedStructure);
+  }
+
+  /**
+   * Gets the coordinator withdraw message
+   * @param collateral - The collateral address
+   * @param coordinator - The coordinator address
+   * @param sender - The sender address of the withdrawal
+   * @param receiver - The receiver address of the withdrawal
+   * @param asset - The asset address to withdraw
+   * @param withdrawRequest - The withdraw collateral instruction data
+   * @param adminFundsNonce - The nonce for the admin funds
+   * @returns The coordinator withdraw message
+   */
+  static getWithdrawMessage(
+    collateral: PublicKey,
+    coordinator: PublicKey,
+    sender: PublicKey,
+    receiver: PublicKey,
+    asset: PublicKey,
+    withdraw: WithdrawCollateral,
+    adminFundsNonce: number,
+  ): Buffer {
+    const encodedData = [
+      PaddingBytesMessage.encode(),
+      DomainSeparatorMessage.encode(
+        'Coordinator',
+        '2',
+        900n,
+        coordinator,
+        new Uint8Array(withdraw.coordinatorSignatureSalt),
+      ),
+      Coordinator.encodeWithdrawMessage(collateral, sender, receiver, asset, withdraw, adminFundsNonce),
+    ].join('');
+
+    const encodedDataHash = HashUtils.keccak256Hex(encodedData);
+    return Buffer.from(encodedDataHash, 'hex');
+  }
+}
+
+/**
+ * Get or create the associated token account for the recipient to receive 
+ * the withdrawn tokens
+ * 
+ * @param program - The program instance
+ * @param sender - The sender of the transaction  
+ * @param recipientAddress - The address of the recipient
+ * @param mintAddress - The mint address of the token being withdrawn
+ * @returns The associated token account address for the recipient
+ */
+async function getDestinationTokenAccount(
+  program: Program<Main>,
+  sender: Keypair,
+  recipientAddress: PublicKey,
+  mintAddress: PublicKey,
+): Promise<Account> {
+  return await getOrCreateAssociatedTokenAccount(
+    program.provider.connection,
+    sender,
+    mintAddress,
+    recipientAddress,
+    false,
+    'confirmed',
+    { commitment: 'confirmed' },
+    TOKEN_PROGRAM_ID
+  );
+}
+
+/**
+ * Get the source token account for the collateral to withdraw from
+ * 
+ * @param depositAddress - The deposit address of the collateral, which is the token authority account to the collateral
+ * @param mintAddress - The mint address of the token being withdrawn
+ * @returns The associated token account address for the collateral
+ */
+async function getSourceTokenAccount(depositAddress: PublicKey, mintAddress: PublicKey) {
+  return await getAssociatedTokenAddress(
+    mintAddress,
+    depositAddress,
+    true
+  );
+}
+
+/**
+ * Submits the collateral admin signature to the blockchain for withdrawal verification
+ * 
+ * @param sender - The sender's keypair that will sign the transaction
+ * @param recipientAddress - The recipient's public key
+ * @param mintAddress - The mint address of the token being withdrawn
+ * @param withdrawRequest - The withdrawal request parameters
+ * @param adminFundsNonce - The nonce for the admin funds
+ * @param program - The program instance
+ * @param collateralAddress - The collateral contract address
+ * @returns The collateral admin signature address
+ */
+async function submitCollateralSignature(
+  sender: Keypair,
+  recipientAddress: PublicKey,
+  mintAddress: PublicKey,
+  withdrawRequest: WithdrawCollateral,
+  adminFundsNonce: number,
+  program: Program<Main>,
+  collateralAddress: PublicKey
+) {
+  // Generate the collateral admin signature
+  const collateralMessageSalt: number[] = Array.from(randomBytes(32)).map(Number)
+  const collateralMessage = Collateral.getWithdrawMessage(
+    collateralAddress,
+    sender.publicKey,
+    recipientAddress,
+    mintAddress,
+    withdrawRequest,
+    collateralMessageSalt,
+    adminFundsNonce
+  )
+
+  const collateralSignature = nacl.sign.detached(Uint8Array.from(collateralMessage), sender.secretKey)
+
+  const collateralSignatureAddress = Collateral.generateWithdrawCollateralPDA(
+    collateralAddress,
+    sender.publicKey,
+    recipientAddress,
+    mintAddress,
+    withdrawRequest,
+    adminFundsNonce,
+    program.programId
+  );
+
+  const collateralSignatureAccount = await program.account.collateralAdminSignatures.fetchNullable(collateralSignatureAddress);
+  if (!collateralSignatureAccount || collateralSignatureAccount.signers.every(signer => !signer.equals(sender.publicKey))) {
+    // Create the instruction to submit the admin signature to the signatures account 
+    const signatureVereficationInstruction = Ed25519ExtendedProgram.createSignatureVerificationInstruction([{
+      signer: sender.publicKey,
+      signature: Buffer.from(collateralSignature),
+      message: collateralMessage,
+    }]);
+
+    // Submit the admin signature to the signatures account 
+    const transaction = await program.methods.submitSignatures({
+      salts: [collateralMessageSalt],
+      targetNonce: adminFundsNonce,
+      signatureSubmissionType: {
+        withdrawCollateralAsset: {
+          sender: sender.publicKey,
+          receiver: recipientAddress,
+          asset: mintAddress,
+          withdrawRequest,
+        }
+      },
+    }).accounts({
+      collateral: collateralAddress,
+      collateralAdminSignatures: collateralSignatureAddress,
+      rentPayer: sender.publicKey,
+    }).preInstructions([
+      signatureVereficationInstruction
+    ]).transaction();
+
+    // Send and confirm the transaction
+    const submitSignaturesHash = await sendAndConfirmTransaction(
+      program.provider.connection,
+      transaction,
+      [sender],
+      { commitment: 'confirmed' }
+    );
+
+    console.log("Collateral admin signature submitted");
+    console.log(submitSignaturesHash);
+  }
+  return collateralSignatureAddress;
+}
+
+/**
+ * Creates a Program instance for interacting with the on-chain program
+ * 
+ * @param programAddress - The address of the on-chain program
+ * @param signer - The keypair of the signer
+ * @param connection - The instance of the connection to the Solana RPC Node
+ * @returns A Program instance for interacting with the on-chain program
+ */
+function getProgram(programAddress: string, signer: Keypair): Program<Main> {
+  const rpcUrl = process.env.SOLANA_RPC_URL
+  if (!rpcUrl) {
+    throw new Error("No RPC URL provided");
+  }
+
+  const connection = new Connection(rpcUrl, { commitment: 'confirmed' })
+
+  // Load the program's Interface Description Language (IDL) which defines 
+  // the program's account structures and instruction interfaces
+  const idl: any = Object.assign(MainIdl, { address: programAddress })
+
+  // Create an AnchorProvider instance to interact with the Solana network 
+  // using the specified RPC endpoint and signer
+  const opts = AnchorProvider.defaultOptions()
+  const provider = new AnchorProvider(
+    connection,
+    new Wallet(signer),
+    opts
+  )
+
+  // Create and return a Program instance that provides an interface to interact
+  // with the on-chain program using the IDL definition and provider connection
+  return new Program<Main>(idl, provider)
+}
+
+/**
+ * Executes a withdrawal transaction on the Solana blockchain using the provided 
+ * signature and parameters.
+ * 
+ * @param program - The Anchor program instance
+ * @param collateral - The collateral model instance
+ * @param depositAddress - The deposit address of the collateral
+ * @param sender - The sender's keypair that will sign the transaction
+ * @param recipientAddress - The recipient's public key
+ * @param mintAddress - The token mint public key
+ * @param expiration - The expiration timestamp for the signature
+ * @param amountInCents - The withdrawal amount in cents
+ * @param signatureSalt - The salt used to generate the coordinator signature
+ * @param signatureData - The coordinator signature data
+ */
+async function executeWithdrawal(
+  program: Program<Main>,
+  collateral: PublicKey,
+  depositAddress: PublicKey,
+  sender: Keypair,
+  recipientAddress: PublicKey,
+  mintAddress: PublicKey,
+  expiration: number,
+  amountInCents: number,
+  signatureSalt: Buffer,
+  signatureData: Buffer
+) {
+  // Load withdraw parameters from the given signature
+  const coordinatorMessageSalt: number[] = Array.from(signatureSalt).map(Number)
+  const coordinatorSignature: number[] = Array.from(signatureData).map(Number)
+  const expiresAt = new BN(expiration)
+  const amountOfAsset = new BN(amountInCents)
+
+  // The withdraw request is the same for both coordinator and collateral admin
+  const withdrawRequest: WithdrawCollateral = {
+    amountOfAsset,
+    signatureExpirationTime: expiresAt,
+    coordinatorSignatureSalt: coordinatorMessageSalt,
+  };
+
+  const collateralAccount = await program.account.collateral.fetch(collateral)
+
+  // Get the source token account for the collateral to withdraw from
+  const collateralTokenAccount = await getSourceTokenAccount(depositAddress, mintAddress)
+  console.log("Source token account", collateralTokenAccount.toBase58())
+
+  // Get or create the associated token account for the recipient to receive 
+  // the withdrawn tokens
+  const destinationTokenAccount = await getDestinationTokenAccount(
+    program,
+    sender,
+    recipientAddress,
+    mintAddress,
+  );
+  console.log("Destination token account", destinationTokenAccount.address.toBase58())
+
+  // Submit the collateral admin signature to the blockchain for withdrawal verification
+  const collateralSignatureAddress = await submitCollateralSignature(
+    sender,
+    recipientAddress,
+    mintAddress,
+    withdrawRequest,
+    collateralAccount.adminFundsNonce,
+    program,
+    collateral
+  );
+
+  const coordinator = await program.account.coordinator.fetch(collateralAccount.coordinator)
+  if (!coordinator.executors || coordinator.executors.length === 0) {
+    throw new Error('Not executors found in the given coordinator')
+  }
+
+  const transaction = await sendAndConfirmTransaction(
+    program.provider.connection,
+    new Transaction().add(
+      // Verify the coordinator signature instruction
+      Ed25519ExtendedProgram.createSignatureVerificationInstruction([
+        {
+          signer: coordinator.executors.find(c => c)!,
+          signature: Buffer.from(coordinatorSignature),
+          message: Coordinator.getWithdrawMessage(
+            collateral,
+            collateralAccount.coordinator,
+            sender.publicKey,
+            recipientAddress,
+            mintAddress,
+            withdrawRequest,
+            collateralAccount.adminFundsNonce,
+
+          )
+        }
+      ]),
+      // Withdraw the collateral asset instruction
+      await program.methods.withdrawCollateralAsset(withdrawRequest)
+        .accounts({
+          sender: sender.publicKey,
+          receiver: recipientAddress,
+          asset: mintAddress,
+          collateralTokenAccount: collateralTokenAccount,
+          receiverTokenAccount: destinationTokenAccount.address,
+          coordinator: collateralAccount.coordinator,
+          collateral: collateral,
+          collateralAdminSignatures: collateralSignatureAddress,
+        })
+        .instruction()
+    ),
+    [sender],
+    { commitment: 'confirmed' }
+  );
+
+  console.log("Withdrawal successful")
+  console.log("Transaction", transaction)
+}
+
+const main = async ({
+  userId,
+  token,
+  amount,
+  adminAddress,
+  recipientAddress,
+  chainId,
+}: FetchV2SignatureOpts) => {
+  /**
+   * Setup signer to send transaction
+   * @dev this should be the admin of the collateral contract
+   */
+  const signerPk = process.env.COLLATERAL_ADMIN_PK;
+  if (!signerPk) {
+    throw new Error("No signer key provided");
+  }
+  const secret: any = bs58.decode(signerPk)
+  const signer = Keypair.fromSecretKey(secret);
+
+  //build API request
+  const signatureUrl = `${BASE_URL}/v1/issuing/users/${userId}/signatures/withdrawals`;
+  const params = {
+    token,
+    amount,
+    adminAddress,
+    recipientAddress,
+    chainId,
+  };
+
+  // request signature with api key
+  const signatureResponse = await axios.get(signatureUrl, {
+    headers: {
+      "Api-Key": process.env.RAIN_API_KEY,
+    },
+    params,
+  });
+
+  // setup parameters from response
+  const { data: signature } = await signatureResponse;
+  if (!signature) {
+    throw new Error("Invalid signature response received");
+  }
+
+  if (signature.status === "pending") {
+    throw new Error("Signature is pending");
+  }
+
+  if (!signature.parameters || !Array.isArray(signature.parameters)) {
+    throw new Error("Invalid signature response: missing or malformed parameters");
+  }
+
+  const collateralProxy = signature.parameters[0];
+  const assetAddress = signature.parameters[1];
+  const amountInCents = signature.parameters[2];
+  const recipient = signature.parameters[3];
+  const expiresAt = signature.parameters[4];
+  const executorPublisherSalt = Buffer.from(signature.parameters[5], "base64");
+  const executorPublisherSig = Buffer.from(signature.parameters[6], "base64");
+
+  //build API request
+  const contractsUrl = `${BASE_URL}/v1/issuing/users/${userId}/contracts`;
+
+  // request signature with api key
+  const contractsResponse = await axios.get(contractsUrl, {
+    headers: {
+      "Api-Key": process.env.RAIN_API_KEY,
+    },
+  });
+
+  const contracts = await contractsResponse.data;
+  const contract = contracts.find((c: any) => c.proxyAddress === collateralProxy);
+  if (!contract) {
+    throw new Error("Contract not found");
+  }
+
+  // Load needed accounts
+  const program = getProgram(contract.programAddress, signer)
+
+  await executeWithdrawal(
+    program,
+    new PublicKey(collateralProxy),
+    new PublicKey(contract.depositAddress),
+    signer,
+    new PublicKey(recipient),
+    new PublicKey(assetAddress),
+    expiresAt,
+    amountInCents,
+    executorPublisherSalt,
+    executorPublisherSig
+  )
+};
+
+// Param & header
+const userId = process.argv[2];
+const token = process.argv[3]; // token to withdraw
+const amount = process.argv[4]; // amount of token to withdraw
+const adminAddress = process.argv[5]; // should be admin on collateral contract
+const recipientAddress = process.argv[6]; // who to send the asset to
+const chainId = process.argv[7]; // which chain to perform the withdraw
+
+// Validate environment variables
+const apiKey = process.env.RAIN_API_KEY;
+if (!apiKey) {
+  throw new Error("RAIN_API_KEY environment variable is required");
+}
+
+const rpcUrl = process.env.SOLANA_RPC_URL;
+if (!rpcUrl) {
+  throw new Error("SOLANA_RPC_URL environment variable is required");
+}
+
+const signerPk = process.env.COLLATERAL_ADMIN_PK;
+if (!signerPk) {
+  throw new Error("COLLATERAL_ADMIN_PK environment variable is required");
+}
+
+if (!userId || !token || !amount || !adminAddress || !recipientAddress || !chainId) {
+  throw new Error("Required query parameters not defined");
+}
+main({ userId, token, amount, adminAddress, recipientAddress, chainId }).catch((ex) =>
+  console.error(ex)
+);
+```
+
+</CodeGroup>
+
+### V2.02 Contracts - Solana
+
+#### MultiSig collateral contract
+
+If your Solana contracts have been upgraded to v2.02, you will need to upgrade the withdrawal flow.
+
+1. Update the [IDL files](https://github.com/SignifyHQ/collateral-contract-integration-examples/tree/main/src/solana/program/v2_02).
+2. Replace the line to get the withdrawSignature Account
+
+```typescript
+const collateralSignatureAccount = await program.account.collateralAdminSignatures.fetchNullable(collateralSignatureAddress); // [!code --]
+const collateralSignatureAccount = await program.account.collateralAdminSignaturesV2.fetchNullable(collateralSignatureAddress); // [!code ++]
+```
+
+3. Replace the line to get the collateral account
+
+```typescript
+const collateralAccount = await program.account.collateral.fetch(collateral) // [!code --]
+const collateralAccount = await program.account.collateralV2.fetch(collateral) // [!code ++]
+```
+
+4. Update the withdraw instruction to specify the account that shall receive back the rent of the CollateralAdminSignatures:
+
+```typescript
+// Withdraw the collateral asset instruction
+await program.methods.withdrawCollateralAsset(withdrawRequest)
+.accounts({
+  rentReceiver: sender.publicKey, // New account to specify who will receive back the rent of the adminSignatures account
+  sender: sender.publicKey,
+  receiver: recipientAddress,
+  asset: mintAddress,
+  collateralTokenAccount: collateralTokenAccount,
+  receiverTokenAccount: destinationTokenAccount.address,
+  coordinator: collateralAccount.coordinator,
+  collateral: collateral,
+  collateralAdminSignatures: collateralSignatureAddress,
+  tokenProgram: TOKEN_PROGRAM_ID
+})
+.instruction()
+```
+<Info>
+Note: The account that receives the rent back in the withdraw must be the same account that paid for the rent when submitting the signature, other wise the withdraw transaction will revert.
+</Info>
+
+```typescript
+// Submit the admin signature to the signatures account 
+const transaction = await program.methods.submitSignatures({
+  salts: [collateralMessageSalt],
+  targetNonce: adminFundsNonce,
+  signatureSubmissionType: {
+    withdrawCollateralAsset: {
+      sender: sender.publicKey,
+      receiver: recipientAddress,
+      asset: mintAddress,
+      withdrawRequest,
+    }
+  },
+}).accounts({
+  collateral: collateralAddress,
+  collateralAdminSignatures: collateralSignatureAddress,
+  rentPayer: sender.publicKey, // The rent payer
+}).preInstructions([
+  signatureVereficationInstruction
+]).transaction();
+```
+
+#### Single Signer collateral contract
+
+For Solana single-signer collateral accounts (where the owner is a traditional, self-custodied wallet), utilize the v2.02 withdrawal flow as described below. Ensure you provide the correct account structure required by the v2.02 program, including the owner's signature (as the transaction signer) and the embedded coordinator signature.
+
+If you are new to the withdrawal process, you can refer to the [examples repository](https://github.com/SignifyHQ/collateral-contract-integration-examples/tree/main/src/solana/examples/withdrawal/single_signer_program_v2_02) for step-by-step guidance.
+
+If you're already familiar with implementing multisig using a Solana program v2.01 or later, simply apply the changes highlighted in the above section to transition to single-signer v2.02 flows.
+
+1. Update the [IDL files](https://github.com/SignifyHQ/collateral-contract-integration-examples/tree/main/src/solana/program/v2_02) if it's needed.
+2. Remove the lines to submit the collateral signature
+
+```typescript
+  const collateralSignatureAddress = await submitCollateralSignature( // [!code --]
+    sender,                                                           // [!code --]
+    recipientAddress,                                                 // [!code --]
+    mintAddress,                                                      // [!code --]
+    withdrawRequest,                                                  // [!code --]
+    collateralAccount.adminFundsNonce,                                // [!code --]
+    program,                                                          // [!code --]
+    collateral                                                        // [!code --]
+  );
+```
+
+3. Replace the line to get the collateral account
+
+```typescript
+const collateralAccount = await program.account.collateral.fetch(collateral) // [!code --]
+const collateralAccount = await program.account.singleSignerCollateral.fetch(collateral) // [!code ++]
+```
+
+4. Replace the lines to create the withdraw collateral asset instruction
+
+```typescript
+  await program.methods.withdrawCollateralAsset(withdrawRequest)  // [!code --]
+    .accounts({                                                   // [!code --]
+      rentReceiver: sender.publicKey,                             // [!code --]
+      sender: sender.publicKey,                                   // [!code --]
+      receiver: recipientAddress,                                 // [!code --]
+      asset: mintAddress,                                         // [!code --]
+      collateralTokenAccount: collateralTokenAccount,             // [!code --]
+      receiverTokenAccount: destinationTokenAccount.address,      // [!code --]
+      coordinator: collateralAccount.coordinator,                 // [!code --]
+      collateral: collateral,                                     // [!code --]
+      collateralAdminSignatures: collateralSignatureAddress,      // [!code --]
+      tokenProgram: TOKEN_PROGRAM_ID                              // [!code --]
+    })                                                            // [!code --]
+    await program.methods.withdrawSingleSignerCollateralAsset(withdrawRequest)                        // [!code ++]
+        .accounts({                                                                                   // [!code ++]
+          owner: owner.publicKey,                                                                     // [!code ++]
+          coordinator: collateralAccount.coordinator,                                                 // [!code ++]
+          collateral: collateral,                                                                     // [!code ++]
+          destination: recipientAddress,                                                              // [!code ++]
+          asset: mintAddress.equals(PublicKey.default) ? null : mintAddress,                          // [!code ++]
+          collateralTokenAccount: collateralTokenAccount,                                             // [!code ++]
+          destinationTokenAccount: destinationTokenAccount ? destinationTokenAccount.address : null,  // [!code ++]
+          tokenProgram: TOKEN_PROGRAM_ID,                                                             // [!code ++]
+        })                                                                                            // [!code ++]
+```
+
+5. Replace `nonce` property reference 
+
+```typescript
+  collateralAccount.adminFundsNonce   // [!code --]
+  collateralAccount.nonce             // [!code ++]
+```
+
+#### Single Signer collateral contract with smart wallet or squad
+
+If your Solana collateral is a single signer type with a smart wallet (e.g. Squad) as owner, you will need to adapt the v2.02 withdrawal flow to work with your smart wallet's signing flow.
+
+1. Be sure to use the Squads multisig vault PDA as the `owner` of the single signer collateral account.
+   - The vault PDA (not the multisig PDA itself) must be set as the owner in all owner references.
+
+```typescript
+  await program.methods.withdrawSingleSignerCollateralAsset(withdrawRequest)
+        .accounts({
+          owner: vaultPda,
+          coordinator: collateralAccount.coordinator,
+```
+
+If you have questions about Squads multisig, refer to the [example](https://github.com/SignifyHQ/collateral-contract-integration-examples/tree/main/src/solana/examples/withdrawal/single_signer_squad_program_v2_02) guidance.
+
+## V2 Contracts - Stellar
+
+Stellar withdrawal requires coordinating with the Coordinator contract using signatures from the Rain API. The `coordinatorAddress` is automatically obtained from the `controllerAddress` field in the contracts API response.
+
+<CodeGroup>
+
+```typescript stellarContractSample.ts
+import axios from "axios";
+import dotenv from "dotenv";
+import path from "path";
+import * as StellarSdk from "@stellar/stellar-sdk";
+
+// Load environment configuration
+const nodeEnv = process.env.NODE_ENV || 'local';
+dotenv.config({ path: path.join(process.cwd(), `.env.${nodeEnv}`) });
+
+const BASE_URL = process.env.RAIN_API_URL || "https://api-dev.raincards.xyz";
+
+type WithdrawalOpts = {
+  userId: string;
+  token: string;
+  amount: string;
+  adminAddress: string;
+  recipientAddress: string;
+  chainId: string;
+};
+
+/**
+ * Sends a transaction to the Stellar network and polls for confirmation
+ */
+async function sendTransaction(
+  signer: StellarSdk.Keypair,
+  operation: StellarSdk.xdr.Operation,
+  timeout: number
+): Promise<string> {
+  const rpcUrl = process.env.STELLAR_RPC_URL;
+  const rpc = new StellarSdk.rpc.Server(rpcUrl);
+  const network = await rpc.getNetwork();
+
+  const account = await rpc.getAccount(signer.publicKey());
+  const innerTransaction = new StellarSdk.TransactionBuilder(account, {
+    fee: StellarSdk.BASE_FEE,
+  })
+    .setNetworkPassphrase(network.passphrase)
+    .addOperation(operation)
+    .setTimeout(timeout)
+    .build();
+
+  // Simulate and prepare transaction
+  const simulationResult = await rpc.simulateTransaction(innerTransaction);
+  const preparedTransaction = await rpc.prepareTransaction(innerTransaction);
+
+  // Sign and send
+  preparedTransaction.sign(signer);
+  const result = await rpc.sendTransaction(preparedTransaction);
+
+  // Poll for confirmation
+  const pollResult = await rpc.pollTransaction(result.hash, {
+    sleepStrategy: (_: number) => 500,
+    attempts: 60,
+  });
+
+  if (pollResult.status === StellarSdk.rpc.Api.GetTransactionStatus.SUCCESS) {
+    console.log("Transaction confirmed");
+  } else {
+    throw new Error(`Transaction failed with status: ${pollResult.status}`);
+  }
+
+  return result.hash;
+}
+
+/**
+ * Executes withdrawal from the collateral using the Coordinator contract
+ */
+async function executeWithdrawal(
+  signer: StellarSdk.Keypair,
+  coordinatorAddress: string,
+  collateralAddress: string,
+  assetAddress: string,
+  amount: bigint,
+  recipientAddress: string,
+  expiresAt: number,
+  salt: Buffer,
+  signature: string,
+  rainAdminPublicKey: string
+): Promise<string> {
+  const contract = new StellarSdk.Contract(coordinatorAddress);
+
+  const stellarArgs = [
+    StellarSdk.nativeToScVal(signer.publicKey(), { type: "address" }),  // caller
+    StellarSdk.nativeToScVal(collateralAddress, { type: "address" }),   // collateral
+    StellarSdk.nativeToScVal(assetAddress, { type: "address" }),        // asset
+    StellarSdk.nativeToScVal(amount, { type: "i128" }),                 // amount
+    StellarSdk.nativeToScVal(recipientAddress, { type: "address" }),    // recipient
+    StellarSdk.nativeToScVal(expiresAt, { type: "u64" }),               // expires_at
+    StellarSdk.nativeToScVal(salt),                                     // salt
+    StellarSdk.nativeToScVal(Buffer.from(signature, "hex")),            // signature
+    StellarSdk.nativeToScVal(Buffer.from(rainAdminPublicKey, "hex")),   // rain_admin_public_key
+  ];
+
+  const operation = contract.call("withdraw_assets", ...stellarArgs);
+  return await sendTransaction(signer, operation, 180);
+}
+
+const main = async ({
+  userId,
+  token,
+  amount,
+  adminAddress,
+  recipientAddress,
+  chainId,
+}: WithdrawalOpts) => {
+  // Setup signer
+  const signerSecret = process.env.COLLATERAL_ADMIN_SECRET;
+  const signer = StellarSdk.Keypair.fromSecret(signerSecret);
+
+  // Request withdrawal signature from Rain API
+  const signatureUrl = `${BASE_URL}/v1/issuing/users/${userId}/signatures/withdrawals`;
+  const signatureResponse = await axios.get(signatureUrl, {
+    headers: { "Api-Key": process.env.RAIN_API_KEY },
+    params: { token, amount, adminAddress, recipientAddress, chainId },
+  });
+
+  const signature = signatureResponse.data;
+  const [
+    collateralProxy,
+    assetAddress,
+    amountValue,
+    recipient,
+    expiresAt,
+    executorPublisherSalt,
+    executorPublisherSig,
+    rainAdminPublicKey,
+  ] = signature.parameters;
+
+  // Fetch user contracts to get coordinator address
+  const contractsUrl = `${BASE_URL}/v1/issuing/users/${userId}/contracts`;
+  const contractsResponse = await axios.get(contractsUrl, {
+    headers: { "Api-Key": process.env.RAIN_API_KEY },
+  });
+
+  const contracts = contractsResponse.data;
+  const contract = contracts.find((c: any) => c.proxyAddress === collateralProxy);
+
+  // Extract coordinator address from contract response
+  const coordinatorAddress = contract.controllerAddress;
+
+  // Execute withdrawal
+  const txHash = await executeWithdrawal(
+    signer,
+    coordinatorAddress,
+    collateralProxy,
+    assetAddress,
+    BigInt(amountValue),
+    recipient,
+    expiresAt,
+    Buffer.from(executorPublisherSalt),
+    executorPublisherSig,
+    rainAdminPublicKey
+  );
+
+  console.log("Withdrawal successful. Transaction hash:", txHash);
+  return txHash;
+};
+
+// Parse arguments and execute
+const userId = process.argv[2];
+const token = process.argv[3];
+const amount = process.argv[4];
+const adminAddress = process.argv[5];
+const recipientAddress = process.argv[6];
+const chainId = process.argv[7];
+
+main({ userId, token, amount, adminAddress, recipientAddress, chainId }).catch(
+  (ex) => console.error("Withdrawal failed:", ex.message)
+);
+```
+
+</CodeGroup>
+
+### Environment Setup
+
+Create a `.env.local` file in your project root with the following variables:
+
+<CodeGroup>
+
+```bash .env.local
+# Stellar RPC endpoint
+STELLAR_RPC_URL=https://soroban-testnet.stellar.org
+
+# Rain API authentication
+RAIN_API_KEY=your_rain_api_key_here
+RAIN_API_URL=https://api-dev.raincards.xyz
+
+# Collateral admin's secret key (Stellar format starting with S)
+COLLATERAL_ADMIN_SECRET=SXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+```
+
+</CodeGroup>
+
+### Key Parameters
+
+| Parameter | Description | Obtained From |
+|-----------|-------------|---------------|
+| `userId` | Your user ID in Rain system | Rain dashboard |
+| `token` | Token contract address to withdraw | Token contract address |
+| `amount` | Amount to withdraw (in cents) | Calculate based on token decimals |
+| `adminAddress` | Collateral admin's Stellar public key | Derived from `COLLATERAL_ADMIN_SECRET` |
+| `recipientAddress` | Recipient's Stellar public key | User's wallet address |
+| `chainId` | Stellar network identifier | `1501` for testnet, `1500` for mainnet |
+
+### Workflow Overview
+
+1. **Request Withdrawal Signature**: Call the Rain API to get a signature for your withdrawal parameters
+2. **Fetch Contract Data**: Retrieve the user's contracts to get the `coordinatorAddress` (from `controllerAddress` field)
+3. **Build Transaction**: Prepare a Soroban transaction with the withdrawal parameters and signatures
+4. **Execute & Confirm**: Send the transaction to Stellar and poll for confirmation
+
+For the complete implementation, refer to the [full example repository](https://github.com/SignifyHQ/collateral-contract-integration-examples/tree/main/src/stellar/examples/withdrawal).
