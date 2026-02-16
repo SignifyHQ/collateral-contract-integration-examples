@@ -1,11 +1,11 @@
-# Solana V2.2 CPI Signature Withdrawal Script (Squads Multisig)
+# Solana V2.02 CPI Signature Withdrawal Script (Squads Multisig)
 
-## 🎯 What This Script Does
+## What This Script Does
 
 This script demonstrates **automated token withdrawals** from Solana SingleSignerCollateral accounts owned by **Squads multisig PDAs** using V2 signatures from the Rain API. This is a more advanced withdrawal flow that uses Squads multisig governance for additional security and control.
 
-### What is V2.2 CPI Signature Withdrawal?
-A V2.2 CPI signature withdrawal is a **secure multi-party approval system** where:
+### What is V2.02 CPI Signature Withdrawal?
+A V2.02 CPI signature withdrawal is a **secure multi-party approval system** where:
 - **Squads multisig PDA** owns the collateral account (not a single admin)
 - **Coordinator signature** from Rain API provides authorization layer
 - **Squads proposal workflow** requires multisig member approval
@@ -18,7 +18,7 @@ A V2.2 CPI signature withdrawal is a **secure multi-party approval system** wher
 - **Integration testing**: Test withdrawal flows with Squads multisig in development environment
 - **Production deployments**: Use when collateral is managed by a multisig wallet
 
-## 🔧 How It Works
+## How It Works
 
 The script follows a **secure multi-step process**:
 
@@ -31,7 +31,7 @@ The script follows a **secure multi-step process**:
 
 This ensures that **only authorized multisig members** can withdraw the correct amounts to the right destinations.
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before running this script, you need:
 
@@ -76,7 +76,7 @@ You need to know these 6 pieces of information:
 | `recipientAddress` | Where to send withdrawn tokens | Your wallet's public key |
 | `chainId` | Solana network identifier | "901" for devnet, "900" for mainnet |
 
-## 🚀 How to Run
+## How to Run
 
 ### Step 1: Install Dependencies
 ```bash
@@ -118,7 +118,7 @@ NODE_ENV=example yarn solana:squads-withdraw:v2-02 \
   901
 ```
 
-## 📖 Getting the Required Parameters
+## Getting the Required Parameters
 
 ### Getting Collateral Information
 
@@ -152,7 +152,221 @@ The amount must be expressed in cents (e.g., 1.50 USDC = `150`).
 - **Devnet**: `901`
 - **Mainnet**: `900`
 
-## 📱 What You'll See When Running
+## Squads multisig example
+
+This example demonstrates how to use [Squads Multisig v4](https://docs.squads.so/main/development/typescript/overview) for secure, programmatic withdrawals from single-signer collateral contracts, leveraging a Squads smart wallet with a single member as the owner.
+
+1. This section covers withdrawals for single signer collateral contracts. If you are not familiar with single signer collateral contract, please refer to [Single Signer collateral contract](#single-signer-collateral-contract) for guidance.
+
+2. If you do not already have a [Squads Multisig v4](https://docs.squads.so/main/development/typescript/overview), you can create one programmatically as part of your setup. If you already have a multisig, you can skip this step and use your existing Vault PDA address as collateral owner.
+
+```typescript
+ /*
+  * 1. Derive multisig PDA deterministically from member's public key (or use existing)
+  * 2. Derive vault PDA from multisig PDA (index 0)
+  */
+
+  // Derive deterministic multisig PDA using member's public key as seed
+  const createKey = Keypair.fromSeed(member.publicKey.toBuffer().slice(0, 32));
+  const [multisigPda] = multisig.getMultisigPda({
+    createKey: createKey.publicKey,
+  });
+
+  // Check if multisig already exists
+  const accountInfo = await connection.getAccountInfo(multisigPda);
+  
+  if (accountInfo) {
+    // Verify it's a Squads v4 multisig
+    const SQUADS_V4_PROGRAM = new PublicKey('SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf');
+    
+    if (accountInfo.owner.equals(SQUADS_V4_PROGRAM) && accountInfo.data.length > 0) {
+      console.log("✓ Multisig already exists");
+      console.log(`  Owner: ${accountInfo.owner.toBase58()}`);
+      console.log(`  Data size: ${accountInfo.data.length} bytes\n`);
+      return multisigPda;
+    } else {
+      throw new Error(
+        `Account exists at ${multisigPda.toBase58()} but is not a valid Squads v4 multisig.\n` +
+        `Owner: ${accountInfo.owner.toBase58()}\n` +
+        `Expected: ${SQUADS_V4_PROGRAM.toBase58()}`
+      );
+    }
+  }
+
+  // Get program config for treasury
+  const programConfigPda = multisig.getProgramConfigPda({})[0];
+  const programConfig = await multisig.accounts.ProgramConfig.fromAccountAddress(
+    connection,
+    programConfigPda
+  );
+  const configTreasury = programConfig.treasury;
+
+  // Create the multisig
+  /**
+   * Creating multisig with the following parameters:
+   *   - Member: <member public key>
+   *   - Threshold: 1 (single signature)
+   *   - Permissions: All
+   *
+   * (The 'member' variable refers to the public key that will be the only
+   * signer required for this multisig, providing full (all) permissions.)
+   */
+  const signature = await multisig.rpc.multisigCreateV2({
+    connection,
+    createKey,
+    creator: payer,
+    multisigPda,
+    configAuthority: null,
+    timeLock: 0,
+    members: [
+      {
+        key: member.publicKey,
+        permissions: multisig.types.Permissions.all(),
+      },
+    ],
+    threshold: 1,
+    rentCollector: null,
+    treasury: configTreasury,
+    sendOptions: { skipPreflight: true },
+  });
+
+  await connection.confirmTransaction(signature);
+  
+  console.log("✓ Multisig created successfully!");
+  console.log(`  Multisig PDA: ${multisigPda.toBase58()}`);
+
+  // Derive the vault PDA (this will be the collateral owner)
+  const [vaultPda] = multisig.getVaultPda({
+    multisigPda,
+    index: 0,
+  });
+```
+
+3. Create the signature verification and the withdraw collateral asset instructions
+
+```typescript
+  const withdrawalInstruction = await program.methods.withdrawSingleSignerCollateralAsset(withdrawRequest)                        
+        .accounts({                                                                                
+          owner: vaultPda,                                                                   
+          coordinator,                                               
+          collateral,                                                                   
+          destination: recipientAddress,                                                            
+          asset: mintAddress,                        
+          collateralTokenAccount: collateralTokenAccount,                                           
+          destinationTokenAccount,
+          tokenProgram: TOKEN_PROGRAM_ID,                                                           
+        })
+
+  const signatureVerificationInstruction = Ed25519ExtendedProgram.createSignatureVerificationInstruction([
+        {
+          signer: coordinator,
+          signature: Buffer.from(coordinatorSignature),
+          message: Coordinator.getWithdrawMessage(
+            collateral,
+            coordinator,
+            vaultPda,
+            recipientAddress,
+            mintAddress,
+            withdrawRequest,
+            nonce
+          )
+        }
+  ])
+```
+
+4. Get the next multisig transaction index
+
+```typescript
+  const multisigInfo = await multisig.accounts.Multisig.fromAccountAddress(
+    connection as any,
+    multisigPdaKey
+  );
+
+  const currentTransactionIndex = Number(multisigInfo.transactionIndex);
+  const newTransactionIndex = BigInt(currentTransactionIndex + 1);
+```
+
+5. Create vault transaction with ONLY the withdrawal instruction
+
+```typescript
+  const vaultMessage = new TransactionMessage({
+    payerKey: vaultPda, // Vault PDA pays for the withdrawal
+    recentBlockhash: (await connection.getLatestBlockhash()).blockhash,
+    instructions: [withdrawalInstruction], // ONLY withdrawal, Ed25519 will be top-level later
+  });
+
+  const vaultWithdrawalTransaction = await multisig.rpc.vaultTransactionCreate({
+    connection: connection as any,
+    feePayer: payer,
+    multisigPda: multisigPdaKey,
+    transactionIndex: newTransactionIndex,
+    creator: member.publicKey,
+    vaultIndex: 0,
+    ephemeralSigners: 0,
+    transactionMessage: vaultMessage as any,
+    memo: "Rain withdrawal (Ed25519 verified separately)",
+  });
+
+  await connection.confirmTransaction(vaultWithdrawalTransaction)
+```
+
+6. Create proposal
+
+```typescript
+  const proposalTransaction = await multisig.rpc.proposalCreate({
+    connection: connection as any,
+    feePayer: payer,
+    multisigPda: multisigPdaKey,
+    transactionIndex: newTransactionIndex,
+    creator: member,
+    isDraft: false,
+  });
+  
+  await connection.confirmTransaction(proposalTransaction);
+```
+
+7. Approve proposal
+
+```typescript
+  const approvalTransaction = await multisig.rpc.proposalApprove({
+    connection: connection as any,
+    feePayer: payer,
+    multisigPda: multisigPdaKey,
+    transactionIndex: newTransactionIndex,
+    member: member,
+  });
+  
+  await connection.confirmTransaction(approvalTransaction);
+```
+
+8. Build the vaultTransactionExecute instruction using Squads SDK
+
+```typescript
+  const vaultTransactionExecuteResult = await multisig.instructions.vaultTransactionExecute({
+    connection: connection as any,
+    multisigPda: multisigPdaKey,
+    transactionIndex: newTransactionIndex,
+    member: member.publicKey,
+    programId: multisig.PROGRAM_ID,
+  });
+```
+
+9. Build final transaction: Ed25519 THEN Squads execute
+
+```typescript
+  const finalTransaction = new Transaction();
+  finalTransaction.add(ed25519Instruction); // Instruction 0: Ed25519 verification
+  finalTransaction.add(vaultTransactionExecuteResult.instruction); // Instruction 1: Execute vault transaction
+  
+  const signature4 = await sendAndConfirmTransaction(
+    connection,
+    finalTransaction,
+    [payer, member], // Payer and member sign
+    { commitment: 'confirmed' }
+  );
+```
+
+### What You'll See When Running
 
 ```
 Member: [MemberPublicKey]
@@ -208,7 +422,7 @@ Recipient: [RecipientAddress]
 Amount: [Amount]
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Errors
 
@@ -263,7 +477,7 @@ curl --location 'https://api-dev.raincards.xyz/v1/issuing/users/YOUR_USER_ID/con
 - Make sure recipient address can receive SPL tokens
 - Ensure the multisig has sufficient threshold approvals (default script uses threshold = 1)
 
-## 🔗 Related Documentation
+## Related Documentation
 
 - [CODING_GUIDELINES.md](../../../../CODING_GUIDELINES.md) — `@rain/program` imports and program version comparison
 - [Solana Web3.js Documentation](https://solana-labs.github.io/solana-web3.js/)
