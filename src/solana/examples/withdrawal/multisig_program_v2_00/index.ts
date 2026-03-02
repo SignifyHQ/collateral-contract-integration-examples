@@ -715,7 +715,6 @@ async function executeWithdrawal(
       // Withdraw the collateral asset instruction
       await program.methods.withdrawCollateralAsset(withdrawRequest)
         .accounts({
-          rentReceiver: sender.publicKey,
           sender: sender.publicKey,
           receiver: recipientAddress,
           asset: mintAddress,
@@ -724,7 +723,6 @@ async function executeWithdrawal(
           coordinator: collateralAccount.coordinator,
           collateral: collateral,
           collateralAdminSignatures: collateralSignatureAddress,
-          tokenProgram: TOKEN_PROGRAM_ID
         })
         .instruction()
     ),

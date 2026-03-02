@@ -32,13 +32,6 @@
           "signer": true
         },
         {
-          "name": "rent_receiver",
-          "docs": [
-            "The receiver of the rent for the CollateralAdminSignatures account."
-          ],
-          "writable": true
-        },
-        {
           "name": "collateral",
           "docs": [
             "The collateral account in which the admin shall be added."
@@ -485,137 +478,6 @@
       ]
     },
     {
-      "name": "create_old_collateral",
-      "docs": [
-        "Creates a new old collateral account"
-      ],
-      "discriminator": [
-        151,
-        6,
-        55,
-        41,
-        115,
-        143,
-        164,
-        146
-      ],
-      "accounts": [
-        {
-          "name": "sender",
-          "docs": [
-            "The sender of the instruction. Must be the collateral creator."
-          ],
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "rent_payer",
-          "docs": [
-            "The payer of the rent for the new Collateral account. It does not require a particular role."
-          ],
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "coordinator",
-          "docs": [
-            "The coordinator account that will own the new collateral account."
-          ]
-        },
-        {
-          "name": "collateral",
-          "docs": [
-            "The old collateral account to be created. The Collateral account is the account responsible",
-            "for storing the information of a borrower."
-          ],
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  67,
-                  111,
-                  108,
-                  108,
-                  97,
-                  116,
-                  101,
-                  114,
-                  97,
-                  108
-                ]
-              },
-              {
-                "kind": "arg",
-                "path": "new_collateral.id"
-              },
-              {
-                "kind": "account",
-                "path": "coordinator"
-              }
-            ]
-          }
-        },
-        {
-          "name": "collateral_authority",
-          "docs": [
-            "The new CollateralAuthority account that will be created. The collateral authority is the",
-            "account responsible for managing the assets of the Collateral."
-          ],
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  67,
-                  111,
-                  108,
-                  108,
-                  97,
-                  116,
-                  101,
-                  114,
-                  97,
-                  108,
-                  65,
-                  117,
-                  116,
-                  104,
-                  111,
-                  114,
-                  105,
-                  116,
-                  121
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "collateral"
-              }
-            ]
-          }
-        },
-        {
-          "name": "system_program",
-          "docs": [
-            "The system program."
-          ],
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "new_collateral",
-          "type": {
-            "defined": {
-              "name": "NewCollateral"
-            }
-          }
-        }
-      ]
-    },
-    {
       "name": "increase_funds_nonce",
       "docs": [
         "Increases the funds nonce of a Collateral account"
@@ -762,13 +624,6 @@
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "token2022_program",
-          "docs": [
-            "The token2022 program."
-          ],
-          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
-        },
-        {
           "name": "system_program",
           "docs": [
             "The system program."
@@ -900,7 +755,8 @@
           "name": "token_program",
           "docs": [
             "The token program to transfer the SPL assets."
-          ]
+          ],
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
           "name": "instruction_sysvar",
@@ -1057,7 +913,8 @@
           "name": "token_program",
           "docs": [
             "The token program required to transfer the SPL assets."
-          ]
+          ],
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
           "name": "instruction_sysvar",
@@ -1162,7 +1019,8 @@
           "name": "token_program",
           "docs": [
             "The token program to transfer the SPL assets."
-          ]
+          ],
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
           "name": "system_program",
@@ -1267,7 +1125,8 @@
           "name": "token_program",
           "docs": [
             "The token program to transfer the SPL assets."
-          ]
+          ],
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
           "name": "system_program",
@@ -1343,62 +1202,6 @@
           }
         }
       ]
-    },
-    {
-      "name": "migrate_collateral_info",
-      "docs": [
-        "Migrates the collateral info from the v1 to the v2"
-      ],
-      "discriminator": [
-        140,
-        39,
-        68,
-        234,
-        43,
-        47,
-        199,
-        128
-      ],
-      "accounts": [
-        {
-          "name": "sender",
-          "docs": [
-            "The sender of the instruction. Must be the collateral creator."
-          ],
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "rent_payer",
-          "docs": [
-            "The rent payer for the account reallocation. It might receive the rent back after the",
-            "reallocation."
-          ],
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "coordinator",
-          "docs": [
-            "The coordinator account that owns the collateral."
-          ]
-        },
-        {
-          "name": "collateral",
-          "docs": [
-            "The collateral account to migrate the info."
-          ],
-          "writable": true
-        },
-        {
-          "name": "system_program",
-          "docs": [
-            "The system program."
-          ],
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
     },
     {
       "name": "publish_statement",
@@ -1496,13 +1299,6 @@
           ],
           "writable": true,
           "signer": true
-        },
-        {
-          "name": "rent_receiver",
-          "docs": [
-            "The receiver of the rent for the CollateralAdminSignatures account."
-          ],
-          "writable": true
         },
         {
           "name": "collateral",
@@ -1810,13 +1606,6 @@
           "signer": true
         },
         {
-          "name": "rent_receiver",
-          "docs": [
-            "The receiver of the rent for the CollateralAdminSignatures account."
-          ],
-          "writable": true
-        },
-        {
           "name": "collateral",
           "docs": [
             "The collateral account that shall be transferred."
@@ -1919,13 +1708,6 @@
           ],
           "writable": true,
           "signer": true
-        },
-        {
-          "name": "rent_receiver",
-          "docs": [
-            "The receiver of the rent for the CollateralAdminSignatures account."
-          ],
-          "writable": true
         },
         {
           "name": "collateral",
@@ -2140,13 +1922,6 @@
           "signer": true
         },
         {
-          "name": "rent_receiver",
-          "docs": [
-            "The receiver of the rent for the CollateralAdminSignatures account."
-          ],
-          "writable": true
-        },
-        {
           "name": "coordinator",
           "docs": [
             "The coordinator account that validates the signatures."
@@ -2240,7 +2015,8 @@
           "name": "token_program",
           "docs": [
             "The token program."
-          ]
+          ],
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
           "name": "instruction_sysvar",
@@ -2294,19 +2070,6 @@
         201,
         1,
         175
-      ]
-    },
-    {
-      "name": "CollateralOld",
-      "discriminator": [
-        98,
-        184,
-        62,
-        45,
-        226,
-        190,
-        222,
-        180
       ]
     },
     {
@@ -2740,8 +2503,8 @@
     {
       "name": "Collateral",
       "docs": [
-        "Represents the V2 Collateral account stored in the blockchain. It is dynamically sized depending",
-        "on the size of the admins list."
+        "Represents the Collateral account stored in the blockchain. The account is owned by a",
+        "Coordinator account and is used to store the information and assets owned by a borrower."
       ],
       "type": {
         "kind": "struct",
@@ -2763,6 +2526,12 @@
             "type": "string"
           },
           {
+            "name": "admins",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
             "name": "admin_threshold",
             "type": "u8"
           },
@@ -2773,19 +2542,6 @@
           {
             "name": "admin_funds_nonce",
             "type": "u32"
-          },
-          {
-            "name": "admins_capacity",
-            "docs": [
-              "The capacity of the admins array"
-            ],
-            "type": "u8"
-          },
-          {
-            "name": "admins",
-            "type": {
-              "vec": "pubkey"
-            }
           }
         ]
       }
@@ -2906,7 +2662,6 @@
         "- `id`: The hash of the allowed parameters that works as account id.",
         "- `bump`: The bump of the CollateralAdminSignatures account.",
         "- `collateral`: The address of the collateral account that owns the signatures.",
-        "- `rent_payer`: The address of the account rent payer.",
         "- `is_in_progress`: The flag to indicate in a request if in progress or not, e.i., at least one",
         "admin has signed the request with a specific parameters.",
         "- `signers`: The list of admins that have signed the request.",
@@ -2933,13 +2688,6 @@
           },
           {
             "name": "collateral",
-            "type": "pubkey"
-          },
-          {
-            "name": "rent_payer",
-            "docs": [
-              "The address of the account rent payer"
-            ],
             "type": "pubkey"
           },
           {
@@ -3092,52 +2840,6 @@
             "docs": [
               "The new value for the funds nonce"
             ],
-            "type": "u32"
-          }
-        ]
-      }
-    },
-    {
-      "name": "CollateralOld",
-      "docs": [
-        "Represents the V1 Collateral account stored in the blockchain. The account is owned by a",
-        "Coordinator account and is used to store the information and assets owned by a borrower."
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "id",
-            "type": "pubkey"
-          },
-          {
-            "name": "coordinator",
-            "type": "pubkey"
-          },
-          {
-            "name": "authority_bump",
-            "type": "u8"
-          },
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "admins",
-            "type": {
-              "vec": "pubkey"
-            }
-          },
-          {
-            "name": "admin_threshold",
-            "type": "u8"
-          },
-          {
-            "name": "admin_data_nonce",
-            "type": "u32"
-          },
-          {
-            "name": "admin_funds_nonce",
             "type": "u32"
           }
         ]
