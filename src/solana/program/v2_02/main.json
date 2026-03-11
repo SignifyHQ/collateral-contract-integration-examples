@@ -278,6 +278,98 @@
       ]
     },
     {
+      "name": "close_old_collateral_signatures",
+      "docs": [
+        "Closes an old CollateralAdminSignatures account and sends rent to collateral authority"
+      ],
+      "discriminator": [
+        229,
+        161,
+        137,
+        95,
+        131,
+        53,
+        127,
+        253
+      ],
+      "accounts": [
+        {
+          "name": "sender",
+          "docs": [
+            "The sender of the instruction. Must be a coordinator's collateral creator."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "coordinator",
+          "docs": [
+            "The coordinator account that validates the sender."
+          ]
+        },
+        {
+          "name": "collateral",
+          "docs": [
+            "The collateral account related to the signatures. It must belong to the coordinator."
+          ]
+        },
+        {
+          "name": "collateral_authority",
+          "docs": [
+            "The collateral authority account that will receive the rent."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "collateral"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collateral_admin_signatures",
+          "docs": [
+            "The CollateralAdminSignatures account to close."
+          ],
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "docs": [
+            "The system program."
+          ],
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "create_collateral",
       "docs": [
         "Creates a new Collateral account to the context of the Coordinator"
@@ -1896,6 +1988,70 @@
       ]
     },
     {
+      "name": "submit_old_collateral_signatures",
+      "docs": [
+        "Submits signatures to an old Collateral account"
+      ],
+      "discriminator": [
+        57,
+        159,
+        18,
+        159,
+        163,
+        119,
+        166,
+        246
+      ],
+      "accounts": [
+        {
+          "name": "rent_payer",
+          "docs": [
+            "The signer of the transaction and the payer of the rent for the CollateralAdminSignatures",
+            "account. They do not require a specific role."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "collateral",
+          "docs": [
+            "The Collateral account the signature will allow the action to be performed."
+          ]
+        },
+        {
+          "name": "collateral_admin_signatures",
+          "docs": [
+            "The CollateralAdminSignatures account to push/update the signature."
+          ],
+          "writable": true
+        },
+        {
+          "name": "instruction_sysvar",
+          "docs": [
+            "The instruction sysvar to get the signatures."
+          ],
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "system_program",
+          "docs": [
+            "The system program."
+          ],
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "request",
+          "type": {
+            "defined": {
+              "name": "SignatureSubmissionRequest"
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "submit_signatures",
       "docs": [
         "Upsert a collateral admin signature into a Collateral account"
@@ -2615,16 +2771,29 @@
       ]
     },
     {
-      "name": "CollateralOld",
+      "name": "CollateralAdminSignaturesV2",
       "discriminator": [
-        98,
-        184,
-        62,
-        45,
-        226,
-        190,
-        222,
-        180
+        194,
+        102,
+        185,
+        168,
+        0,
+        177,
+        70,
+        136
+      ]
+    },
+    {
+      "name": "CollateralV2",
+      "discriminator": [
+        165,
+        86,
+        67,
+        157,
+        199,
+        120,
+        39,
+        111
       ]
     },
     {
@@ -3090,31 +3259,41 @@
     },
     {
       "code": 6003,
+      "name": "InvalidStaleThreshold",
+      "msg": "Invalid stale threshold"
+    },
+    {
+      "code": 6004,
       "name": "FeedIdRequired",
       "msg": "Feed ID is required when the oracle is not the default address"
     },
     {
-      "code": 6004,
+      "code": 6005,
       "name": "DefaultKeysNotAllowed",
       "msg": "Oracle and asset pubkeys cannot be both default keys"
     },
     {
-      "code": 6005,
+      "code": 6006,
       "name": "InvalidPriceOracleAccount",
       "msg": "Invalid price oracle account"
     },
     {
-      "code": 6006,
+      "code": 6007,
+      "name": "UnsupportedMintExtension",
+      "msg": "Unsupported mint extension"
+    },
+    {
+      "code": 6008,
       "name": "SupportedAssetDoesNotBelongToCoordinator",
       "msg": "Supported asset does not belong to the coordinator"
     },
     {
-      "code": 6007,
+      "code": 6009,
       "name": "MintTokenDoesNotBelongToSupportedAsset",
       "msg": "Mint token does not belong to the supported asset"
     },
     {
-      "code": 6008,
+      "code": 6010,
       "name": "PriceOracleMismatch",
       "msg": "Price oracle does not match the supported asset"
     }
@@ -3123,8 +3302,8 @@
     {
       "name": "Collateral",
       "docs": [
-        "Represents the SingleSignerCollateral account stored in the blockchain. It is dynamically sized depending",
-        "on the size of the admins list."
+        "Represents the V1 Collateral account stored in the blockchain. The account is owned by a",
+        "Coordinator account and is used to store the information and assets owned by a borrower."
       ],
       "type": {
         "kind": "struct",
@@ -3146,6 +3325,12 @@
             "type": "string"
           },
           {
+            "name": "admins",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
             "name": "admin_threshold",
             "type": "u8"
           },
@@ -3156,19 +3341,6 @@
           {
             "name": "admin_funds_nonce",
             "type": "u32"
-          },
-          {
-            "name": "admins_capacity",
-            "docs": [
-              "The capacity of the admins array"
-            ],
-            "type": "u8"
-          },
-          {
-            "name": "admins",
-            "type": {
-              "vec": "pubkey"
-            }
           }
         ]
       }
@@ -3283,13 +3455,11 @@
     {
       "name": "CollateralAdminSignatures",
       "docs": [
-        "Represents the CollateralAdminSignatures account stored in the blockchain. The account is",
         "owned by a Collateral account and is used to store the signatures of the admins of the",
         "collateral account to avoid the transaction size limit.",
         "- `id`: The hash of the allowed parameters that works as account id.",
         "- `bump`: The bump of the CollateralAdminSignatures account.",
         "- `collateral`: The address of the collateral account that owns the signatures.",
-        "- `rent_payer`: The address of the account rent payer.",
         "- `is_in_progress`: The flag to indicate in a request if in progress or not, e.i., at least one",
         "admin has signed the request with a specific parameters.",
         "- `signers`: The list of admins that have signed the request.",
@@ -3316,13 +3486,6 @@
           },
           {
             "name": "collateral",
-            "type": "pubkey"
-          },
-          {
-            "name": "rent_payer",
-            "docs": [
-              "The address of the account rent payer"
-            ],
             "type": "pubkey"
           },
           {
@@ -3389,6 +3552,70 @@
               "defined": {
                 "name": "SignatureSubmissionType"
               }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CollateralAdminSignaturesV2",
+      "docs": [
+        "Represents the CollateralAdminSignatures account stored in the blockchain. The account is",
+        "owned by a Collateral account and is used to store the signatures of the admins of the",
+        "collateral account to avoid the transaction size limit.",
+        "- `id`: The hash of the allowed parameters that works as account id.",
+        "- `bump`: The bump of the CollateralAdminSignatures account.",
+        "- `collateral`: The address of the collateral account that owns the signatures.",
+        "- `rent_payer`: The address of the account rent payer.",
+        "- `is_in_progress`: The flag to indicate in a request if in progress or not, e.i., at least one",
+        "admin has signed the request with a specific parameters.",
+        "- `signers`: The list of admins that have signed the request.",
+        "- `action_message_hash`: The hash of the allowed parameters."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "docs": [
+              "The hash of the allowed parameters that works as account id"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "collateral",
+            "type": "pubkey"
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "The address of the account rent payer"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "is_in_progress",
+            "docs": [
+              "The flag to indicate in a request if in progress or not."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "signers",
+            "docs": [
+              "The list of admins that have signed the request"
+            ],
+            "type": {
+              "vec": "pubkey"
             }
           }
         ]
@@ -3503,52 +3730,6 @@
       }
     },
     {
-      "name": "CollateralOld",
-      "docs": [
-        "Represents the V1 Collateral account stored in the blockchain. The account is owned by a",
-        "Coordinator account and is used to store the information and assets owned by a borrower."
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "id",
-            "type": "pubkey"
-          },
-          {
-            "name": "coordinator",
-            "type": "pubkey"
-          },
-          {
-            "name": "authority_bump",
-            "type": "u8"
-          },
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "admins",
-            "type": {
-              "vec": "pubkey"
-            }
-          },
-          {
-            "name": "admin_threshold",
-            "type": "u8"
-          },
-          {
-            "name": "admin_data_nonce",
-            "type": "u32"
-          },
-          {
-            "name": "admin_funds_nonce",
-            "type": "u32"
-          }
-        ]
-      }
-    },
-    {
       "name": "CollateralTeamTransferred",
       "docs": [
         "Represents the information to emit when a Collateral account is transferred to a new team",
@@ -3589,6 +3770,59 @@
               "The new threshold for the Collateral account"
             ],
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CollateralV2",
+      "docs": [
+        "Represents the SingleSignerCollateral account stored in the blockchain. It is dynamically sized depending",
+        "on the size of the admins list."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "pubkey"
+          },
+          {
+            "name": "coordinator",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority_bump",
+            "type": "u8"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "admin_threshold",
+            "type": "u8"
+          },
+          {
+            "name": "admin_data_nonce",
+            "type": "u32"
+          },
+          {
+            "name": "admin_funds_nonce",
+            "type": "u32"
+          },
+          {
+            "name": "admins_capacity",
+            "docs": [
+              "The capacity of the admins array"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "admins",
+            "type": {
+              "vec": "pubkey"
+            }
           }
         ]
       }
