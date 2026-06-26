@@ -123,6 +123,7 @@ import {
   getOrCreateAssociatedTokenAccount,
   getAssociatedTokenAddress,
   TOKEN_PROGRAM_ID,
+  TOKEN_2022_PROGRAM_ID,
   Account
 } from "@solana/spl-token";
 import { Ed25519ExtendedProgram, IdlV2_01, MainV2_01 } from "@rain/program";
@@ -469,6 +470,7 @@ async function getDestinationTokenAccount(
   sender: Keypair,
   recipientAddress: PublicKey,
   mintAddress: PublicKey,
+  tokenProgramId: PublicKey,
 ): Promise<Account> {
   return await getOrCreateAssociatedTokenAccount(
     program.provider.connection,
@@ -478,8 +480,28 @@ async function getDestinationTokenAccount(
     false,
     'confirmed',
     { commitment: 'confirmed' },
-    TOKEN_PROGRAM_ID
+    tokenProgramId
   );
+}
+
+/**
+ * Resolve the SPL Token program that owns a mint (classic SPL vs Token-2022).
+ *
+ * @param connection - An RPC connection
+ * @param mintAddress - The token mint to resolve the program for
+ * @returns TOKEN_PROGRAM_ID or TOKEN_2022_PROGRAM_ID
+ */
+async function resolveMintTokenProgram(connection: Connection, mintAddress: PublicKey): Promise<PublicKey> {
+  const mintInfo = await connection.getAccountInfo(mintAddress);
+  if (!mintInfo) {
+    throw new Error(`Mint account ${mintAddress.toBase58()} not found`);
+  }
+  if (!mintInfo.owner.equals(TOKEN_PROGRAM_ID) && !mintInfo.owner.equals(TOKEN_2022_PROGRAM_ID)) {
+    throw new Error(
+      `Mint ${mintAddress.toBase58()} is not owned by a known SPL Token program (owner: ${mintInfo.owner.toBase58()})`
+    );
+  }
+  return mintInfo.owner;
 }
 
 /**
@@ -489,11 +511,12 @@ async function getDestinationTokenAccount(
  * @param mintAddress - The mint address of the token being withdrawn
  * @returns The associated token account address for the collateral
  */
-async function getSourceTokenAccount(depositAddress: PublicKey, mintAddress: PublicKey) {
+async function getSourceTokenAccount(depositAddress: PublicKey, mintAddress: PublicKey, tokenProgramId: PublicKey) {
   return await getAssociatedTokenAddress(
     mintAddress,
     depositAddress,
-    true
+    true,
+    tokenProgramId
   );
 }
 
@@ -662,17 +685,22 @@ async function executeWithdrawal(
 
   const collateralAccount = await program.account.collateralV2.fetch(collateral)
 
+  // Resolve the mint's token program (classic SPL vs Token-2022) so the derived accounts and the
+  // instruction are built under the correct program.
+  const tokenProgramId = await resolveMintTokenProgram(program.provider.connection, mintAddress)
+
   // Get the source token account for the collateral to withdraw from
-  const collateralTokenAccount = await getSourceTokenAccount(depositAddress, mintAddress)
+  const collateralTokenAccount = await getSourceTokenAccount(depositAddress, mintAddress, tokenProgramId)
   console.log("Source token account", collateralTokenAccount.toBase58())
 
-  // Get or create the associated token account for the recipient to receive 
+  // Get or create the associated token account for the recipient to receive
   // the withdrawn tokens
   const destinationTokenAccount = await getDestinationTokenAccount(
     program,
     sender,
     recipientAddress,
     mintAddress,
+    tokenProgramId,
   );
   console.log("Destination token account", destinationTokenAccount.address.toBase58())
 
@@ -724,7 +752,7 @@ async function executeWithdrawal(
           coordinator: collateralAccount.coordinator,
           collateral: collateral,
           collateralAdminSignatures: collateralSignatureAddress,
-          tokenProgram: TOKEN_PROGRAM_ID
+          tokenProgram: tokenProgramId
         })
         .instruction()
     ),

@@ -454,12 +454,13 @@ class Coordinator {
 }
 
 
+
 /**
- * Get or create the associated token account for the recipient to receive 
+ * Get or create the associated token account for the recipient to receive
  * the withdrawn tokens
- * 
+ *
  * @param program - The program instance
- * @param sender - The sender of the transaction  
+ * @param sender - The sender of the transaction
  * @param recipientAddress - The address of the recipient
  * @param mintAddress - The mint address of the token being withdrawn
  * @returns The associated token account address for the recipient
