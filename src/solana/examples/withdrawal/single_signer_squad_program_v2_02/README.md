@@ -245,6 +245,14 @@ This example demonstrates how to use [Squads Multisig v4](https://docs.squads.so
 3. Create the signature verification and the withdraw collateral asset instructions
 
 ```typescript
+  // Resolve the token program from the mint — a mint account is owned by exactly its token
+  // program, so this yields TOKEN_PROGRAM_ID for classic SPL mints and TOKEN_2022_PROGRAM_ID for
+  // Token-2022 mints. Use the same value when deriving collateralTokenAccount /
+  // destinationTokenAccount; hardcoding TOKEN_PROGRAM_ID silently derives wrong accounts for
+  // Token-2022 mints.
+  const mintInfo = await connection.getAccountInfo(mintAddress);
+  const tokenProgramId = mintInfo!.owner;
+
   const withdrawalInstruction = await program.methods.withdrawSingleSignerCollateralAsset(withdrawRequest)                        
         .accounts({                                                                                
           owner: vaultPda,                                                                   
@@ -254,7 +262,7 @@ This example demonstrates how to use [Squads Multisig v4](https://docs.squads.so
           asset: mintAddress,                        
           collateralTokenAccount: collateralTokenAccount,                                           
           destinationTokenAccount,
-          tokenProgram: TOKEN_PROGRAM_ID,                                                           
+          tokenProgram: tokenProgramId, // resolved from the mint owner (TOKEN_PROGRAM_ID or TOKEN_2022_PROGRAM_ID), not hardcoded
         })
 
   const signatureVerificationInstruction = Ed25519ExtendedProgram.createSignatureVerificationInstruction([

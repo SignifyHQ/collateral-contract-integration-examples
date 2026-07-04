@@ -74,7 +74,14 @@ The rest of your `submitSignatures` flow (instruction name and accounts like `co
 For the **withdrawCollateralAsset** instruction, the V2 program requires two extra accounts. Add them to the `.accounts(...)` object:
 
 - **rentReceiver** — Set the account that will receive the lamports back when the signatures account is closed. It must to be the same account set as rent payer in the `submitSignatures` transaction.
-- **tokenProgram** — Set to the SPL Token program: `TOKEN_PROGRAM_ID` (from `@solana/spl-token`).
+- **tokenProgram** — Set to the token program that **owns the mint**, not a hardcoded value. For a classic SPL mint this is `TOKEN_PROGRAM_ID`; for a Token-2022 mint it must be `TOKEN_2022_PROGRAM_ID` (both from `@solana/spl-token`). Hardcoding `TOKEN_PROGRAM_ID` silently derives the wrong associated token accounts for Token-2022 mints. Resolve it from the mint — its account `owner` *is* its token program — and use the same value when deriving `collateralTokenAccount` / `receiverTokenAccount`:
+
+  ```ts
+  // The mint account is owned by exactly its token program.
+  const mintInfo = await connection.getAccountInfo(mintAddress);
+  const tokenProgram = mintInfo!.owner; // TOKEN_PROGRAM_ID or TOKEN_2022_PROGRAM_ID
+  ```
+
 
 So the accounts for `withdrawCollateralAsset` change from:
 
@@ -104,6 +111,6 @@ to:
   coordinator: collateralAccount.coordinator,
   collateral: collateral,
   collateralAdminSignatures: collateralSignatureAddress,
-  tokenProgram: TOKEN_PROGRAM_ID,
+  tokenProgram, // resolved from the mint owner (see note above), not hardcoded
 })
 ```
