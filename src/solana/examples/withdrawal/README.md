@@ -4,7 +4,9 @@ This folder contains withdrawal integration examples for different versions of t
 
 - **multisig_program_v2_00** — Multisig withdrawal (program v2.00)
 - **multisig_program_v2_01** — Multisig withdrawal (program v2.01)
+- **multisig_program_v2_01_tenant** — Multisig withdrawal (program v2.01) for self-managed tenants (tenant API endpoints, no `userId`)
 - **single_signer_program_v2_02** — Single-signer withdrawal (program v2.02)
+- **single_signer_program_v2_02_tenant** — Single-signer withdrawal (program v2.02) for self-managed tenants (tenant API endpoints, no `userId`)
 - **single_signer_squad_program_v2_02** — Squads single signer withdrawal (program v2.02)
 
 For program version comparison and `@rain/program` import usage, see [CODING_GUIDELINES.md](../../../CODING_GUIDELINES.md).
@@ -39,7 +41,7 @@ yarn run solana:withdraw:select-version
 
 ### Result
 
-The script prints which withdrawal example to follow. Use the corresponding example in this folder (`multisign_program_v2_00/`, `multisign_program_v2_01/`, `single_signer_program_v2_02/`, or `single_signer_squad_program_v2_02/`) to perform your withdrawal.
+The script prints which withdrawal example to follow. Use the corresponding example in this folder (`multisig_program_v2_00/`, `multisig_program_v2_01/`, `single_signer_program_v2_02/`, or `single_signer_squad_program_v2_02/`) to perform your withdrawal.
 
 ## 2. Migrating from v2.01 to v2.02
 
