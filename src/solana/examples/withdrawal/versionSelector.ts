@@ -110,11 +110,11 @@ async function getCollateralVersion(
   const discriminator = Array.from(accountInfo.data.slice(0, 8));
 
   if (discriminatorMatches(discriminator, DISCRIMINATOR_MULTISIGN_V1)) {
-    return `withdrawal/multisign_program_v2_00`;
+    return `withdrawal/multisig_program_v2_00`;
   } else if (discriminatorMatches(discriminator, DISCRIMINATOR_MULTISIGN_V2)) {
-    return `withdrawal/multisign_program_v2_01`;
+    return `withdrawal/multisig_program_v2_01 (signature flow) or withdrawal/multisig_timelock_program_v2_05 (timelock flow, program v2.05)`;
   } else if (discriminatorMatches(discriminator, DISCRIMINATOR_SINGLE_SIGNER)) {
-    return `withdrawal/single_signer_(squad_)program_v2_02`;
+    return `withdrawal/single_signer_(squad_)program_v2_02 (signature flow) or withdrawal/single_signer_timelock_program_v2_05 (timelock flow, program v2.05)`;
   } else {
     throw new Error(
       `Unknown account discriminator: ${discriminator.join(",")}`

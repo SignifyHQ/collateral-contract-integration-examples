@@ -6,6 +6,8 @@ This folder contains withdrawal integration examples for different versions of t
 - **multisig_program_v2_01** — Multisig withdrawal (program v2.01)
 - **single_signer_program_v2_02** — Single-signer withdrawal (program v2.02)
 - **single_signer_squad_program_v2_02** — Squads single signer withdrawal (program v2.02)
+- **multisig_timelock_program_v2_05** — Multisig timelock (permissionless) withdrawal (program v2.05)
+- **single_signer_timelock_program_v2_05** — Single-signer timelock (permissionless) withdrawal (program v2.05)
 
 For program version comparison and `@rain/program` import usage, see [CODING_GUIDELINES.md](../../../CODING_GUIDELINES.md).
 
@@ -13,6 +15,7 @@ For program version comparison and `@rain/program` import usage, see [CODING_GUI
 
 1. [What version to use](#what-version-to-use)
 2. [Migrating from v2.00 to v2.01](#2-migrating-from-v201-to-v202)
+3. [Timelock (permissionless) withdrawals — program v2.05](#3-timelock-permissionless-withdrawals--program-v205)
 
 ## 1. What version to use
 
@@ -39,7 +42,7 @@ yarn run solana:withdraw:select-version
 
 ### Result
 
-The script prints which withdrawal example to follow. Use the corresponding example in this folder (`multisign_program_v2_00/`, `multisign_program_v2_01/`, `single_signer_program_v2_02/`, or `single_signer_squad_program_v2_02/`) to perform your withdrawal.
+The script prints which withdrawal example to follow. Use the corresponding example in this folder (`multisig_program_v2_00/`, `multisig_program_v2_01/`, `single_signer_program_v2_02/`, or `single_signer_squad_program_v2_02/`) to perform your withdrawal. For program v2.05 collaterals, the timelock alternatives are `multisig_timelock_program_v2_05/` and `single_signer_timelock_program_v2_05/`.
 
 ## 2. Migrating from v2.01 to v2.02
 
@@ -114,3 +117,59 @@ to:
   tokenProgram, // resolved from the mint owner (see note above), not hardcoded
 })
 ```
+
+## 3. Timelock (permissionless) withdrawals — program v2.05
+
+Program v2.05 adds **timelock withdrawals** (on-chain the feature is called *permissionless withdrawal*: no Rain co-signature is needed at execution time). Instead of requesting a withdrawal signature from the Rain API, the collateral admins (or the single-signer owner) create a withdrawal request directly on-chain. The request commits the amount, asset and recipient, and starts a **7-day timelock**:
+
+- **Rain reviews the request** and usually executes it early (*expedited*), so funds arrive without waiting for the timelock. Rain can instead cancel the request with a reason (e.g. the amount exceeds the team's spending power).
+- **If Rain does not act**, any current collateral admin (or the owner) can execute the request themselves once the timelock elapses — this is the guaranteed exit path.
+- **The requesting side can cancel** a pending request at any time, without a reason, reclaiming the request account's rent.
+
+![Timelock withdrawal lifecycle](../../../../out/src/solana/examples/withdrawal/diagrams/timelock_withdrawal_lifecycle/Timelock%20withdrawal%20lifecycle.png "Timelock withdrawal lifecycle")
+
+Rules that apply to every timelock withdrawal:
+
+- **One live request per collateral + asset pair.** The request account address is derived from the collateral and the asset mint, so a second request for the same pair fails until the pending one is executed or cancelled.
+- **No on-chain status field.** A request is pending while its account exists and terminal once the account is closed; the outcome (executed/cancelled) is carried by events and exposed off-chain via the API (see [Tracking requests](#tracking-requests)). The timelock events are emitted via CPI — they appear as inner instructions, not program logs (see the *Consuming timelock events* section of the withdraw-collateral docs).
+- **The feature is opt-in per coordinator** and disabled by default: requests fail with `TimelockNotEnabled` until Rain creates the coordinator's `TimelockConfig` with `enabled = true`. Disabling it later only blocks *new* requests — pending ones can still be executed or cancelled.
+- **The delay is fixed at 7 days** by the program; it is not configurable per coordinator.
+- **Requests do not expire.** Once `executable_from` passes, a request stays executable indefinitely until it is executed or cancelled.
+- **Amounts are in the asset's base units** (1 SOL = `1000000000`, 1 USDC = `1000000`), unlike the cent-denominated signature flow.
+
+### Multisig flow
+
+See [multisig_timelock_program_v2_05](multisig_timelock_program_v2_05/). Requesting is a 2-transaction flow:
+
+1. `submit_signatures` with the `RequestPermissionlessWithdrawal` submission type stores the admins' Ed25519 signatures on-chain (re-run per admin until the threshold is reached).
+2. `request_permissionless_withdrawal` consumes the signatures account and creates the request. The transaction sender must itself be an admin, and its rent payer must be the admin that paid the signatures account rent.
+
+A pending multisig request is bound to the collateral's governance state: adding/removing admins, changing the threshold or transferring the team makes it stale (`ApprovalConfigChanged`) — cancel it to reclaim the rent and request again.
+
+### Single-signer flow
+
+See [single_signer_timelock_program_v2_05](single_signer_timelock_program_v2_05/). Requesting is a single `request_single_signer_permissionless_withdrawal` transaction signed by the owner — no admin signatures and no nonce. If the collateral ownership is transferred while a request is pending, the request becomes stale (`RequesterNoLongerOwner`) and can only be cancelled.
+
+### Manual cancellation
+
+Both example scripts expose a `cancel` action calling `cancel_permissionless_withdrawal`. Admins/owners must cancel **without** a reason; cancellation reasons are reserved for Rain executors and surface in the API's `cancellationReason` field.
+
+![Timelock withdrawal cancellation](../../../../out/src/solana/examples/withdrawal/diagrams/timelock_withdrawal_cancel/Timelock%20withdrawal%20cancellation.png "Timelock withdrawal cancellation")
+
+### Coexistence with signature-based withdrawals
+
+Timelock withdrawals **do not replace** the signature-based flow — v2.05 keeps `withdraw_collateral_asset` and `withdraw_single_signer_collateral_asset` unchanged, and both flows operate on the same collateral accounts:
+
+- The signature-based flow remains the immediate path: request a signature from the Rain API and execute in one transaction (see the v2.00–v2.02 examples in this folder).
+- The timelock flow removes the signature dependency at the cost of the review window; it is the recommended path for integrations that need a Rain-independent exit.
+- A pending timelock request does not block signature-based withdrawals, and vice versa. Note that a multisig timelock request consumes the same `adminFundsNonce` as signature withdrawals, so admin signatures collected for one flow cannot be replayed by the other.
+
+### Tracking requests
+
+Both example scripts expose a `list` action calling the tenant API:
+
+```
+GET /v1/issuing/time-lock-withdrawals
+```
+
+Query parameters: `cursor`, `limit` (1–100, default 20), `chainId` (`"900"` mainnet, `"901"` devnet), `assetAddress`, `status` (`PENDING` | `EXECUTED` | `CANCELLED`), `unlockAfter`, `unlockBefore`. Each entry reports the request identity, amount, recipient, `isUnlocked`/`unlockedAt`, and — once terminal — the execution or cancellation transaction hashes and the `cancellationReason` for Rain-side cancellations.
