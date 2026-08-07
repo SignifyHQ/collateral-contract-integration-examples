@@ -1377,6 +1377,264 @@ If your Solana collateral is a single signer type with a smart wallet (e.g. Squa
 
 If you have questions about Squads multisig, refer to the [example](https://github.com/SignifyHQ/collateral-contract-integration-examples/tree/main/src/solana/examples/withdrawal/single_signer_squad_program_v2_02) guidance.
 
+### V2.05 Contracts - Solana
+
+Program v2.05 adds **timelock (permissionless) withdrawals**: instead of requesting a withdrawal signature from the Rain API, you create a withdrawal request directly on-chain. The request commits the amount, asset and recipient and starts a 7-day timelock. Rain reviews the request and usually executes it early (expedited); it can also cancel it with a reason. If Rain does not act, you can execute the request yourself once the timelock elapses — no Rain co-signature is needed at execution time.
+
+The feature is **opt-in per coordinator** and disabled by default: Rain enables it on-chain by creating the coordinator's `TimelockConfig` with `enabled = true`. Until then, requests fail with `TimelockNotEnabled` — contact Rain to enable timelock withdrawals for your coordinator.
+
+Complete runnable examples:
+- [MultiSig timelock withdrawal](https://github.com/SignifyHQ/collateral-contract-integration-examples/tree/main/src/solana/examples/withdrawal/multisig_timelock_program_v2_05)
+- [Single Signer timelock withdrawal](https://github.com/SignifyHQ/collateral-contract-integration-examples/tree/main/src/solana/examples/withdrawal/single_signer_timelock_program_v2_05)
+
+#### How it works
+
+1. **Request**: create the on-chain `WithdrawalRequest` (multisig: 2 transactions — admin signatures then the request; single-signer: 1 transaction signed by the owner).
+2. **Review**: Rain picks up the on-chain event and either executes the request early or cancels it with a reason.
+3. **Execute or cancel**: after the timelock elapses, any current admin (or the owner) runs `process_permissionless_withdrawal`; a pending request can be cancelled at any time with `cancel_permissionless_withdrawal`.
+
+<Info>
+Only one request can be pending per collateral + asset pair — the request account address is derived from the collateral and the asset mint. Amounts are expressed in the asset's base units (1 SOL = 1000000000, 1 USDC = 1000000), not in cents. Native SOL is represented by the default (all-zeros) public key with all token accounts set to null.
+</Info>
+
+The new PDAs are derived as follows:
+
+```typescript
+const [withdrawalRequest] = PublicKey.findProgramAddressSync(
+  [Buffer.from('WithdrawalRequest'), collateral.toBuffer(), assetMint.toBuffer()],
+  program.programId,
+);
+const [timelockConfig] = PublicKey.findProgramAddressSync(
+  [Buffer.from('TimelockConfig'), coordinator.toBuffer()],
+  program.programId,
+);
+const [collateralAuthority] = PublicKey.findProgramAddressSync(
+  [Buffer.from('CollateralAuthority'), collateral.toBuffer()],
+  program.programId,
+);
+```
+
+#### MultiSig collateral contract - timelock request
+
+1. Update the [IDL files](https://github.com/SignifyHQ/collateral-contract-integration-examples/tree/main/src/solana/program/v2_05).
+2. Have each admin sign the `RequestPermissionlessWithdrawal` message and submit it with `submitSignatures`. The message is built like the existing admin withdraw message (EIP-712-style Keccak-256 over the domain separator and the action structure), with the action type hash `RequestPermissionlessWithdrawal(address collateral,address recipient,address asset,uint256 amount,uint256 nonce)` and fields encoded in the order `collateral, recipient, asset, amount (u64), adminFundsNonce (u32)`.
+
+```typescript
+// Submit the admin signature to the signatures account
+const transaction = await program.methods.submitSignatures({
+  salts: [salt],
+  targetNonce: collateralAccount.adminFundsNonce,
+  signatureSubmissionType: {
+    requestPermissionlessWithdrawal: {
+      recipient,
+      asset: assetMint,
+      amount,
+    }
+  },
+}).accounts({
+  collateral: collateralAddress,
+  collateralAdminSignatures: signaturesPDA, // derived from the action message hash
+  rentPayer: admin.publicKey,
+}).preInstructions([
+  signatureVerificationInstruction
+]).transaction();
+```
+
+<Info>
+The Ed25519 verification instruction must be the instruction immediately before submitSignatures in the same transaction. Signatures accumulate on-chain across transactions until min(adminThreshold, admins.length) is reached.
+</Info>
+
+3. Send the request. The transaction sender must itself be a collateral admin:
+
+```typescript
+const transaction = await program.methods.requestPermissionlessWithdrawal(amount, recipient, assetMint)
+  .accountsPartial({
+    sender: admin.publicKey,
+    rentPayer: admin.publicKey,
+    coordinator: collateralAccount.coordinator,
+    collateral,
+    collateralAuthority,
+    collateralAdminSignatures: signaturesPDA,
+    timelockConfig,
+    asset: isSol ? null : assetMint,
+    collateralTokenAccount, // the collateral authority's ATA, or null for SOL
+    withdrawalRequest,
+  }).transaction();
+```
+
+<Info>
+rentPayer must be the same key that paid the rent when the signatures account was created, and it must sign the request transaction (the signatures account rent is returned to it).
+</Info>
+
+<Info>
+timelockConfig must always be passed at its derived PDA even when the account does not exist on-chain. A missing account means the feature is disabled (timelock withdrawals are opt-in per coordinator); passing the derived address is what prevents a forged or omitted account from bypassing enabled = false.
+</Info>
+
+<Info>
+A pending multisig request is bound to the collateral's governance state: adding/removing admins, changing the threshold or transferring the team makes it stale (ApprovalConfigChanged) — cancel it to reclaim the rent and request again.
+</Info>
+
+#### Single Signer collateral contract - timelock request
+
+A single transaction signed by the owner — no admin signatures, no Ed25519 verification and no nonce:
+
+```typescript
+const transaction = await program.methods.requestSingleSignerPermissionlessWithdrawal(amount, recipient, assetMint)
+  .accountsPartial({
+    owner: owner.publicKey,
+    rentPayer: owner.publicKey,
+    coordinator: collateralAccount.coordinator,
+    collateral,
+    collateralAuthority,
+    timelockConfig,
+    asset: isSol ? null : assetMint,
+    collateralTokenAccount,
+    withdrawalRequest,
+  }).transaction();
+```
+
+<Info>
+If the collateral ownership is transferred while a request is pending, the request becomes stale (RequesterNoLongerOwner) and can only be cancelled.
+</Info>
+
+#### Processing the withdrawal
+
+Once the timelock elapses (`executable_from` on the request account), any current collateral admin — or the single-signer owner — can execute the request. Rain executors can execute at any time without waiting. The recipient and rent collector must match the values stored in the request:
+
+```typescript
+const request = await program.account.withdrawalRequest.fetch(withdrawalRequest);
+
+const transaction = await program.methods.processPermissionlessWithdrawal(request.amount) // expected_amount — must equal the stored request amount
+  .accountsPartial({
+    sender: sender.publicKey,
+    coordinator: collateralAccount.coordinator,
+    collateral,
+    collateralAuthority,
+    withdrawalRequest,
+    rentCollector: request.rentCollector, // must match the stored rent collector
+    rentPayer: sender.publicKey,
+    recipient: request.recipient,         // must match the stored recipient
+    asset: isSol ? null : request.asset,
+    collateralTokenAccount,               // the collateral authority's ATA, or null for SOL
+    recipientTokenAccount,                // the recipient's ATA, or null for SOL
+    tokenProgram: tokenProgramId,         // resolved from the mint owner, not hardcoded
+    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+  }).transaction();
+```
+
+<Info>
+The instruction argument binds the transaction to the request that was reviewed: because the request account address is reused after a request closes, a cancelled-and-recreated request could otherwise be executed with terms the sender never saw. If the pending request's amount does not equal the argument, the program rejects the transaction with WithdrawalAmountMismatch — refetch the request and retry.
+</Info>
+
+<Info>
+The recipient token account is created by the program when missing (init_if_needed, rent paid by rentPayer) — derive it, do not pre-create it.
+</Info>
+
+#### Cancelling the withdrawal
+
+A pending request can be cancelled at any time by a current admin or the owner, closing the request account and returning its rent:
+
+```typescript
+const transaction = await program.methods.cancelPermissionlessWithdrawal(null)
+  .accountsPartial({
+    sender: sender.publicKey,
+    coordinator: collateralAccount.coordinator,
+    collateral,
+    withdrawalRequest,
+    rentCollector: request.rentCollector,
+  }).transaction();
+```
+
+<Info>
+Admins and owners must pass null as the reason — cancellation reasons are reserved for Rain executors and surface in the API's cancellationReason field.
+</Info>
+
+#### Consuming timelock events
+
+Each lifecycle step emits an event: `TimelockWithdrawalRequested` (emitted by both request instructions — the payload alone does not distinguish the multisig and single-signer variants), `TimelockWithdrawalExecuted` (with an `expedited` flag), `TimelockWithdrawalAdminCancelled`, `TimelockWithdrawalRainAdminCancelled` (carries the `reason`), and `TimelockConfigCreated` / `TimelockConfigUpdated`.
+
+Unlike the rest of the program's events, the timelock events are emitted via Anchor's `emit_cpi!`: they appear as **self-CPI inner instructions** of the transaction, not as `Program data:` log lines. Log-based listeners (`connection.onLogs`, `EventParser.parseLogs`) will not see them — decode them from `meta.innerInstructions` instead:
+
+```typescript
+const EVENT_IX_TAG_LE_HEX = 'e445a52e51cb9a1d'; // Anchor's event-CPI instruction tag
+const [eventAuthority] = PublicKey.findProgramAddressSync(
+  [Buffer.from('__event_authority')],
+  program.programId,
+);
+
+const tx = await connection.getTransaction(signature, { commitment: 'confirmed', maxSupportedTransactionVersion: 0 });
+const events = (tx!.meta!.innerInstructions ?? [])
+  .sort((a, b) => a.index - b.index) // RPC ordering is not guaranteed
+  .flatMap(({ instructions }) => instructions)
+  .flatMap((instruction) => {
+    const data = Buffer.from(bs58.decode(instruction.data));
+    // An event CPI targets the program itself, passes only the event authority
+    // PDA, and its data starts with the 8-byte event instruction tag
+    if (
+      !tx!.transaction.message.staticAccountKeys[instruction.programIdIndex].equals(program.programId) ||
+      instruction.accounts.length !== 1 ||
+      !tx!.transaction.message.staticAccountKeys[instruction.accounts[0]].equals(eventAuthority) ||
+      data.subarray(0, 8).toString('hex') !== EVENT_IX_TAG_LE_HEX
+    ) {
+      return [];
+    }
+    const event = program.coder.events.decode(data.subarray(8).toString('base64'));
+    return event ? [event] : [];
+  });
+```
+
+<Info>
+The event CPI is why the six timelock instructions carry two trailing accounts, eventAuthority and program. Anchor's accounts resolver fills both in automatically (as in the snippets above); only hand-rolled instruction builders need to append them explicitly.
+</Info>
+
+#### Tracking requests via the Rain API
+
+```bash
+curl --location 'https://api-dev.raincards.xyz/v1/issuing/time-lock-withdrawals?status=PENDING&chainId=901' \
+--header 'Api-Key: YOUR_API_KEY' \
+--header 'accept: application/json'
+```
+
+Query parameters:
+
+| Parameter | Description |
+|-----------|-------------|
+| `cursor` | Pagination cursor (UUID) |
+| `limit` | Page size, 1–100 (default 20) |
+| `chainId` | `"900"` mainnet, `"901"` devnet |
+| `assetAddress` | Filter by asset mint |
+| `status` | `PENDING`, `EXECUTED` or `CANCELLED` |
+| `unlockAfter` / `unlockBefore` | Filter by unlock time (ISO date-time) |
+
+**Response Example:**
+
+```json
+[
+    {
+        "id": "0e9f4c2a-8f4b-4f0e-9f37-0f4c1c2d3e4f",
+        "withdrawalId": "c2b1a090-1111-4222-8333-444455556666",
+        "chainId": "901",
+        "requesterAddress": "HFFdJHiEZBgniNh754BPqsCdeNasv3got5wJqRABHnCX",
+        "assetAddress": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+        "assetAmountNative": "1500000",
+        "recipientAddress": "CvXV3wxqcUT7h5iFd6MqQvNuGEYPuipcrt6ZMPgEBr3q",
+        "requestedAt": "2026-07-31T12:00:00.000Z",
+        "status": "PENDING",
+        "intentTransactionHash": "5o1kj...",
+        "isUnlocked": false,
+        "unlockedAt": "2026-08-07T12:00:00.000Z"
+    }
+]
+```
+
+Executed entries add `executedAt` and `executedTransactionHash`; cancelled entries add `cancelledAt`, `cancelledTransactionHash`, `cancelledBy` and — for Rain-side cancellations — `cancellationReason`.
+
+#### Coexistence with signature-based withdrawals
+
+<Info>
+Timelock withdrawals do not replace the signature-based flow: v2.05 keeps withdrawCollateralAsset and withdrawSingleSignerCollateralAsset unchanged, and both flows operate on the same collateral accounts. The signature-based flow remains the immediate path; the timelock flow removes the Rain signature dependency at the cost of the review window. A pending timelock request does not block signature-based withdrawals (and vice versa), but note that a multisig timelock request consumes the same adminFundsNonce, so admin signatures collected for one flow cannot be replayed by the other.
+</Info>
+
 ## V2 Contracts - Stellar
 
 Stellar withdrawal requires coordinating with the Coordinator contract using signatures from the Rain API. The `coordinatorAddress` is automatically obtained from the `controllerAddress` field in the contracts API response.

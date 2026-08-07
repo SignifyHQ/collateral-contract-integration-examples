@@ -1,0 +1,81 @@
+@startuml "Timelock withdrawal lifecycle"
+
+!pragma teoz true
+
+' Lines style
+skinparam linetype ortho
+skinparam defaultFontColor black
+' Define the sequence's style
+skinparam SequenceArrowColor black
+' Define the actor's style
+skinparam Actor {
+    BackgroundColor white
+    BorderColor black
+    Padding 15
+}
+' Define the box's style
+skinparam SequenceBox {
+  BackgroundColor LightBlue
+  BorderColor black
+  FontSize 21
+  Padding 20
+}
+' Define the participant's style
+skinparam SequenceParticipant {
+    ArrowColor black
+    BackgroundColor white
+    BorderColor black
+    Padding 15
+}
+' Define the life line's style
+skinparam SequenceLifeLine {
+    BackgroundColor LightGray
+    BorderColor black
+}
+
+title Timelock Withdrawal Lifecycle (request, review, execute)
+
+actor "Collateral Admin / Owner" as Admin
+
+box "Solana Network"
+participant "Solana RPC" as RPC
+participant "Collateral Program" as Program
+participant "Withdrawal Request" as Request
+end box
+
+participant "Rain (review)" as Rain
+
+activate Admin
+Admin -> RPC ++: Submit admin signatures\n(multisig only: Ed25519 + submit_signatures)
+RPC -> Program ++: Validate and store signatures
+RPC <-- Program --: Signatures stored
+Admin <-- RPC --: Return tx
+
+Admin -> RPC ++: Send request_permissionless_withdrawal\n(single-signer: request_single_signer_permissionless_withdrawal)
+RPC -> Program ++: Verify sender and signatures threshold
+Program -> Request ++: Create WithdrawalRequest\n(executable_from = now + 7 days)
+Program --> Rain: TimelockWithdrawalRequested event
+Admin <-- RPC --: Return tx
+deactivate Program
+
+alt Rain approves (expedited)
+    Rain -> Program ++: process_permissionless_withdrawal\n(executor, no timelock wait)
+    Program -> Program : Transfer funds to recipient
+    Program -> Request : Close request, rent to rent collector
+    Program --> Rain --: TimelockWithdrawalExecuted (expedited)
+else Rain cancels (reason required)
+    Rain -> Program ++: cancel_permissionless_withdrawal (reason)
+    Program -> Request : Close request, rent to rent collector
+    Program --> Rain --: TimelockWithdrawalRainAdminCancelled
+else Rain does not act, timelock elapses
+    Admin -> RPC ++: process_permissionless_withdrawal\n(after executable_from)
+    RPC -> Program ++: Verify sender is a current admin/owner\nand the timelock elapsed
+    Program -> Program : Transfer funds to recipient
+    Program -> Request : Close request, rent to rent collector
+    RPC <-- Program --: TimelockWithdrawalExecuted
+    Admin <-- RPC --: Return tx
+end
+deactivate Request
+deactivate Admin
+
+@enduml
