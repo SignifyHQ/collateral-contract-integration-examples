@@ -19,9 +19,11 @@
     "solana:collateral-transfer": "ts-node src/solana/examples/collateralTeamTransfer/index.ts",
     "solana:withdraw:select-version": "ts-node src/solana/examples/withdrawal/versionSelector.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "solana:withdraw:v2-00": "yarn build && node dist/src/solana/examples/withdrawal/multisign_program_v2_00/index.js",
-    "solana:withdraw:v2-01": "yarn build && node dist/src/solana/examples/withdrawal/multisign_program_v2_01/index.js",
+    "solana:withdraw:v2-00": "yarn build && node dist/src/solana/examples/withdrawal/multisig_program_v2_00/index.js",
+    "solana:withdraw:v2-01": "yarn build && node dist/src/solana/examples/withdrawal/multisig_program_v2_01/index.js",
+    "solana:withdraw:v2-01-tenant": "yarn build && node dist/src/solana/examples/withdrawal/multisig_program_v2_01_tenant/index.js",
     "solana:withdraw:v2-02": "yarn build && node dist/src/solana/examples/withdrawal/single_signer_program_v2_02/index.js",
+    "solana:withdraw:v2-02-tenant": "yarn build && node dist/src/solana/examples/withdrawal/single_signer_program_v2_02_tenant/index.js",
     "solana:squads-withdraw:v2-02": "yarn build && node dist/src/solana/examples/withdrawal/single_signer_squad_program_v2_02/index.js",
     "stellar:withdraw": "yarn build && node dist/src/stellar/examples/withdrawal/index.js"
   },
