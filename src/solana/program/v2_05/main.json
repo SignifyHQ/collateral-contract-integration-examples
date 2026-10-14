@@ -2,40 +2,61 @@
   "address": "",
   "metadata": {
     "name": "main",
-    "version": "2.0.5",
-    "spec": "0.1.0",
+    "version": "2.05",
+    "spec": "2.05",
     "description": "Created with Anchor"
   },
   "instructions": [
     {
       "name": "add_collateral_admin",
-      "docs": ["Adds a new admin to a Collateral account"],
-      "discriminator": [8, 113, 189, 95, 60, 56, 83, 61],
+      "docs": [
+        "Adds a new admin to a Collateral account"
+      ],
+      "discriminator": [
+        8,
+        113,
+        189,
+        95,
+        60,
+        56,
+        83,
+        61
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction. They do not require a specific role into the account."],
+          "docs": [
+            "The sender of the instruction. They do not require a specific role into the account."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "rent_receiver",
-          "docs": ["The receiver of the rent for the CollateralAdminSignatures account."],
+          "docs": [
+            "The receiver of the rent for the CollateralAdminSignatures account."
+          ],
           "writable": true
         },
         {
           "name": "collateral",
-          "docs": ["The collateral account in which the admin shall be added."],
+          "docs": [
+            "The collateral account in which the admin shall be added."
+          ],
           "writable": true
         },
         {
           "name": "collateral_admin_signatures",
-          "docs": ["The CollateralAdminSignatures account to get the submitted signatures."],
+          "docs": [
+            "The CollateralAdminSignatures account to get the submitted signatures."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -48,8 +69,19 @@
     },
     {
       "name": "add_coordinator_executor",
-      "docs": ["Adds a new executor to a Coordinator account"],
-      "discriminator": [17, 70, 245, 75, 21, 134, 183, 234],
+      "docs": [
+        "Adds a new executor to a Coordinator account"
+      ],
+      "discriminator": [
+        17,
+        70,
+        245,
+        75,
+        21,
+        134,
+        183,
+        234
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -62,12 +94,16 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account to which the executor will be added."],
+          "docs": [
+            "The coordinator account to which the executor will be added."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program account"],
+          "docs": [
+            "The system program account"
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -80,8 +116,19 @@
     },
     {
       "name": "add_coordinator_publisher",
-      "docs": ["Adds a new publisher to a Coordinator account"],
-      "discriminator": [101, 133, 35, 235, 213, 27, 50, 10],
+      "docs": [
+        "Adds a new publisher to a Coordinator account"
+      ],
+      "discriminator": [
+        101,
+        133,
+        35,
+        235,
+        213,
+        27,
+        50,
+        10
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -94,12 +141,16 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account the New Publisher will be added to."],
+          "docs": [
+            "The coordinator account the New Publisher will be added to."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program account"],
+          "docs": [
+            "The system program account"
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -112,8 +163,19 @@
     },
     {
       "name": "add_supported_asset",
-      "docs": ["Adds a new supported asset to the context of the Coordinator"],
-      "discriminator": [223, 241, 203, 224, 145, 11, 152, 10],
+      "docs": [
+        "Adds a new supported asset to the context of the Coordinator"
+      ],
+      "discriminator": [
+        223,
+        241,
+        203,
+        224,
+        145,
+        11,
+        152,
+        10
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -135,7 +197,9 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account to which the asset will be added."]
+          "docs": [
+            "The coordinator account to which the asset will be added."
+          ]
         },
         {
           "name": "mint_token",
@@ -165,7 +229,23 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [83, 117, 112, 112, 111, 114, 116, 101, 100, 32, 65, 115, 115, 101, 116]
+                "value": [
+                  83,
+                  117,
+                  112,
+                  112,
+                  111,
+                  114,
+                  116,
+                  101,
+                  100,
+                  32,
+                  65,
+                  115,
+                  115,
+                  101,
+                  116
+                ]
               },
               {
                 "kind": "account",
@@ -180,7 +260,9 @@
         },
         {
           "name": "system_program",
-          "docs": ["The system program account"],
+          "docs": [
+            "The system program account"
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -197,8 +279,19 @@
     },
     {
       "name": "cancel_permissionless_withdrawal",
-      "docs": ["Cancels a pending permissionless timelock withdrawal request"],
-      "discriminator": [106, 196, 56, 194, 150, 108, 155, 181],
+      "docs": [
+        "Cancels a pending permissionless timelock withdrawal request"
+      ],
+      "discriminator": [
+        106,
+        196,
+        56,
+        194,
+        150,
+        108,
+        155,
+        181
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -218,7 +311,25 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [87, 105, 116, 104, 100, 114, 97, 119, 97, 108, 82, 101, 113, 117, 101, 115, 116]
+                "value": [
+                  87,
+                  105,
+                  116,
+                  104,
+                  100,
+                  114,
+                  97,
+                  119,
+                  97,
+                  108,
+                  82,
+                  101,
+                  113,
+                  117,
+                  101,
+                  115,
+                  116
+                ]
               },
               {
                 "kind": "account",
@@ -246,7 +357,25 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [95, 95, 101, 118, 101, 110, 116, 95, 97, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               }
             ]
           }
@@ -266,8 +395,19 @@
     },
     {
       "name": "close_collateral_admin_signatures",
-      "docs": ["Closes a stale CollateralAdminSignaturesV2 account and sends rent to its stored rent payer"],
-      "discriminator": [185, 94, 139, 13, 246, 14, 13, 154],
+      "docs": [
+        "Closes a stale CollateralAdminSignaturesV2 account and sends rent to its stored rent payer"
+      ],
+      "discriminator": [
+        185,
+        94,
+        139,
+        13,
+        246,
+        14,
+        13,
+        154
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -280,7 +420,9 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account that owns the collateral."]
+          "docs": [
+            "The coordinator account that owns the collateral."
+          ]
         },
         {
           "name": "collateral",
@@ -291,15 +433,40 @@
         },
         {
           "name": "collateral_admin_signatures",
-          "docs": ["The stale CollateralAdminSignaturesV2 account to close."],
+          "docs": [
+            "The stale CollateralAdminSignaturesV2 account to close."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 100, 109, 105, 110, 83, 105, 103, 110, 97, 116,
-                  117, 114, 101, 115
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  100,
+                  109,
+                  105,
+                  110,
+                  83,
+                  105,
+                  103,
+                  110,
+                  97,
+                  116,
+                  117,
+                  114,
+                  101,
+                  115
                 ]
               },
               {
@@ -320,7 +487,9 @@
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -328,32 +497,71 @@
     },
     {
       "name": "close_old_collateral_signatures",
-      "docs": ["Closes an old CollateralAdminSignatures account and sends rent to collateral authority"],
-      "discriminator": [229, 161, 137, 95, 131, 53, 127, 253],
+      "docs": [
+        "Closes an old CollateralAdminSignatures account and sends rent to collateral authority"
+      ],
+      "discriminator": [
+        229,
+        161,
+        137,
+        95,
+        131,
+        53,
+        127,
+        253
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction. Must be a coordinator's collateral creator."],
+          "docs": [
+            "The sender of the instruction. Must be a coordinator's collateral creator."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account that validates the sender."]
+          "docs": [
+            "The coordinator account that validates the sender."
+          ]
         },
         {
           "name": "collateral",
-          "docs": ["The collateral account related to the signatures. It must belong to the coordinator."]
+          "docs": [
+            "The collateral account related to the signatures. It must belong to the coordinator."
+          ]
         },
         {
           "name": "collateral_authority",
-          "docs": ["The collateral authority account that will receive the rent."],
+          "docs": [
+            "The collateral authority account that will receive the rent."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               },
               {
                 "kind": "account",
@@ -364,12 +572,16 @@
         },
         {
           "name": "collateral_admin_signatures",
-          "docs": ["The CollateralAdminSignatures account to close."],
+          "docs": [
+            "The CollateralAdminSignatures account to close."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -381,7 +593,16 @@
         "Closes a CollateralAdminSignaturesV2 account whose target nonce is behind the collateral's",
         "current nonce (so it can never execute), recovering rent while still multi-admin"
       ],
-      "discriminator": [227, 63, 185, 153, 94, 192, 255, 70],
+      "discriminator": [
+        227,
+        63,
+        185,
+        153,
+        94,
+        192,
+        255,
+        70
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -394,7 +615,9 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account that owns the collateral."]
+          "docs": [
+            "The coordinator account that owns the collateral."
+          ]
         },
         {
           "name": "collateral",
@@ -405,15 +628,40 @@
         },
         {
           "name": "collateral_admin_signatures",
-          "docs": ["The stale CollateralAdminSignaturesV2 account to close."],
+          "docs": [
+            "The stale CollateralAdminSignaturesV2 account to close."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 100, 109, 105, 110, 83, 105, 103, 110, 97, 116,
-                  117, 114, 101, 115
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  100,
+                  109,
+                  105,
+                  110,
+                  83,
+                  105,
+                  103,
+                  110,
+                  97,
+                  116,
+                  117,
+                  114,
+                  101,
+                  115
                 ]
               },
               {
@@ -434,7 +682,9 @@
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -451,24 +701,41 @@
     },
     {
       "name": "create_collateral",
-      "docs": ["Creates a new Collateral account to the context of the Coordinator"],
-      "discriminator": [83, 100, 134, 60, 141, 155, 146, 199],
+      "docs": [
+        "Creates a new Collateral account to the context of the Coordinator"
+      ],
+      "discriminator": [
+        83,
+        100,
+        134,
+        60,
+        141,
+        155,
+        146,
+        199
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction. Must be the collateral creator."],
+          "docs": [
+            "The sender of the instruction. Must be the collateral creator."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "rent_payer",
-          "docs": ["The payer of the rent for the new Collateral account. It does not require a particular role."],
+          "docs": [
+            "The payer of the rent for the new Collateral account. It does not require a particular role."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account that will own the new collateral account."]
+          "docs": [
+            "The coordinator account that will own the new collateral account."
+          ]
         },
         {
           "name": "collateral",
@@ -481,7 +748,18 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108
+                ]
               },
               {
                 "kind": "arg",
@@ -504,7 +782,27 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               },
               {
                 "kind": "account",
@@ -515,7 +813,9 @@
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -532,12 +832,25 @@
     },
     {
       "name": "create_coordinator",
-      "docs": ["Creates a new Coordinator account"],
-      "discriminator": [152, 254, 127, 43, 143, 209, 242, 221],
+      "docs": [
+        "Creates a new Coordinator account"
+      ],
+      "discriminator": [
+        152,
+        254,
+        127,
+        43,
+        143,
+        209,
+        242,
+        221
+      ],
       "accounts": [
         {
           "name": "rent_payer",
-          "docs": ["The payer of the rent for the new Coordinator account."],
+          "docs": [
+            "The payer of the rent for the new Coordinator account."
+          ],
           "writable": true,
           "signer": true
         },
@@ -553,7 +866,19 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 111, 114, 100, 105, 110, 97, 116, 111, 114]
+                "value": [
+                  67,
+                  111,
+                  111,
+                  114,
+                  100,
+                  105,
+                  110,
+                  97,
+                  116,
+                  111,
+                  114
+                ]
               },
               {
                 "kind": "arg",
@@ -564,7 +889,9 @@
         },
         {
           "name": "system_program",
-          "docs": ["The system program account"],
+          "docs": [
+            "The system program account"
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -581,24 +908,41 @@
     },
     {
       "name": "create_old_collateral",
-      "docs": ["Creates a new old collateral account"],
-      "discriminator": [151, 6, 55, 41, 115, 143, 164, 146],
+      "docs": [
+        "Creates a new old collateral account"
+      ],
+      "discriminator": [
+        151,
+        6,
+        55,
+        41,
+        115,
+        143,
+        164,
+        146
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction. Must be the collateral creator."],
+          "docs": [
+            "The sender of the instruction. Must be the collateral creator."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "rent_payer",
-          "docs": ["The payer of the rent for the new Collateral account. It does not require a particular role."],
+          "docs": [
+            "The payer of the rent for the new Collateral account. It does not require a particular role."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account that will own the new collateral account."]
+          "docs": [
+            "The coordinator account that will own the new collateral account."
+          ]
         },
         {
           "name": "collateral",
@@ -611,7 +955,18 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108
+                ]
               },
               {
                 "kind": "arg",
@@ -634,7 +989,27 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               },
               {
                 "kind": "account",
@@ -645,7 +1020,9 @@
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -662,12 +1039,25 @@
     },
     {
       "name": "create_single_signer_collateral",
-      "docs": ["Creates a new SingleSignerCollateral account with single owner model"],
-      "discriminator": [238, 164, 222, 237, 137, 207, 13, 187],
+      "docs": [
+        "Creates a new SingleSignerCollateral account with single owner model"
+      ],
+      "discriminator": [
+        238,
+        164,
+        222,
+        237,
+        137,
+        207,
+        13,
+        187
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["Must be coordinator's collateral_creator (Rain's KMS)"],
+          "docs": [
+            "Must be coordinator's collateral_creator (Rain's KMS)"
+          ],
           "writable": true,
           "signer": true
         },
@@ -686,7 +1076,18 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108
+                ]
               },
               {
                 "kind": "arg",
@@ -705,7 +1106,27 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               },
               {
                 "kind": "account",
@@ -732,8 +1153,19 @@
     },
     {
       "name": "create_timelock_config",
-      "docs": ["Creates a new TimelockConfig for a Coordinator"],
-      "discriminator": [64, 20, 80, 39, 217, 63, 156, 98],
+      "docs": [
+        "Creates a new TimelockConfig for a Coordinator"
+      ],
+      "discriminator": [
+        64,
+        20,
+        80,
+        39,
+        217,
+        63,
+        156,
+        98
+      ],
       "accounts": [
         {
           "name": "owner",
@@ -750,7 +1182,22 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [84, 105, 109, 101, 108, 111, 99, 107, 67, 111, 110, 102, 105, 103]
+                "value": [
+                  84,
+                  105,
+                  109,
+                  101,
+                  108,
+                  111,
+                  99,
+                  107,
+                  67,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
               },
               {
                 "kind": "account",
@@ -769,7 +1216,25 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [95, 95, 101, 118, 101, 110, 116, 95, 97, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               }
             ]
           }
@@ -787,8 +1252,19 @@
     },
     {
       "name": "increase_funds_nonce",
-      "docs": ["Increases the funds nonce of a Collateral account"],
-      "discriminator": [7, 178, 181, 114, 75, 201, 61, 186],
+      "docs": [
+        "Increases the funds nonce of a Collateral account"
+      ],
+      "discriminator": [
+        7,
+        178,
+        181,
+        114,
+        75,
+        201,
+        61,
+        186
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -801,16 +1277,22 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account the Collateral account belongs to."]
+          "docs": [
+            "The coordinator account the Collateral account belongs to."
+          ]
         },
         {
           "name": "collateral",
-          "docs": ["The Collateral account to increase the funds nonce (supports V1 and SingleSignerCollateral)."],
+          "docs": [
+            "The Collateral account to increase the funds nonce (supports V1 and SingleSignerCollateral)."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -818,8 +1300,19 @@
     },
     {
       "name": "liquidate_assets",
-      "docs": ["Liquidates the assets of a Collateral account to pay a Statement"],
-      "discriminator": [1, 35, 58, 90, 73, 217, 226, 208],
+      "docs": [
+        "Liquidates the assets of a Collateral account to pay a Statement"
+      ],
+      "discriminator": [
+        1,
+        35,
+        58,
+        90,
+        73,
+        217,
+        226,
+        208
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -832,7 +1325,9 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account the Statement was published in."]
+          "docs": [
+            "The coordinator account the Statement was published in."
+          ]
         },
         {
           "name": "collateral",
@@ -843,13 +1338,35 @@
         },
         {
           "name": "collateral_authority",
-          "docs": ["The Collateral Authority account where the assets are held."],
+          "docs": [
+            "The Collateral Authority account where the assets are held."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               },
               {
                 "kind": "account",
@@ -860,27 +1377,37 @@
         },
         {
           "name": "statement",
-          "docs": ["The Statement to liquidate. Must be related with the coordinator and the collateral."],
+          "docs": [
+            "The Statement to liquidate. Must be related with the coordinator and the collateral."
+          ],
           "writable": true
         },
         {
           "name": "treasury",
-          "docs": ["The treasury account to transfer the assets to. Must be related with the coordinator."],
+          "docs": [
+            "The treasury account to transfer the assets to. Must be related with the coordinator."
+          ],
           "writable": true
         },
         {
           "name": "token_program",
-          "docs": ["The SPL Token program."],
+          "docs": [
+            "The SPL Token program."
+          ],
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
           "name": "token2022_program",
-          "docs": ["The token2022 program."],
+          "docs": [
+            "The token2022 program."
+          ],
           "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -888,37 +1415,78 @@
     },
     {
       "name": "make_payment_from_collateral",
-      "docs": ["Makes a payment from a Collateral account"],
-      "discriminator": [17, 62, 81, 176, 72, 144, 63, 179],
+      "docs": [
+        "Makes a payment from a Collateral account"
+      ],
+      "discriminator": [
+        17,
+        62,
+        81,
+        176,
+        72,
+        144,
+        63,
+        179
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The transaction signer. It must not have an specific role."],
+          "docs": [
+            "The transaction signer. It must not have an specific role."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account that custody the treasury to receive the payment."]
+          "docs": [
+            "The coordinator account that custody the treasury to receive the payment."
+          ]
         },
         {
           "name": "collateral",
-          "docs": ["The collateral account that must be owned by the coordinator (V1 or SingleSignerCollateral)."],
+          "docs": [
+            "The collateral account that must be owned by the coordinator (V1 or SingleSignerCollateral)."
+          ],
           "writable": true
         },
         {
           "name": "supported_asset",
-          "docs": ["The supported asset account to validate if the asset to pay is supported by the coordinator."]
+          "docs": [
+            "The supported asset account to validate if the asset to pay is supported by the coordinator."
+          ]
         },
         {
           "name": "collateral_authority",
-          "docs": ["The collateral authority account that custody the funds to pay."],
+          "docs": [
+            "The collateral authority account that custody the funds to pay."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               },
               {
                 "kind": "account",
@@ -929,43 +1497,59 @@
         },
         {
           "name": "treasury",
-          "docs": ["The treasury account to receive the payment. Must match with the coordinator treasury."],
+          "docs": [
+            "The treasury account to receive the payment. Must match with the coordinator treasury."
+          ],
           "writable": true
         },
         {
           "name": "asset",
-          "docs": ["The asset of the Mint token to transfer."],
+          "docs": [
+            "The asset of the Mint token to transfer."
+          ],
           "optional": true
         },
         {
           "name": "oracle",
-          "docs": ["The oracle account to get the price of the asset."],
+          "docs": [
+            "The oracle account to get the price of the asset."
+          ],
           "optional": true
         },
         {
           "name": "collateral_token_account",
-          "docs": ["The collateral token account to transfer the SPL assets from the collateral."],
+          "docs": [
+            "The collateral token account to transfer the SPL assets from the collateral."
+          ],
           "writable": true,
           "optional": true
         },
         {
           "name": "treasury_token_account",
-          "docs": ["The treasury token account to transfer the SPL assets to the treasury."],
+          "docs": [
+            "The treasury token account to transfer the SPL assets to the treasury."
+          ],
           "writable": true,
           "optional": true
         },
         {
           "name": "token_program",
-          "docs": ["The token program to transfer the SPL assets."]
+          "docs": [
+            "The token program to transfer the SPL assets."
+          ]
         },
         {
           "name": "instruction_sysvar",
-          "docs": ["The instruction sysvar to get the signatures data."],
+          "docs": [
+            "The instruction sysvar to get the signatures data."
+          ],
           "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -982,42 +1566,85 @@
     },
     {
       "name": "make_payment_from_collateral_for_statement",
-      "docs": ["Makes a payment from a Collateral account for a specific Statement"],
-      "discriminator": [114, 26, 76, 2, 247, 245, 168, 253],
+      "docs": [
+        "Makes a payment from a Collateral account for a specific Statement"
+      ],
+      "discriminator": [
+        114,
+        26,
+        76,
+        2,
+        247,
+        245,
+        168,
+        253
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The transaction signer. It must not have an specific role."],
+          "docs": [
+            "The transaction signer. It must not have an specific role."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account that custody the treasury to receive the payment."]
+          "docs": [
+            "The coordinator account that custody the treasury to receive the payment."
+          ]
         },
         {
           "name": "collateral",
-          "docs": ["The collateral account that custody the funds to pay (V1 or SingleSignerCollateral)."],
+          "docs": [
+            "The collateral account that custody the funds to pay (V1 or SingleSignerCollateral)."
+          ],
           "writable": true
         },
         {
           "name": "supported_asset",
-          "docs": ["The supported asset account to validate if the asset to pay is supported by the coordinator."]
+          "docs": [
+            "The supported asset account to validate if the asset to pay is supported by the coordinator."
+          ]
         },
         {
           "name": "statement",
-          "docs": ["The statement account to pay that is derived from the statement_id and the coordinator."],
+          "docs": [
+            "The statement account to pay that is derived from the statement_id and the coordinator."
+          ],
           "writable": true
         },
         {
           "name": "collateral_authority",
-          "docs": ["The collateral authority account that custody the funds to pay."],
+          "docs": [
+            "The collateral authority account that custody the funds to pay."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               },
               {
                 "kind": "account",
@@ -1028,43 +1655,59 @@
         },
         {
           "name": "treasury",
-          "docs": ["The treasury account to receive the payment. Must match with the coordinator treasury."],
+          "docs": [
+            "The treasury account to receive the payment. Must match with the coordinator treasury."
+          ],
           "writable": true
         },
         {
           "name": "asset",
-          "docs": ["The asset of the Mint token to transfer."],
+          "docs": [
+            "The asset of the Mint token to transfer."
+          ],
           "optional": true
         },
         {
           "name": "oracle",
-          "docs": ["The oracle account to get the price of the asset."],
+          "docs": [
+            "The oracle account to get the price of the asset."
+          ],
           "optional": true
         },
         {
           "name": "collateral_token_account",
-          "docs": ["The collateral token account to transfer the SPL assets from the collateral."],
+          "docs": [
+            "The collateral token account to transfer the SPL assets from the collateral."
+          ],
           "writable": true,
           "optional": true
         },
         {
           "name": "treasury_token_account",
-          "docs": ["The treasury token account to transfer the SPL assets to the treasury."],
+          "docs": [
+            "The treasury token account to transfer the SPL assets to the treasury."
+          ],
           "writable": true,
           "optional": true
         },
         {
           "name": "token_program",
-          "docs": ["The token program required to transfer the SPL assets."]
+          "docs": [
+            "The token program required to transfer the SPL assets."
+          ]
         },
         {
           "name": "instruction_sysvar",
-          "docs": ["The instruction sysvar to get the signatures data."],
+          "docs": [
+            "The instruction sysvar to get the signatures data."
+          ],
           "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -1081,57 +1724,88 @@
     },
     {
       "name": "make_payment_from_user_account",
-      "docs": ["Makes a payment transferring the assets from the transaction sender"],
-      "discriminator": [239, 118, 52, 39, 117, 11, 93, 42],
+      "docs": [
+        "Makes a payment transferring the assets from the transaction sender"
+      ],
+      "discriminator": [
+        239,
+        118,
+        52,
+        39,
+        117,
+        11,
+        93,
+        42
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The transaction signer. It must not have an specific role."],
+          "docs": [
+            "The transaction signer. It must not have an specific role."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account that custody the treasury to receive the payment."]
+          "docs": [
+            "The coordinator account that custody the treasury to receive the payment."
+          ]
         },
         {
           "name": "supported_asset",
-          "docs": ["The supported asset account to validate if the asset to pay is supported by the coordinator."]
+          "docs": [
+            "The supported asset account to validate if the asset to pay is supported by the coordinator."
+          ]
         },
         {
           "name": "treasury",
-          "docs": ["The treasury account to receive the payment. Must match with the coordinator treasury."],
+          "docs": [
+            "The treasury account to receive the payment. Must match with the coordinator treasury."
+          ],
           "writable": true
         },
         {
           "name": "asset",
-          "docs": ["The asset of the Mint token to transfer."],
+          "docs": [
+            "The asset of the Mint token to transfer."
+          ],
           "optional": true
         },
         {
           "name": "oracle",
-          "docs": ["The oracle account to get the price of the asset."],
+          "docs": [
+            "The oracle account to get the price of the asset."
+          ],
           "optional": true
         },
         {
           "name": "sender_token_account",
-          "docs": ["The sender token account to transfer the SPL assets from the sender."],
+          "docs": [
+            "The sender token account to transfer the SPL assets from the sender."
+          ],
           "writable": true,
           "optional": true
         },
         {
           "name": "treasury_token_account",
-          "docs": ["The treasury token account to transfer the SPL assets to the treasury."],
+          "docs": [
+            "The treasury token account to transfer the SPL assets to the treasury."
+          ],
           "writable": true,
           "optional": true
         },
         {
           "name": "token_program",
-          "docs": ["The token program to transfer the SPL assets."]
+          "docs": [
+            "The token program to transfer the SPL assets."
+          ]
         },
         {
           "name": "system_program",
-          "docs": ["The system program"],
+          "docs": [
+            "The system program"
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -1148,62 +1822,95 @@
     },
     {
       "name": "make_payment_from_user_account_for_statement",
-      "docs": ["Makes a payment transferring the assets from the transaction sender for a specific Statement"],
-      "discriminator": [246, 43, 176, 105, 168, 5, 168, 216],
+      "docs": [
+        "Makes a payment transferring the assets from the transaction sender for a specific Statement"
+      ],
+      "discriminator": [
+        246,
+        43,
+        176,
+        105,
+        168,
+        5,
+        168,
+        216
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The transaction signer. It must not have an specific role."],
+          "docs": [
+            "The transaction signer. It must not have an specific role."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account that custody the treasury to receive the payment."]
+          "docs": [
+            "The coordinator account that custody the treasury to receive the payment."
+          ]
         },
         {
           "name": "supported_asset",
-          "docs": ["The supported asset account to validate if the asset to pay is supported by the coordinator."]
+          "docs": [
+            "The supported asset account to validate if the asset to pay is supported by the coordinator."
+          ]
         },
         {
           "name": "statement",
-          "docs": ["The statement account to pay that must be owned by the coordinator."],
+          "docs": [
+            "The statement account to pay that must be owned by the coordinator."
+          ],
           "writable": true
         },
         {
           "name": "treasury",
-          "docs": ["The treasury account to receive the payment. Must match with the coordinator treasury."],
+          "docs": [
+            "The treasury account to receive the payment. Must match with the coordinator treasury."
+          ],
           "writable": true
         },
         {
           "name": "asset",
-          "docs": ["The asset of the Mint token to transfer."],
+          "docs": [
+            "The asset of the Mint token to transfer."
+          ],
           "optional": true
         },
         {
           "name": "oracle",
-          "docs": ["The oracle account to get the price of the asset. Must match with the supported asset oracle."],
+          "docs": [
+            "The oracle account to get the price of the asset. Must match with the supported asset oracle."
+          ],
           "optional": true
         },
         {
           "name": "sender_token_account",
-          "docs": ["The sender token account to transfer the SPL assets from the sender."],
+          "docs": [
+            "The sender token account to transfer the SPL assets from the sender."
+          ],
           "writable": true,
           "optional": true
         },
         {
           "name": "treasury_token_account",
-          "docs": ["The treasury token account to transfer the SPL assets to the treasury."],
+          "docs": [
+            "The treasury token account to transfer the SPL assets to the treasury."
+          ],
           "writable": true,
           "optional": true
         },
         {
           "name": "token_program",
-          "docs": ["The token program to transfer the SPL assets."]
+          "docs": [
+            "The token program to transfer the SPL assets."
+          ]
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -1220,27 +1927,46 @@
     },
     {
       "name": "mark_statement_paid",
-      "docs": ["Marks an specific amount of a Statement as paid"],
-      "discriminator": [213, 23, 215, 237, 79, 34, 158, 83],
+      "docs": [
+        "Marks an specific amount of a Statement as paid"
+      ],
+      "discriminator": [
+        213,
+        23,
+        215,
+        237,
+        79,
+        34,
+        158,
+        83
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction that must to be a coordinator executor."],
+          "docs": [
+            "The sender of the instruction that must to be a coordinator executor."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account the statement belongs to."]
+          "docs": [
+            "The coordinator account the statement belongs to."
+          ]
         },
         {
           "name": "statement",
-          "docs": ["The statement account to mark as paid. It must belong to the given coordinator."],
+          "docs": [
+            "The statement account to mark as paid. It must belong to the given coordinator."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -1257,12 +1983,25 @@
     },
     {
       "name": "migrate_collateral_info",
-      "docs": ["Migrates the collateral info from the old format to the current format"],
-      "discriminator": [140, 39, 68, 234, 43, 47, 199, 128],
+      "docs": [
+        "Migrates the collateral info from the old format to the current format"
+      ],
+      "discriminator": [
+        140,
+        39,
+        68,
+        234,
+        43,
+        47,
+        199,
+        128
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction. Must be the collateral creator."],
+          "docs": [
+            "The sender of the instruction. Must be the collateral creator."
+          ],
           "writable": true,
           "signer": true
         },
@@ -1277,16 +2016,22 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account that owns the collateral."]
+          "docs": [
+            "The coordinator account that owns the collateral."
+          ]
         },
         {
           "name": "collateral",
-          "docs": ["The collateral account to migrate the info."],
+          "docs": [
+            "The collateral account to migrate the info."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -1297,27 +2042,44 @@
       "docs": [
         "Migrates a Collateral (multi-admin) to SingleSignerCollateral (single-owner) via coordinator collateral_creator authorization"
       ],
-      "discriminator": [119, 54, 24, 43, 18, 165, 203, 187],
+      "discriminator": [
+        119,
+        54,
+        24,
+        43,
+        18,
+        165,
+        203,
+        187
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction. Must be the coordinator's collateral creator."],
+          "docs": [
+            "The sender of the instruction. Must be the coordinator's collateral creator."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "rent_receiver",
-          "docs": ["Receives excess rent when account shrinks"],
+          "docs": [
+            "Receives excess rent when account shrinks"
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator that owns the collateral. The sender must be the collateral creator."]
+          "docs": [
+            "The coordinator that owns the collateral. The sender must be the collateral creator."
+          ]
         },
         {
           "name": "collateral",
-          "docs": ["The collateral to migrate (V1 or V2) - will be rewritten as SingleSignerCollateral"],
+          "docs": [
+            "The collateral to migrate (V1 or V2) - will be rewritten as SingleSignerCollateral"
+          ],
           "writable": true
         },
         {
@@ -1334,8 +2096,19 @@
     },
     {
       "name": "process_permissionless_withdrawal",
-      "docs": ["Executes a permissionless timelock withdrawal (timelock or expedited path)"],
-      "discriminator": [139, 145, 153, 164, 33, 33, 245, 116],
+      "docs": [
+        "Executes a permissionless timelock withdrawal (timelock or expedited path)"
+      ],
+      "discriminator": [
+        139,
+        145,
+        153,
+        164,
+        33,
+        33,
+        245,
+        116
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -1349,21 +2122,47 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account that governs the collateral."]
+          "docs": [
+            "The coordinator account that governs the collateral."
+          ]
         },
         {
           "name": "collateral",
-          "docs": ["The collateral account from which funds will be withdrawn. Must belong to coordinator."]
+          "docs": [
+            "The collateral account from which funds will be withdrawn. Must belong to coordinator."
+          ]
         },
         {
           "name": "collateral_authority",
-          "docs": ["The collateral authority PDA that holds the assets."],
+          "docs": [
+            "The collateral authority PDA that holds the assets."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               },
               {
                 "kind": "account",
@@ -1382,7 +2181,25 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [87, 105, 116, 104, 100, 114, 97, 119, 97, 108, 82, 101, 113, 117, 101, 115, 116]
+                "value": [
+                  87,
+                  105,
+                  116,
+                  104,
+                  100,
+                  114,
+                  97,
+                  119,
+                  97,
+                  108,
+                  82,
+                  101,
+                  113,
+                  117,
+                  101,
+                  115,
+                  116
+                ]
               },
               {
                 "kind": "account",
@@ -1402,29 +2219,39 @@
         },
         {
           "name": "rent_payer",
-          "docs": ["Pays rent if init_if_needed creates the recipient ATA."],
+          "docs": [
+            "Pays rent if init_if_needed creates the recipient ATA."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "recipient",
-          "docs": ["The recipient of the withdrawn assets. Must match withdrawal_request.recipient."],
+          "docs": [
+            "The recipient of the withdrawn assets. Must match withdrawal_request.recipient."
+          ],
           "writable": true
         },
         {
           "name": "asset",
-          "docs": ["The SPL mint of the asset to withdraw. None for native SOL."],
+          "docs": [
+            "The SPL mint of the asset to withdraw. None for native SOL."
+          ],
           "optional": true
         },
         {
           "name": "collateral_token_account",
-          "docs": ["The collateral authority's token account for the asset being withdrawn."],
+          "docs": [
+            "The collateral authority's token account for the asset being withdrawn."
+          ],
           "writable": true,
           "optional": true
         },
         {
           "name": "recipient_token_account",
-          "docs": ["The recipient's token account for the asset being received."],
+          "docs": [
+            "The recipient's token account for the asset being received."
+          ],
           "writable": true,
           "optional": true,
           "pda": {
@@ -1445,24 +2272,60 @@
             "program": {
               "kind": "const",
               "value": [
-                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142, 13, 131, 11, 90, 19, 153, 218, 255, 16,
-                132, 4, 142, 123, 216, 219, 233, 248, 89
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
               ]
             }
           }
         },
         {
           "name": "token_program",
-          "docs": ["The token program."]
+          "docs": [
+            "The token program."
+          ]
         },
         {
           "name": "associated_token_program",
-          "docs": ["The associated token program."],
+          "docs": [
+            "The associated token program."
+          ],
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         },
         {
@@ -1471,7 +2334,25 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [95, 95, 101, 118, 101, 110, 116, 95, 97, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               }
             ]
           }
@@ -1489,24 +2370,41 @@
     },
     {
       "name": "publish_statement",
-      "docs": ["Publishes a new Statement for a Collateral account into the context of the Coordinator"],
-      "discriminator": [93, 17, 72, 187, 233, 58, 34, 178],
+      "docs": [
+        "Publishes a new Statement for a Collateral account into the context of the Coordinator"
+      ],
+      "discriminator": [
+        93,
+        17,
+        72,
+        187,
+        233,
+        58,
+        34,
+        178
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction that must to be a coordinator publisher."],
+          "docs": [
+            "The sender of the instruction that must to be a coordinator publisher."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "rent_payer",
-          "docs": ["The payer of the rent for the new Statement account. It does not require a particular role."],
+          "docs": [
+            "The payer of the rent for the new Statement account. It does not require a particular role."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account the statement belongs to."]
+          "docs": [
+            "The coordinator account the statement belongs to."
+          ]
         },
         {
           "name": "collateral",
@@ -1526,7 +2424,9 @@
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -1543,33 +2443,54 @@
     },
     {
       "name": "remove_collateral_admin",
-      "docs": ["Removes an admin from a Collateral account"],
-      "discriminator": [202, 180, 209, 228, 36, 140, 173, 136],
+      "docs": [
+        "Removes an admin from a Collateral account"
+      ],
+      "discriminator": [
+        202,
+        180,
+        209,
+        228,
+        36,
+        140,
+        173,
+        136
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction. They do not require a specific role into the account."],
+          "docs": [
+            "The sender of the instruction. They do not require a specific role into the account."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "rent_receiver",
-          "docs": ["The receiver of the rent for the CollateralAdminSignatures account."],
+          "docs": [
+            "The receiver of the rent for the CollateralAdminSignatures account."
+          ],
           "writable": true
         },
         {
           "name": "collateral",
-          "docs": ["The collateral account in which the admin shall be removed."],
+          "docs": [
+            "The collateral account in which the admin shall be removed."
+          ],
           "writable": true
         },
         {
           "name": "collateral_admin_signatures",
-          "docs": ["The CollateralAdminSignatures account to get the submitted signatures."],
+          "docs": [
+            "The CollateralAdminSignatures account to get the submitted signatures."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -1582,8 +2503,19 @@
     },
     {
       "name": "remove_coordinator_executor",
-      "docs": ["Removes an executor from a Coordinator account"],
-      "discriminator": [210, 153, 87, 32, 122, 80, 219, 136],
+      "docs": [
+        "Removes an executor from a Coordinator account"
+      ],
+      "discriminator": [
+        210,
+        153,
+        87,
+        32,
+        122,
+        80,
+        219,
+        136
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -1596,12 +2528,16 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account from which the executor will be removed."],
+          "docs": [
+            "The coordinator account from which the executor will be removed."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program account"],
+          "docs": [
+            "The system program account"
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -1614,8 +2550,19 @@
     },
     {
       "name": "remove_coordinator_publisher",
-      "docs": ["Removes a publisher from a Coordinator account"],
-      "discriminator": [119, 225, 227, 147, 18, 51, 240, 187],
+      "docs": [
+        "Removes a publisher from a Coordinator account"
+      ],
+      "discriminator": [
+        119,
+        225,
+        227,
+        147,
+        18,
+        51,
+        240,
+        187
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -1628,12 +2575,16 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account the publisher will be removed from."],
+          "docs": [
+            "The coordinator account the publisher will be removed from."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program account."],
+          "docs": [
+            "The system program account."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -1646,8 +2597,19 @@
     },
     {
       "name": "remove_supported_asset",
-      "docs": ["Removes a supported asset from the context of the Coordinator"],
-      "discriminator": [155, 159, 215, 149, 255, 141, 175, 198],
+      "docs": [
+        "Removes a supported asset from the context of the Coordinator"
+      ],
+      "discriminator": [
+        155,
+        159,
+        215,
+        149,
+        255,
+        141,
+        175,
+        198
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -1668,7 +2630,9 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account to which the asset will be removed."]
+          "docs": [
+            "The coordinator account to which the asset will be removed."
+          ]
         },
         {
           "name": "supported_asset",
@@ -1681,7 +2645,23 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [83, 117, 112, 112, 111, 114, 116, 101, 100, 32, 65, 115, 115, 101, 116]
+                "value": [
+                  83,
+                  117,
+                  112,
+                  112,
+                  111,
+                  114,
+                  116,
+                  101,
+                  100,
+                  32,
+                  65,
+                  115,
+                  115,
+                  101,
+                  116
+                ]
               },
               {
                 "kind": "account",
@@ -1696,7 +2676,9 @@
         },
         {
           "name": "system_program",
-          "docs": ["The system program account"],
+          "docs": [
+            "The system program account"
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -1709,18 +2691,33 @@
     },
     {
       "name": "request_permissionless_withdrawal",
-      "docs": ["Requests a permissionless timelock withdrawal from a multi-admin collateral"],
-      "discriminator": [239, 173, 11, 220, 179, 111, 110, 123],
+      "docs": [
+        "Requests a permissionless timelock withdrawal from a multi-admin collateral"
+      ],
+      "discriminator": [
+        239,
+        173,
+        11,
+        220,
+        179,
+        111,
+        110,
+        123
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction. Must be a collateral admin."],
+          "docs": [
+            "The sender of the instruction. Must be a collateral admin."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "rent_payer",
-          "docs": ["Pays rent for the WithdrawalRequest and receives rent from the closed signatures account."],
+          "docs": [
+            "Pays rent for the WithdrawalRequest and receives rent from the closed signatures account."
+          ],
           "writable": true,
           "signer": true
         },
@@ -1733,12 +2730,34 @@
         },
         {
           "name": "collateral_authority",
-          "docs": ["The collateral authority PDA that holds native SOL and owns collateral token accounts."],
+          "docs": [
+            "The collateral authority PDA that holds native SOL and owns collateral token accounts."
+          ],
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               },
               {
                 "kind": "account",
@@ -1753,16 +2772,22 @@
         },
         {
           "name": "timelock_config",
-          "docs": ["Must always be passed at the deterministic PDA address to prevent bypass of enabled=false."]
+          "docs": [
+            "Must always be passed at the deterministic PDA address to prevent bypass of enabled=false."
+          ]
         },
         {
           "name": "asset",
-          "docs": ["The SPL mint of the asset to withdraw. None for native SOL."],
+          "docs": [
+            "The SPL mint of the asset to withdraw. None for native SOL."
+          ],
           "optional": true
         },
         {
           "name": "collateral_token_account",
-          "docs": ["The collateral authority's token account for the requested SPL asset."],
+          "docs": [
+            "The collateral authority's token account for the requested SPL asset."
+          ],
           "optional": true
         },
         {
@@ -1772,7 +2797,25 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [87, 105, 116, 104, 100, 114, 97, 119, 97, 108, 82, 101, 113, 117, 101, 115, 116]
+                "value": [
+                  87,
+                  105,
+                  116,
+                  104,
+                  100,
+                  114,
+                  97,
+                  119,
+                  97,
+                  108,
+                  82,
+                  101,
+                  113,
+                  117,
+                  101,
+                  115,
+                  116
+                ]
               },
               {
                 "kind": "account",
@@ -1795,7 +2838,25 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [95, 95, 101, 118, 101, 110, 116, 95, 97, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               }
             ]
           }
@@ -1821,18 +2882,33 @@
     },
     {
       "name": "request_single_signer_permissionless_withdrawal",
-      "docs": ["Requests a permissionless timelock withdrawal from a single-signer collateral"],
-      "discriminator": [59, 245, 220, 88, 129, 121, 252, 62],
+      "docs": [
+        "Requests a permissionless timelock withdrawal from a single-signer collateral"
+      ],
+      "discriminator": [
+        59,
+        245,
+        220,
+        88,
+        129,
+        121,
+        252,
+        62
+      ],
       "accounts": [
         {
           "name": "owner",
-          "docs": ["The collateral owner. Signs the transaction directly."],
+          "docs": [
+            "The collateral owner. Signs the transaction directly."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "rent_payer",
-          "docs": ["Pays rent for the WithdrawalRequest and is stored as its close rent collector."],
+          "docs": [
+            "Pays rent for the WithdrawalRequest and is stored as its close rent collector."
+          ],
           "writable": true,
           "signer": true
         },
@@ -1844,12 +2920,34 @@
         },
         {
           "name": "collateral_authority",
-          "docs": ["The collateral authority PDA that holds native SOL and owns collateral token accounts."],
+          "docs": [
+            "The collateral authority PDA that holds native SOL and owns collateral token accounts."
+          ],
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               },
               {
                 "kind": "account",
@@ -1863,12 +2961,16 @@
         },
         {
           "name": "asset",
-          "docs": ["The SPL mint of the asset to withdraw. None for native SOL."],
+          "docs": [
+            "The SPL mint of the asset to withdraw. None for native SOL."
+          ],
           "optional": true
         },
         {
           "name": "collateral_token_account",
-          "docs": ["The collateral authority's token account for the requested SPL asset."],
+          "docs": [
+            "The collateral authority's token account for the requested SPL asset."
+          ],
           "optional": true
         },
         {
@@ -1878,7 +2980,25 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [87, 105, 116, 104, 100, 114, 97, 119, 97, 108, 82, 101, 113, 117, 101, 115, 116]
+                "value": [
+                  87,
+                  105,
+                  116,
+                  104,
+                  100,
+                  114,
+                  97,
+                  119,
+                  97,
+                  108,
+                  82,
+                  101,
+                  113,
+                  117,
+                  101,
+                  115,
+                  116
+                ]
               },
               {
                 "kind": "account",
@@ -1901,7 +3021,25 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [95, 95, 101, 118, 101, 110, 116, 95, 97, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               }
             ]
           }
@@ -1927,8 +3065,19 @@
     },
     {
       "name": "submit_old_collateral_signatures",
-      "docs": ["Submits signatures to an old Collateral account"],
-      "discriminator": [57, 159, 18, 159, 163, 119, 166, 246],
+      "docs": [
+        "Submits signatures to an old Collateral account"
+      ],
+      "discriminator": [
+        57,
+        159,
+        18,
+        159,
+        163,
+        119,
+        166,
+        246
+      ],
       "accounts": [
         {
           "name": "rent_payer",
@@ -1948,21 +3097,29 @@
         },
         {
           "name": "collateral",
-          "docs": ["The Collateral account the signature will allow the action to be performed."]
+          "docs": [
+            "The Collateral account the signature will allow the action to be performed."
+          ]
         },
         {
           "name": "collateral_admin_signatures",
-          "docs": ["The CollateralAdminSignatures account to push/update the signature."],
+          "docs": [
+            "The CollateralAdminSignatures account to push/update the signature."
+          ],
           "writable": true
         },
         {
           "name": "instruction_sysvar",
-          "docs": ["The instruction sysvar to get the signatures."],
+          "docs": [
+            "The instruction sysvar to get the signatures."
+          ],
           "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -1979,8 +3136,19 @@
     },
     {
       "name": "submit_signatures",
-      "docs": ["Upsert a collateral admin signature into a Collateral account"],
-      "discriminator": [194, 5, 18, 152, 245, 144, 134, 77],
+      "docs": [
+        "Upsert a collateral admin signature into a Collateral account"
+      ],
+      "discriminator": [
+        194,
+        5,
+        18,
+        152,
+        245,
+        144,
+        134,
+        77
+      ],
       "accounts": [
         {
           "name": "rent_payer",
@@ -2000,17 +3168,23 @@
         },
         {
           "name": "collateral_admin_signatures",
-          "docs": ["The CollateralAdminSignatures account to push/update the signature."],
+          "docs": [
+            "The CollateralAdminSignatures account to push/update the signature."
+          ],
           "writable": true
         },
         {
           "name": "instruction_sysvar",
-          "docs": ["The instruction sysvar to get the signatures."],
+          "docs": [
+            "The instruction sysvar to get the signatures."
+          ],
           "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -2027,33 +3201,54 @@
     },
     {
       "name": "transfer_collateral_team",
-      "docs": ["Transfer a Collateral Account to a new team"],
-      "discriminator": [214, 77, 54, 238, 103, 85, 74, 156],
+      "docs": [
+        "Transfer a Collateral Account to a new team"
+      ],
+      "discriminator": [
+        214,
+        77,
+        54,
+        238,
+        103,
+        85,
+        74,
+        156
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction. They do not require a specific role into the account."],
+          "docs": [
+            "The sender of the instruction. They do not require a specific role into the account."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "rent_receiver",
-          "docs": ["The receiver of the rent for the CollateralAdminSignatures account."],
+          "docs": [
+            "The receiver of the rent for the CollateralAdminSignatures account."
+          ],
           "writable": true
         },
         {
           "name": "collateral",
-          "docs": ["The collateral account that shall be transferred."],
+          "docs": [
+            "The collateral account that shall be transferred."
+          ],
           "writable": true
         },
         {
           "name": "collateral_admin_signatures",
-          "docs": ["The CollateralAdminSignatures account to get the submitted signatures."],
+          "docs": [
+            "The CollateralAdminSignatures account to get the submitted signatures."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -2070,8 +3265,19 @@
     },
     {
       "name": "transfer_ownership",
-      "docs": ["Transfers the ownership of a Coordinator account"],
-      "discriminator": [65, 177, 215, 73, 53, 45, 99, 47],
+      "docs": [
+        "Transfers the ownership of a Coordinator account"
+      ],
+      "discriminator": [
+        65,
+        177,
+        215,
+        73,
+        53,
+        45,
+        99,
+        47
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -2084,12 +3290,16 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account to be transferred to a new owner."],
+          "docs": [
+            "The coordinator account to be transferred to a new owner."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program account"],
+          "docs": [
+            "The system program account"
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -2102,12 +3312,25 @@
     },
     {
       "name": "transfer_single_signer_collateral_ownership",
-      "docs": ["Transfers ownership of a SingleSignerCollateral account"],
-      "discriminator": [15, 3, 166, 229, 43, 123, 85, 181],
+      "docs": [
+        "Transfers ownership of a SingleSignerCollateral account"
+      ],
+      "discriminator": [
+        15,
+        3,
+        166,
+        229,
+        43,
+        123,
+        85,
+        181
+      ],
       "accounts": [
         {
           "name": "owner",
-          "docs": ["Current owner must sign"],
+          "docs": [
+            "Current owner must sign"
+          ],
           "writable": true,
           "signer": true
         },
@@ -2125,33 +3348,54 @@
     },
     {
       "name": "update_collateral_admin_threshold",
-      "docs": ["Updates the admin threshold of a Collateral account"],
-      "discriminator": [120, 74, 105, 215, 147, 104, 76, 51],
+      "docs": [
+        "Updates the admin threshold of a Collateral account"
+      ],
+      "discriminator": [
+        120,
+        74,
+        105,
+        215,
+        147,
+        104,
+        76,
+        51
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction. They do not require a specific role into the account."],
+          "docs": [
+            "The sender of the instruction. They do not require a specific role into the account."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "rent_receiver",
-          "docs": ["The receiver of the rent for the CollateralAdminSignatures account."],
+          "docs": [
+            "The receiver of the rent for the CollateralAdminSignatures account."
+          ],
           "writable": true
         },
         {
           "name": "collateral",
-          "docs": ["The collateral account in which the threshold shall be updated."],
+          "docs": [
+            "The collateral account in which the threshold shall be updated."
+          ],
           "writable": true
         },
         {
           "name": "collateral_admin_signatures",
-          "docs": ["The CollateralAdminSignatures account to get the submitted signatures."],
+          "docs": [
+            "The CollateralAdminSignatures account to get the submitted signatures."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -2164,8 +3408,19 @@
     },
     {
       "name": "update_collateral_creator",
-      "docs": ["Updates a Coordinator account collateral creator"],
-      "discriminator": [194, 239, 157, 39, 89, 172, 141, 218],
+      "docs": [
+        "Updates a Coordinator account collateral creator"
+      ],
+      "discriminator": [
+        194,
+        239,
+        157,
+        39,
+        89,
+        172,
+        141,
+        218
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -2178,12 +3433,16 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account to be updated."],
+          "docs": [
+            "The coordinator account to be updated."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program account."],
+          "docs": [
+            "The system program account."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -2196,8 +3455,19 @@
     },
     {
       "name": "update_coordinator_treasury",
-      "docs": ["Updates a Coordinator account supported asset treasury"],
-      "discriminator": [195, 205, 29, 85, 235, 37, 146, 74],
+      "docs": [
+        "Updates a Coordinator account supported asset treasury"
+      ],
+      "discriminator": [
+        195,
+        205,
+        29,
+        85,
+        235,
+        37,
+        146,
+        74
+      ],
       "accounts": [
         {
           "name": "sender",
@@ -2210,12 +3480,16 @@
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account to be updated."],
+          "docs": [
+            "The coordinator account to be updated."
+          ],
           "writable": true
         },
         {
           "name": "system_program",
-          "docs": ["The system program account."],
+          "docs": [
+            "The system program account."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -2228,18 +3502,33 @@
     },
     {
       "name": "update_statement",
-      "docs": ["Updates a Statement for a Collateral account into the context of the Coordinator"],
-      "discriminator": [231, 17, 97, 251, 44, 84, 104, 192],
+      "docs": [
+        "Updates a Statement for a Collateral account into the context of the Coordinator"
+      ],
+      "discriminator": [
+        231,
+        17,
+        97,
+        251,
+        44,
+        84,
+        104,
+        192
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction that must to be a coordinator publisher."],
+          "docs": [
+            "The sender of the instruction that must to be a coordinator publisher."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account the statement belongs to."]
+          "docs": [
+            "The coordinator account the statement belongs to."
+          ]
         },
         {
           "name": "collateral",
@@ -2259,7 +3548,9 @@
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -2276,8 +3567,19 @@
     },
     {
       "name": "update_timelock_config",
-      "docs": ["Updates an existing TimelockConfig for a Coordinator"],
-      "discriminator": [21, 164, 192, 85, 114, 252, 239, 221],
+      "docs": [
+        "Updates an existing TimelockConfig for a Coordinator"
+      ],
+      "discriminator": [
+        21,
+        164,
+        192,
+        85,
+        114,
+        252,
+        239,
+        221
+      ],
       "accounts": [
         {
           "name": "owner",
@@ -2293,7 +3595,22 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [84, 105, 109, 101, 108, 111, 99, 107, 67, 111, 110, 102, 105, 103]
+                "value": [
+                  84,
+                  105,
+                  109,
+                  101,
+                  108,
+                  111,
+                  99,
+                  107,
+                  67,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
               },
               {
                 "kind": "account",
@@ -2308,7 +3625,25 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [95, 95, 101, 118, 101, 110, 116, 95, 97, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               }
             ]
           }
@@ -2326,23 +3661,40 @@
     },
     {
       "name": "withdraw_collateral_asset",
-      "docs": ["Withdraws a Collateral asset from a Collateral account"],
-      "discriminator": [47, 108, 22, 69, 238, 159, 167, 211],
+      "docs": [
+        "Withdraws a Collateral asset from a Collateral account"
+      ],
+      "discriminator": [
+        47,
+        108,
+        22,
+        69,
+        238,
+        159,
+        167,
+        211
+      ],
       "accounts": [
         {
           "name": "sender",
-          "docs": ["The sender of the instruction. Must be a collateral admin."],
+          "docs": [
+            "The sender of the instruction. Must be a collateral admin."
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "rent_receiver",
-          "docs": ["The receiver of the rent for the CollateralAdminSignatures account."],
+          "docs": [
+            "The receiver of the rent for the CollateralAdminSignatures account."
+          ],
           "writable": true
         },
         {
           "name": "coordinator",
-          "docs": ["The coordinator account that validates the signatures."]
+          "docs": [
+            "The coordinator account that validates the signatures."
+          ]
         },
         {
           "name": "collateral",
@@ -2354,13 +3706,35 @@
         },
         {
           "name": "collateral_authority",
-          "docs": ["The collateral authority account that holds the assets to be withdrawn."],
+          "docs": [
+            "The collateral authority account that holds the assets to be withdrawn."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               },
               {
                 "kind": "account",
@@ -2371,43 +3745,59 @@
         },
         {
           "name": "collateral_admin_signatures",
-          "docs": ["The CollateralAdminSignatures account to get the submitted signatures."],
+          "docs": [
+            "The CollateralAdminSignatures account to get the submitted signatures."
+          ],
           "writable": true
         },
         {
           "name": "receiver",
-          "docs": ["The receiver of the asset."],
+          "docs": [
+            "The receiver of the asset."
+          ],
           "writable": true
         },
         {
           "name": "asset",
-          "docs": ["The asset to withdraw. It is None for native assets and Some for SPL tokens."],
+          "docs": [
+            "The asset to withdraw. It is None for native assets and Some for SPL tokens."
+          ],
           "optional": true
         },
         {
           "name": "collateral_token_account",
-          "docs": ["The token account of the collateral that holds the asset to be withdrawn."],
+          "docs": [
+            "The token account of the collateral that holds the asset to be withdrawn."
+          ],
           "writable": true,
           "optional": true
         },
         {
           "name": "receiver_token_account",
-          "docs": ["The token account of the receiver that will receive the asset."],
+          "docs": [
+            "The token account of the receiver that will receive the asset."
+          ],
           "writable": true,
           "optional": true
         },
         {
           "name": "token_program",
-          "docs": ["The token program."]
+          "docs": [
+            "The token program."
+          ]
         },
         {
           "name": "instruction_sysvar",
-          "docs": ["The instruction sysvar to get the signatures."],
+          "docs": [
+            "The instruction sysvar to get the signatures."
+          ],
           "address": "Sysvar1nstructions1111111111111111111111111"
         },
         {
           "name": "system_program",
-          "docs": ["The system program."],
+          "docs": [
+            "The system program."
+          ],
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -2424,12 +3814,25 @@
     },
     {
       "name": "withdraw_single_signer_collateral_asset",
-      "docs": ["Withdraws an asset from a SingleSignerCollateral account (owner + coordinator signature)"],
-      "discriminator": [13, 25, 64, 83, 111, 184, 70, 241],
+      "docs": [
+        "Withdraws an asset from a SingleSignerCollateral account (owner + coordinator signature)"
+      ],
+      "discriminator": [
+        13,
+        25,
+        64,
+        83,
+        111,
+        184,
+        70,
+        241
+      ],
       "accounts": [
         {
           "name": "owner",
-          "docs": ["Owner must sign (can be Squads PDA invoking via CPI)"],
+          "docs": [
+            "Owner must sign (can be Squads PDA invoking via CPI)"
+          ],
           "writable": true,
           "signer": true
         },
@@ -2447,7 +3850,27 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [67, 111, 108, 108, 97, 116, 101, 114, 97, 108, 65, 117, 116, 104, 111, 114, 105, 116, 121]
+                "value": [
+                  67,
+                  111,
+                  108,
+                  108,
+                  97,
+                  116,
+                  101,
+                  114,
+                  97,
+                  108,
+                  65,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
               },
               {
                 "kind": "account",
@@ -2501,189 +3924,603 @@
   "accounts": [
     {
       "name": "Collateral",
-      "discriminator": [123, 130, 234, 63, 255, 240, 255, 92]
+      "discriminator": [
+        123,
+        130,
+        234,
+        63,
+        255,
+        240,
+        255,
+        92
+      ]
     },
     {
       "name": "CollateralAdminSignatures",
-      "discriminator": [10, 242, 54, 189, 174, 201, 1, 175]
+      "discriminator": [
+        10,
+        242,
+        54,
+        189,
+        174,
+        201,
+        1,
+        175
+      ]
     },
     {
       "name": "CollateralAdminSignaturesV2",
-      "discriminator": [194, 102, 185, 168, 0, 177, 70, 136]
+      "discriminator": [
+        194,
+        102,
+        185,
+        168,
+        0,
+        177,
+        70,
+        136
+      ]
     },
     {
       "name": "CollateralV2",
-      "discriminator": [165, 86, 67, 157, 199, 120, 39, 111]
+      "discriminator": [
+        165,
+        86,
+        67,
+        157,
+        199,
+        120,
+        39,
+        111
+      ]
     },
     {
       "name": "Coordinator",
-      "discriminator": [234, 133, 61, 140, 173, 3, 10, 188]
+      "discriminator": [
+        234,
+        133,
+        61,
+        140,
+        173,
+        3,
+        10,
+        188
+      ]
     },
     {
       "name": "PriceUpdateV2",
-      "discriminator": [34, 241, 35, 99, 157, 126, 244, 205]
+      "discriminator": [
+        34,
+        241,
+        35,
+        99,
+        157,
+        126,
+        244,
+        205
+      ]
     },
     {
       "name": "SingleSignerCollateral",
-      "discriminator": [19, 45, 99, 29, 196, 50, 228, 117]
+      "discriminator": [
+        19,
+        45,
+        99,
+        29,
+        196,
+        50,
+        228,
+        117
+      ]
     },
     {
       "name": "Statement",
-      "discriminator": [202, 2, 247, 46, 97, 244, 139, 209]
+      "discriminator": [
+        202,
+        2,
+        247,
+        46,
+        97,
+        244,
+        139,
+        209
+      ]
     },
     {
       "name": "SupportedAsset",
-      "discriminator": [129, 27, 96, 192, 89, 180, 227, 200]
+      "discriminator": [
+        129,
+        27,
+        96,
+        192,
+        89,
+        180,
+        227,
+        200
+      ]
     },
     {
       "name": "TimelockConfig",
-      "discriminator": [189, 87, 27, 18, 189, 173, 47, 197]
+      "discriminator": [
+        189,
+        87,
+        27,
+        18,
+        189,
+        173,
+        47,
+        197
+      ]
     },
     {
       "name": "WithdrawalRequest",
-      "discriminator": [242, 88, 147, 173, 182, 62, 229, 193]
+      "discriminator": [
+        242,
+        88,
+        147,
+        173,
+        182,
+        62,
+        229,
+        193
+      ]
     }
   ],
   "events": [
     {
       "name": "CollateralAccountCreated",
-      "discriminator": [205, 133, 237, 32, 187, 104, 104, 70]
+      "discriminator": [
+        205,
+        133,
+        237,
+        32,
+        187,
+        104,
+        104,
+        70
+      ]
     },
     {
       "name": "CollateralAdminAdded",
-      "discriminator": [86, 225, 54, 77, 178, 186, 246, 9]
+      "discriminator": [
+        86,
+        225,
+        54,
+        77,
+        178,
+        186,
+        246,
+        9
+      ]
     },
     {
       "name": "CollateralAdminRemoved",
-      "discriminator": [168, 2, 186, 233, 168, 193, 74, 22]
+      "discriminator": [
+        168,
+        2,
+        186,
+        233,
+        168,
+        193,
+        74,
+        22
+      ]
     },
     {
       "name": "CollateralAdminSignaturesSubmitted",
-      "discriminator": [48, 143, 119, 134, 96, 216, 166, 137]
+      "discriminator": [
+        48,
+        143,
+        119,
+        134,
+        96,
+        216,
+        166,
+        137
+      ]
     },
     {
       "name": "CollateralAdminThresholdUpdated",
-      "discriminator": [135, 91, 37, 245, 180, 100, 182, 84]
+      "discriminator": [
+        135,
+        91,
+        37,
+        245,
+        180,
+        100,
+        182,
+        84
+      ]
     },
     {
       "name": "CollateralCreatorUpdated",
-      "discriminator": [118, 89, 24, 234, 154, 255, 100, 82]
+      "discriminator": [
+        118,
+        89,
+        24,
+        234,
+        154,
+        255,
+        100,
+        82
+      ]
     },
     {
       "name": "CollateralFundsNonceIncreased",
-      "discriminator": [66, 123, 127, 220, 74, 220, 227, 138]
+      "discriminator": [
+        66,
+        123,
+        127,
+        220,
+        74,
+        220,
+        227,
+        138
+      ]
     },
     {
       "name": "CollateralMigratedToSingleSigner",
-      "discriminator": [127, 110, 69, 184, 227, 54, 187, 134]
+      "discriminator": [
+        127,
+        110,
+        69,
+        184,
+        227,
+        54,
+        187,
+        134
+      ]
     },
     {
       "name": "CollateralTeamTransferred",
-      "discriminator": [114, 255, 83, 208, 247, 200, 115, 169]
+      "discriminator": [
+        114,
+        255,
+        83,
+        208,
+        247,
+        200,
+        115,
+        169
+      ]
     },
     {
       "name": "CollateralWithdrawal",
-      "discriminator": [228, 99, 165, 138, 242, 193, 220, 162]
+      "discriminator": [
+        228,
+        99,
+        165,
+        138,
+        242,
+        193,
+        220,
+        162
+      ]
     },
     {
       "name": "ExecutorAdded",
-      "discriminator": [41, 10, 249, 60, 242, 196, 109, 62]
+      "discriminator": [
+        41,
+        10,
+        249,
+        60,
+        242,
+        196,
+        109,
+        62
+      ]
     },
     {
       "name": "ExecutorRemoved",
-      "discriminator": [13, 84, 95, 215, 219, 121, 202, 82]
+      "discriminator": [
+        13,
+        84,
+        95,
+        215,
+        219,
+        121,
+        202,
+        82
+      ]
     },
     {
       "name": "Liquidation",
-      "discriminator": [253, 18, 85, 107, 192, 175, 171, 172]
+      "discriminator": [
+        253,
+        18,
+        85,
+        107,
+        192,
+        175,
+        171,
+        172
+      ]
     },
     {
       "name": "NewTreasury",
-      "discriminator": [206, 3, 27, 162, 251, 5, 150, 78]
+      "discriminator": [
+        206,
+        3,
+        27,
+        162,
+        251,
+        5,
+        150,
+        78
+      ]
     },
     {
       "name": "OwnershipTransferred",
-      "discriminator": [172, 61, 205, 183, 250, 50, 38, 98]
+      "discriminator": [
+        172,
+        61,
+        205,
+        183,
+        250,
+        50,
+        38,
+        98
+      ]
     },
     {
       "name": "PaymentFromCollateral",
-      "discriminator": [72, 100, 20, 89, 65, 84, 100, 83]
+      "discriminator": [
+        72,
+        100,
+        20,
+        89,
+        65,
+        84,
+        100,
+        83
+      ]
     },
     {
       "name": "PaymentFromCollateralForStatement",
-      "discriminator": [88, 89, 125, 64, 102, 193, 218, 142]
+      "discriminator": [
+        88,
+        89,
+        125,
+        64,
+        102,
+        193,
+        218,
+        142
+      ]
     },
     {
       "name": "PaymentFromUserAccount",
-      "discriminator": [101, 161, 48, 56, 226, 112, 107, 208]
+      "discriminator": [
+        101,
+        161,
+        48,
+        56,
+        226,
+        112,
+        107,
+        208
+      ]
     },
     {
       "name": "PaymentFromUserAccountForStatement",
-      "discriminator": [246, 245, 147, 81, 80, 120, 213, 3]
+      "discriminator": [
+        246,
+        245,
+        147,
+        81,
+        80,
+        120,
+        213,
+        3
+      ]
     },
     {
       "name": "PublisherAdded",
-      "discriminator": [121, 240, 153, 141, 180, 107, 200, 10]
+      "discriminator": [
+        121,
+        240,
+        153,
+        141,
+        180,
+        107,
+        200,
+        10
+      ]
     },
     {
       "name": "PublisherRemoved",
-      "discriminator": [171, 116, 181, 171, 91, 213, 37, 135]
+      "discriminator": [
+        171,
+        116,
+        181,
+        171,
+        91,
+        213,
+        37,
+        135
+      ]
     },
     {
       "name": "SingleSignerCollateralCreated",
-      "discriminator": [96, 253, 95, 146, 66, 114, 11, 235]
+      "discriminator": [
+        96,
+        253,
+        95,
+        146,
+        66,
+        114,
+        11,
+        235
+      ]
     },
     {
       "name": "SingleSignerCollateralOwnershipTransferred",
-      "discriminator": [105, 48, 137, 202, 109, 156, 108, 198]
+      "discriminator": [
+        105,
+        48,
+        137,
+        202,
+        109,
+        156,
+        108,
+        198
+      ]
     },
     {
       "name": "SingleSignerCollateralWithdrawal",
-      "discriminator": [50, 203, 238, 151, 46, 249, 77, 108]
+      "discriminator": [
+        50,
+        203,
+        238,
+        151,
+        46,
+        249,
+        77,
+        108
+      ]
     },
     {
       "name": "StatementMarkedPaid",
-      "discriminator": [170, 115, 170, 137, 137, 124, 104, 225]
+      "discriminator": [
+        170,
+        115,
+        170,
+        137,
+        137,
+        124,
+        104,
+        225
+      ]
     },
     {
       "name": "StatementPublished",
-      "discriminator": [39, 64, 113, 216, 162, 226, 124, 80]
+      "discriminator": [
+        39,
+        64,
+        113,
+        216,
+        162,
+        226,
+        124,
+        80
+      ]
     },
     {
       "name": "StatementUpdated",
-      "discriminator": [7, 222, 169, 125, 120, 249, 123, 101]
+      "discriminator": [
+        7,
+        222,
+        169,
+        125,
+        120,
+        249,
+        123,
+        101
+      ]
     },
     {
       "name": "SupportedAssetAdded",
-      "discriminator": [180, 12, 47, 239, 122, 96, 13, 173]
+      "discriminator": [
+        180,
+        12,
+        47,
+        239,
+        122,
+        96,
+        13,
+        173
+      ]
     },
     {
       "name": "SupportedAssetRemoved",
-      "discriminator": [107, 209, 15, 207, 114, 250, 189, 13]
+      "discriminator": [
+        107,
+        209,
+        15,
+        207,
+        114,
+        250,
+        189,
+        13
+      ]
     },
     {
       "name": "TimelockConfigCreated",
-      "discriminator": [28, 110, 64, 60, 54, 120, 247, 242]
+      "discriminator": [
+        28,
+        110,
+        64,
+        60,
+        54,
+        120,
+        247,
+        242
+      ]
     },
     {
       "name": "TimelockConfigUpdated",
-      "discriminator": [185, 151, 233, 144, 250, 169, 17, 4]
+      "discriminator": [
+        185,
+        151,
+        233,
+        144,
+        250,
+        169,
+        17,
+        4
+      ]
     },
     {
       "name": "TimelockWithdrawalAdminCancelled",
-      "discriminator": [163, 7, 245, 167, 141, 135, 131, 70]
+      "discriminator": [
+        163,
+        7,
+        245,
+        167,
+        141,
+        135,
+        131,
+        70
+      ]
     },
     {
       "name": "TimelockWithdrawalExecuted",
-      "discriminator": [114, 115, 46, 121, 249, 62, 65, 166]
+      "discriminator": [
+        114,
+        115,
+        46,
+        121,
+        249,
+        62,
+        65,
+        166
+      ]
     },
     {
       "name": "TimelockWithdrawalRainAdminCancelled",
-      "discriminator": [127, 68, 31, 163, 195, 129, 245, 58]
+      "discriminator": [
+        127,
+        68,
+        31,
+        163,
+        195,
+        129,
+        245,
+        58
+      ]
     },
     {
       "name": "TimelockWithdrawalRequested",
-      "discriminator": [229, 163, 238, 209, 209, 91, 158, 230]
+      "discriminator": [
+        229,
+        163,
+        238,
+        209,
+        209,
+        91,
+        158,
+        230
+      ]
     }
   ],
   "errors": [
@@ -2807,27 +4644,37 @@
         "fields": [
           {
             "name": "coordinator_account",
-            "docs": ["The address of the Coordinator account the Collateral account belongs to"],
+            "docs": [
+              "The address of the Coordinator account the Collateral account belongs to"
+            ],
             "type": "pubkey"
           },
           {
             "name": "collateral_account",
-            "docs": ["The address where the Collateral account was created"],
+            "docs": [
+              "The address where the Collateral account was created"
+            ],
             "type": "pubkey"
           },
           {
             "name": "authority_address",
-            "docs": ["The address of the Collateral authority that will manage the funds"],
+            "docs": [
+              "The address of the Collateral authority that will manage the funds"
+            ],
             "type": "pubkey"
           },
           {
             "name": "name",
-            "docs": ["The name assigned to the Collateral account"],
+            "docs": [
+              "The name assigned to the Collateral account"
+            ],
             "type": "string"
           },
           {
             "name": "user",
-            "docs": ["The user that created the Collateral account"],
+            "docs": [
+              "The user that created the Collateral account"
+            ],
             "type": "pubkey"
           }
         ]
@@ -2845,12 +4692,16 @@
         "fields": [
           {
             "name": "collateral_account",
-            "docs": ["The address of the Collateral account where the admin was added"],
+            "docs": [
+              "The address of the Collateral account where the admin was added"
+            ],
             "type": "pubkey"
           },
           {
             "name": "admin",
-            "docs": ["The address of the admin that was added"],
+            "docs": [
+              "The address of the admin that was added"
+            ],
             "type": "pubkey"
           }
         ]
@@ -2868,12 +4719,16 @@
         "fields": [
           {
             "name": "collateral_account",
-            "docs": ["The address of the Collateral account where the admin was removed"],
+            "docs": [
+              "The address of the Collateral account where the admin was removed"
+            ],
             "type": "pubkey"
           },
           {
             "name": "admin",
-            "docs": ["The address of the admin that was removed"],
+            "docs": [
+              "The address of the admin that was removed"
+            ],
             "type": "pubkey"
           }
         ]
@@ -2897,9 +4752,14 @@
         "fields": [
           {
             "name": "id",
-            "docs": ["The hash of the allowed parameters that works as account id"],
+            "docs": [
+              "The hash of the allowed parameters that works as account id"
+            ],
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           },
           {
@@ -2912,7 +4772,9 @@
           },
           {
             "name": "is_in_progress",
-            "docs": ["The flag to indicate in a request if in progress or not."],
+            "docs": [
+              "The flag to indicate in a request if in progress or not."
+            ],
             "type": "bool"
           },
           {
@@ -2944,24 +4806,32 @@
         "fields": [
           {
             "name": "collateral_account",
-            "docs": ["The address of the Collateral account where the admin signature was added"],
+            "docs": [
+              "The address of the Collateral account where the admin signature was added"
+            ],
             "type": "pubkey"
           },
           {
             "name": "signatures_account",
-            "docs": ["The address of the CollateralAdminSignatures account where the admin signature was added"],
+            "docs": [
+              "The address of the CollateralAdminSignatures account where the admin signature was added"
+            ],
             "type": "pubkey"
           },
           {
             "name": "signers",
-            "docs": ["The address of the admin that submitted the signatures"],
+            "docs": [
+              "The address of the admin that submitted the signatures"
+            ],
             "type": {
               "vec": "pubkey"
             }
           },
           {
             "name": "action",
-            "docs": ["The action that was signed"],
+            "docs": [
+              "The action that was signed"
+            ],
             "type": {
               "defined": {
                 "name": "SignatureSubmissionType"
@@ -2991,9 +4861,14 @@
         "fields": [
           {
             "name": "id",
-            "docs": ["The hash of the allowed parameters that works as account id"],
+            "docs": [
+              "The hash of the allowed parameters that works as account id"
+            ],
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           },
           {
@@ -3006,17 +4881,23 @@
           },
           {
             "name": "rent_payer",
-            "docs": ["The address of the account rent payer"],
+            "docs": [
+              "The address of the account rent payer"
+            ],
             "type": "pubkey"
           },
           {
             "name": "is_in_progress",
-            "docs": ["The flag to indicate in a request if in progress or not."],
+            "docs": [
+              "The flag to indicate in a request if in progress or not."
+            ],
             "type": "bool"
           },
           {
             "name": "signers",
-            "docs": ["The list of admins that have signed the request"],
+            "docs": [
+              "The list of admins that have signed the request"
+            ],
             "type": {
               "vec": "pubkey"
             }
@@ -3036,12 +4917,16 @@
         "fields": [
           {
             "name": "collateral_account",
-            "docs": ["The address of the Collateral account where the admin threshold was updated"],
+            "docs": [
+              "The address of the Collateral account where the admin threshold was updated"
+            ],
             "type": "pubkey"
           },
           {
             "name": "threshold",
-            "docs": ["The updated value for the admin threshold"],
+            "docs": [
+              "The updated value for the admin threshold"
+            ],
             "type": "u8"
           }
         ]
@@ -3049,23 +4934,31 @@
     },
     {
       "name": "CollateralCreatorUpdated",
-      "docs": ["Represents the information to emit when a collateral creator is updated into a Coordinator account"],
+      "docs": [
+        "Represents the information to emit when a collateral creator is updated into a Coordinator account"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "coordinator_account",
-            "docs": ["The coordinator account the collateral creator was updated in."],
+            "docs": [
+              "The coordinator account the collateral creator was updated in."
+            ],
             "type": "pubkey"
           },
           {
             "name": "collateral_creator",
-            "docs": ["The Pubkey of the new collateral creator"],
+            "docs": [
+              "The Pubkey of the new collateral creator"
+            ],
             "type": "pubkey"
           },
           {
             "name": "old_collateral_creator",
-            "docs": ["The Pubkey of the old collateral creator"],
+            "docs": [
+              "The Pubkey of the old collateral creator"
+            ],
             "type": "pubkey"
           }
         ]
@@ -3083,12 +4976,16 @@
         "fields": [
           {
             "name": "collateral_account",
-            "docs": ["The address of the Collateral account where the funds nonce was increased"],
+            "docs": [
+              "The address of the Collateral account where the funds nonce was increased"
+            ],
             "type": "pubkey"
           },
           {
             "name": "nonce",
-            "docs": ["The new value for the funds nonce"],
+            "docs": [
+              "The new value for the funds nonce"
+            ],
             "type": "u32"
           }
         ]
@@ -3130,24 +5027,32 @@
         "fields": [
           {
             "name": "collateral_account",
-            "docs": ["The address of the Collateral account that was transferred"],
+            "docs": [
+              "The address of the Collateral account that was transferred"
+            ],
             "type": "pubkey"
           },
           {
             "name": "new_name",
-            "docs": ["The new name assigned to the Collateral account"],
+            "docs": [
+              "The new name assigned to the Collateral account"
+            ],
             "type": "string"
           },
           {
             "name": "new_admins",
-            "docs": ["The new list of admins for the Collateral account"],
+            "docs": [
+              "The new list of admins for the Collateral account"
+            ],
             "type": {
               "vec": "pubkey"
             }
           },
           {
             "name": "new_threshold",
-            "docs": ["The new threshold for the Collateral account"],
+            "docs": [
+              "The new threshold for the Collateral account"
+            ],
             "type": "u8"
           }
         ]
@@ -3192,7 +5097,9 @@
           },
           {
             "name": "admins_capacity",
-            "docs": ["The capacity of the admins array"],
+            "docs": [
+              "The capacity of the admins array"
+            ],
             "type": "u8"
           },
           {
@@ -3218,22 +5125,30 @@
         "fields": [
           {
             "name": "collateral_account",
-            "docs": ["The address of the Collateral account where the asset was withdrawn"],
+            "docs": [
+              "The address of the Collateral account where the asset was withdrawn"
+            ],
             "type": "pubkey"
           },
           {
             "name": "asset",
-            "docs": ["The address of the asset that was withdrawn"],
+            "docs": [
+              "The address of the asset that was withdrawn"
+            ],
             "type": "pubkey"
           },
           {
             "name": "recipient",
-            "docs": ["The address of the account that received the asset"],
+            "docs": [
+              "The address of the account that received the asset"
+            ],
             "type": "pubkey"
           },
           {
             "name": "amount_of_asset",
-            "docs": ["The amount of the asset that was withdrawn"],
+            "docs": [
+              "The amount of the asset that was withdrawn"
+            ],
             "type": "u64"
           }
         ]
@@ -3252,12 +5167,16 @@
         "fields": [
           {
             "name": "id",
-            "docs": ["Coordinator account id"],
+            "docs": [
+              "Coordinator account id"
+            ],
             "type": "pubkey"
           },
           {
             "name": "bump",
-            "docs": ["Coordinator account bump use to derive the address where the account was created"],
+            "docs": [
+              "Coordinator account bump use to derive the address where the account was created"
+            ],
             "type": "u8"
           },
           {
@@ -3270,17 +5189,23 @@
           },
           {
             "name": "collateral_creator",
-            "docs": ["Is the account allowed to create Collateral accounts for coordinator borrowers."],
+            "docs": [
+              "Is the account allowed to create Collateral accounts for coordinator borrowers."
+            ],
             "type": "pubkey"
           },
           {
             "name": "treasury",
-            "docs": ["The Treasury Account is the account where the payments are collected."],
+            "docs": [
+              "The Treasury Account is the account where the payments are collected."
+            ],
             "type": "pubkey"
           },
           {
             "name": "publishers",
-            "docs": ["A list with the publishers accounts allowed to publish statements for the coordinator."],
+            "docs": [
+              "A list with the publishers accounts allowed to publish statements for the coordinator."
+            ],
             "type": {
               "vec": "pubkey"
             }
@@ -3299,18 +5224,24 @@
     },
     {
       "name": "ExecutorAdded",
-      "docs": ["Represents the information to emit when an executor is added into a Coordinator account"],
+      "docs": [
+        "Represents the information to emit when an executor is added into a Coordinator account"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "coordinator_account",
-            "docs": ["The coordinator account the executor was added to."],
+            "docs": [
+              "The coordinator account the executor was added to."
+            ],
             "type": "pubkey"
           },
           {
             "name": "executor",
-            "docs": ["The Pubkey of the added executor."],
+            "docs": [
+              "The Pubkey of the added executor."
+            ],
             "type": "pubkey"
           }
         ]
@@ -3318,18 +5249,24 @@
     },
     {
       "name": "ExecutorRemoved",
-      "docs": ["Represents the information to emit when an executor is removed from a Coordinator account"],
+      "docs": [
+        "Represents the information to emit when an executor is removed from a Coordinator account"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "coordinator_account",
-            "docs": ["The coordinator account the executor was removed from."],
+            "docs": [
+              "The coordinator account the executor was removed from."
+            ],
             "type": "pubkey"
           },
           {
             "name": "executor",
-            "docs": ["The Pubkey of the executor that was removed."],
+            "docs": [
+              "The Pubkey of the executor that was removed."
+            ],
             "type": "pubkey"
           }
         ]
@@ -3359,60 +5296,80 @@
         "fields": [
           {
             "name": "coordinator_account",
-            "docs": ["The address of the Coordinator account the Collateral account belongs to."],
+            "docs": [
+              "The address of the Coordinator account the Collateral account belongs to."
+            ],
             "type": "pubkey"
           },
           {
             "name": "collateral_account",
-            "docs": ["The address of the Collateral account were the funds were paid from."],
+            "docs": [
+              "The address of the Collateral account were the funds were paid from."
+            ],
             "type": "pubkey"
           },
           {
             "name": "liquidator",
-            "docs": ["The address of the liquidator."],
+            "docs": [
+              "The address of the liquidator."
+            ],
             "type": "pubkey"
           },
           {
             "name": "statement_id",
-            "docs": ["The id of the statement that was liquidated."],
+            "docs": [
+              "The id of the statement that was liquidated."
+            ],
             "type": "string"
           },
           {
             "name": "assets",
-            "docs": ["The addresses of the assets liquidated."],
+            "docs": [
+              "The addresses of the assets liquidated."
+            ],
             "type": {
               "vec": "pubkey"
             }
           },
           {
             "name": "asset_decimals",
-            "docs": ["The decimals of the assets liquidated."],
+            "docs": [
+              "The decimals of the assets liquidated."
+            ],
             "type": "bytes"
           },
           {
             "name": "amounts_in_assets",
-            "docs": ["The liquidated amount in assets."],
+            "docs": [
+              "The liquidated amount in assets."
+            ],
             "type": {
               "vec": "u64"
             }
           },
           {
             "name": "amounts_in_cents",
-            "docs": ["The liquidated amounts in cents."],
+            "docs": [
+              "The liquidated amounts in cents."
+            ],
             "type": {
               "vec": "u64"
             }
           },
           {
             "name": "fees_in_assets",
-            "docs": ["The fees in asset for each asset liquidated."],
+            "docs": [
+              "The fees in asset for each asset liquidated."
+            ],
             "type": {
               "vec": "u64"
             }
           },
           {
             "name": "net_amount_in_cents",
-            "docs": ["The net amount in cents of the liquidation."],
+            "docs": [
+              "The net amount in cents of the liquidation."
+            ],
             "type": "u64"
           }
         ]
@@ -3432,24 +5389,35 @@
         "fields": [
           {
             "name": "team_or_statement_id",
-            "docs": ["The team ID or statement ID to make the payment to."],
+            "docs": [
+              "The team ID or statement ID to make the payment to."
+            ],
             "type": "string"
           },
           {
             "name": "amount_in_asset",
-            "docs": ["The amount in asset to make the payment."],
+            "docs": [
+              "The amount in asset to make the payment."
+            ],
             "type": "u64"
           },
           {
             "name": "signature_expiration_time",
-            "docs": ["The timestamp when the publisher/executor signature expires."],
+            "docs": [
+              "The timestamp when the publisher/executor signature expires."
+            ],
             "type": "i64"
           },
           {
             "name": "signature_salt",
-            "docs": ["The salt used to generate the signature."],
+            "docs": [
+              "The salt used to generate the signature."
+            ],
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           }
         ]
@@ -3467,12 +5435,16 @@
         "fields": [
           {
             "name": "team_or_statement_id",
-            "docs": ["The team ID or statement ID to make the payment to."],
+            "docs": [
+              "The team ID or statement ID to make the payment to."
+            ],
             "type": "string"
           },
           {
             "name": "amount_in_asset",
-            "docs": ["The amount in asset to make the payment."],
+            "docs": [
+              "The amount in asset to make the payment."
+            ],
             "type": "u64"
           }
         ]
@@ -3490,12 +5462,16 @@
         "fields": [
           {
             "name": "statement_id",
-            "docs": ["The external ID of the statement to mark as paid."],
+            "docs": [
+              "The external ID of the statement to mark as paid."
+            ],
             "type": "string"
           },
           {
             "name": "amount_in_cents",
-            "docs": ["The amount of cents to mark as paid."],
+            "docs": [
+              "The amount of cents to mark as paid."
+            ],
             "type": "u64"
           }
         ]
@@ -3515,17 +5491,23 @@
         "fields": [
           {
             "name": "id",
-            "docs": ["An Id to derive the address of the Collateral account."],
+            "docs": [
+              "An Id to derive the address of the Collateral account."
+            ],
             "type": "pubkey"
           },
           {
             "name": "name",
-            "docs": ["The name of the Collateral account."],
+            "docs": [
+              "The name of the Collateral account."
+            ],
             "type": "string"
           },
           {
             "name": "initial_admin",
-            "docs": ["The initial admin of the Collateral account."],
+            "docs": [
+              "The initial admin of the Collateral account."
+            ],
             "type": "pubkey"
           }
         ]
@@ -3533,38 +5515,52 @@
     },
     {
       "name": "NewCoordinator",
-      "docs": ["Structure to store the initial information required to initialize a coordinator account."],
+      "docs": [
+        "Structure to store the initial information required to initialize a coordinator account."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "id",
-            "docs": ["The coordinator account id used to derive the address where the account will be created"],
+            "docs": [
+              "The coordinator account id used to derive the address where the account will be created"
+            ],
             "type": "pubkey"
           },
           {
             "name": "owner",
-            "docs": ["The account that will be owner of the new coordinator account."],
+            "docs": [
+              "The account that will be owner of the new coordinator account."
+            ],
             "type": "pubkey"
           },
           {
             "name": "collateral_creator",
-            "docs": ["The collateral creator account."],
+            "docs": [
+              "The collateral creator account."
+            ],
             "type": "pubkey"
           },
           {
             "name": "treasury",
-            "docs": ["The treasury address"],
+            "docs": [
+              "The treasury address"
+            ],
             "type": "pubkey"
           },
           {
             "name": "initial_publisher",
-            "docs": ["The address of the first publisher account."],
+            "docs": [
+              "The address of the first publisher account."
+            ],
             "type": "pubkey"
           },
           {
             "name": "initial_executor",
-            "docs": ["The address of the first executor account."],
+            "docs": [
+              "The address of the first executor account."
+            ],
             "type": "pubkey"
           }
         ]
@@ -3572,7 +5568,9 @@
     },
     {
       "name": "NewSingleSignerCollateral",
-      "docs": ["Structure to store the initial information required to initialize a SingleSignerCollateral account."],
+      "docs": [
+        "Structure to store the initial information required to initialize a SingleSignerCollateral account."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -3608,7 +5606,9 @@
         "fields": [
           {
             "name": "feed_id",
-            "docs": ["An optional feed id corresponding to the price oracle to assign."],
+            "docs": [
+              "An optional feed id corresponding to the price oracle to assign."
+            ],
             "type": {
               "option": "string"
             }
@@ -3643,23 +5643,31 @@
     },
     {
       "name": "NewTreasury",
-      "docs": ["Represents the information to emit when a treasury is updated into a Coordinator account"],
+      "docs": [
+        "Represents the information to emit when a treasury is updated into a Coordinator account"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "coordinator_account",
-            "docs": ["The coordinator account the treasury was updated in."],
+            "docs": [
+              "The coordinator account the treasury was updated in."
+            ],
             "type": "pubkey"
           },
           {
             "name": "treasury",
-            "docs": ["The Pubkey of the new treasury"],
+            "docs": [
+              "The Pubkey of the new treasury"
+            ],
             "type": "pubkey"
           },
           {
             "name": "old_treasury",
-            "docs": ["The Pubkey of the old treasury"],
+            "docs": [
+              "The Pubkey of the old treasury"
+            ],
             "type": "pubkey"
           }
         ]
@@ -3667,23 +5675,31 @@
     },
     {
       "name": "OwnershipTransferred",
-      "docs": ["Represents the information to emit when the ownership of a coordinator account is transferred"],
+      "docs": [
+        "Represents the information to emit when the ownership of a coordinator account is transferred"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "coordinator_account",
-            "docs": ["The coordinator account the ownership was transferred from."],
+            "docs": [
+              "The coordinator account the ownership was transferred from."
+            ],
             "type": "pubkey"
           },
           {
             "name": "new_owner",
-            "docs": ["The Pubkey of the new owner"],
+            "docs": [
+              "The Pubkey of the new owner"
+            ],
             "type": "pubkey"
           },
           {
             "name": "old_owner",
-            "docs": ["The Pubkey of the old owner"],
+            "docs": [
+              "The Pubkey of the old owner"
+            ],
             "type": "pubkey"
           }
         ]
@@ -3709,52 +5725,72 @@
         "fields": [
           {
             "name": "payer",
-            "docs": ["The address of the payer."],
+            "docs": [
+              "The address of the payer."
+            ],
             "type": "pubkey"
           },
           {
             "name": "team_id",
-            "docs": ["The id of the team."],
+            "docs": [
+              "The id of the team."
+            ],
             "type": "string"
           },
           {
             "name": "collateral_account",
-            "docs": ["The address of the Collateral account were the funds were paid from."],
+            "docs": [
+              "The address of the Collateral account were the funds were paid from."
+            ],
             "type": "pubkey"
           },
           {
             "name": "asset",
-            "docs": ["The address of the asset paid."],
+            "docs": [
+              "The address of the asset paid."
+            ],
             "type": "pubkey"
           },
           {
             "name": "amount_in_asset",
-            "docs": ["The amount of the asset paid."],
+            "docs": [
+              "The amount of the asset paid."
+            ],
             "type": "u64"
           },
           {
             "name": "amount_in_cents",
-            "docs": ["The amount in cents paid."],
+            "docs": [
+              "The amount in cents paid."
+            ],
             "type": "u64"
           },
           {
             "name": "fee_in_asset",
-            "docs": ["The fee in asset."],
+            "docs": [
+              "The fee in asset."
+            ],
             "type": "u64"
           },
           {
             "name": "asset_decimals",
-            "docs": ["The decimals of the asset."],
+            "docs": [
+              "The decimals of the asset."
+            ],
             "type": "u8"
           },
           {
             "name": "nonce",
-            "docs": ["The nonce for the collateral funds nonce."],
+            "docs": [
+              "The nonce for the collateral funds nonce."
+            ],
             "type": "u32"
           },
           {
             "name": "expires_at",
-            "docs": ["The expiration date of the given signature to allow the payment from collateral."],
+            "docs": [
+              "The expiration date of the given signature to allow the payment from collateral."
+            ],
             "type": "i64"
           }
         ]
@@ -3781,57 +5817,79 @@
         "fields": [
           {
             "name": "payer",
-            "docs": ["The address of the payer."],
+            "docs": [
+              "The address of the payer."
+            ],
             "type": "pubkey"
           },
           {
             "name": "statement_id",
-            "docs": ["The id of the statement."],
+            "docs": [
+              "The id of the statement."
+            ],
             "type": "string"
           },
           {
             "name": "team_id",
-            "docs": ["The id of the team."],
+            "docs": [
+              "The id of the team."
+            ],
             "type": "string"
           },
           {
             "name": "collateral_account",
-            "docs": ["The address of the Collateral account were the funds are paid from."],
+            "docs": [
+              "The address of the Collateral account were the funds are paid from."
+            ],
             "type": "pubkey"
           },
           {
             "name": "asset",
-            "docs": ["The address of the asset paid."],
+            "docs": [
+              "The address of the asset paid."
+            ],
             "type": "pubkey"
           },
           {
             "name": "amount_in_asset",
-            "docs": ["The amount of the asset paid."],
+            "docs": [
+              "The amount of the asset paid."
+            ],
             "type": "u64"
           },
           {
             "name": "amount_in_cents",
-            "docs": ["The amount in cents paid."],
+            "docs": [
+              "The amount in cents paid."
+            ],
             "type": "u64"
           },
           {
             "name": "fee_in_asset",
-            "docs": ["The value of the fee paid in asset."],
+            "docs": [
+              "The value of the fee paid in asset."
+            ],
             "type": "u64"
           },
           {
             "name": "asset_decimals",
-            "docs": ["The decimals of the asset."],
+            "docs": [
+              "The decimals of the asset."
+            ],
             "type": "u8"
           },
           {
             "name": "nonce",
-            "docs": ["The nonce for the collateral funds nonce."],
+            "docs": [
+              "The nonce for the collateral funds nonce."
+            ],
             "type": "u32"
           },
           {
             "name": "expires_at",
-            "docs": ["The expiration date of the given signature to allow the payment from collateral."],
+            "docs": [
+              "The expiration date of the given signature to allow the payment from collateral."
+            ],
             "type": "i64"
           }
         ]
@@ -3854,37 +5912,51 @@
         "fields": [
           {
             "name": "payer",
-            "docs": ["The address of the payer."],
+            "docs": [
+              "The address of the payer."
+            ],
             "type": "pubkey"
           },
           {
             "name": "team_id",
-            "docs": ["The id of the team the payment is made to."],
+            "docs": [
+              "The id of the team the payment is made to."
+            ],
             "type": "string"
           },
           {
             "name": "asset",
-            "docs": ["The address of the asset used to pay."],
+            "docs": [
+              "The address of the asset used to pay."
+            ],
             "type": "pubkey"
           },
           {
             "name": "amount_in_asset",
-            "docs": ["The amount of the asset paid."],
+            "docs": [
+              "The amount of the asset paid."
+            ],
             "type": "u64"
           },
           {
             "name": "amount_in_cents",
-            "docs": ["The amount in cents paid."],
+            "docs": [
+              "The amount in cents paid."
+            ],
             "type": "u64"
           },
           {
             "name": "fee_in_asset",
-            "docs": ["The value of the fee paid in asset."],
+            "docs": [
+              "The value of the fee paid in asset."
+            ],
             "type": "u64"
           },
           {
             "name": "asset_decimals",
-            "docs": ["The decimals of the asset."],
+            "docs": [
+              "The decimals of the asset."
+            ],
             "type": "u8"
           }
         ]
@@ -3908,42 +5980,58 @@
         "fields": [
           {
             "name": "payer",
-            "docs": ["The address of the payer."],
+            "docs": [
+              "The address of the payer."
+            ],
             "type": "pubkey"
           },
           {
             "name": "statement_id",
-            "docs": ["The id of the statement the payment was made to."],
+            "docs": [
+              "The id of the statement the payment was made to."
+            ],
             "type": "string"
           },
           {
             "name": "team_id",
-            "docs": ["The id of the team the payment was made to."],
+            "docs": [
+              "The id of the team the payment was made to."
+            ],
             "type": "string"
           },
           {
             "name": "asset",
-            "docs": ["The address of the asset used to pay."],
+            "docs": [
+              "The address of the asset used to pay."
+            ],
             "type": "pubkey"
           },
           {
             "name": "amount_in_asset",
-            "docs": ["The amount of the asset paid."],
+            "docs": [
+              "The amount of the asset paid."
+            ],
             "type": "u64"
           },
           {
             "name": "amount_in_cents",
-            "docs": ["The amount in cents paid."],
+            "docs": [
+              "The amount in cents paid."
+            ],
             "type": "u64"
           },
           {
             "name": "fee_in_asset",
-            "docs": ["The value of the fee paid in asset."],
+            "docs": [
+              "The value of the fee paid in asset."
+            ],
             "type": "u64"
           },
           {
             "name": "asset_decimals",
-            "docs": ["The decimals of the asset."],
+            "docs": [
+              "The decimals of the asset."
+            ],
             "type": "u8"
           }
         ]
@@ -3963,7 +6051,10 @@
               "`FeedId` but avoid the type alias because of compatibility issues with Anchor's `idl-build` feature."
             ],
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           },
           {
@@ -3980,7 +6071,9 @@
           },
           {
             "name": "publish_time",
-            "docs": ["The timestamp of this price update in seconds"],
+            "docs": [
+              "The timestamp of this price update in seconds"
+            ],
             "type": "i64"
           },
           {
@@ -4054,18 +6147,24 @@
     },
     {
       "name": "PublisherAdded",
-      "docs": ["Represents the information to emit when a publisher is added into a Coordinator account"],
+      "docs": [
+        "Represents the information to emit when a publisher is added into a Coordinator account"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "coordinator_account",
-            "docs": ["The coordinator account the publisher was added to."],
+            "docs": [
+              "The coordinator account the publisher was added to."
+            ],
             "type": "pubkey"
           },
           {
             "name": "publisher",
-            "docs": ["The Pubkey of the added publisher"],
+            "docs": [
+              "The Pubkey of the added publisher"
+            ],
             "type": "pubkey"
           }
         ]
@@ -4073,18 +6172,24 @@
     },
     {
       "name": "PublisherRemoved",
-      "docs": ["Represents the information to emit when a publisher is removed from a Coordinator account"],
+      "docs": [
+        "Represents the information to emit when a publisher is removed from a Coordinator account"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "coordinator_account",
-            "docs": ["The coordinator account the publisher was removed from."],
+            "docs": [
+              "The coordinator account the publisher was removed from."
+            ],
             "type": "pubkey"
           },
           {
             "name": "publisher",
-            "docs": ["The Pubkey of the publisher that was removed."],
+            "docs": [
+              "The Pubkey of the publisher that was removed."
+            ],
             "type": "pubkey"
           }
         ]
@@ -4103,12 +6208,16 @@
         "fields": [
           {
             "name": "target_nonce",
-            "docs": ["The nonce value that is expected to be used with the signatures"],
+            "docs": [
+              "The nonce value that is expected to be used with the signatures"
+            ],
             "type": "u32"
           },
           {
             "name": "signature_submission_type",
-            "docs": ["The type of the signature submission"],
+            "docs": [
+              "The type of the signature submission"
+            ],
             "type": {
               "defined": {
                 "name": "SignatureSubmissionType"
@@ -4117,10 +6226,15 @@
           },
           {
             "name": "salts",
-            "docs": ["The salts used to generate the signatures"],
+            "docs": [
+              "The salts used to generate the signatures"
+            ],
             "type": {
               "vec": {
-                "array": ["u8", 32]
+                "array": [
+                  "u8",
+                  32
+                ]
               }
             }
           }
@@ -4141,7 +6255,9 @@
             "fields": [
               {
                 "name": "new_admin",
-                "docs": ["The address of the new admin to add"],
+                "docs": [
+                  "The address of the new admin to add"
+                ],
                 "type": "pubkey"
               }
             ]
@@ -4151,7 +6267,9 @@
             "fields": [
               {
                 "name": "admin_to_remove",
-                "docs": ["The address of the admin to remove"],
+                "docs": [
+                  "The address of the admin to remove"
+                ],
                 "type": "pubkey"
               }
             ]
@@ -4161,7 +6279,9 @@
             "fields": [
               {
                 "name": "new_threshold",
-                "docs": ["The new threshold"],
+                "docs": [
+                  "The new threshold"
+                ],
                 "type": "u8"
               }
             ]
@@ -4181,22 +6301,30 @@
             "fields": [
               {
                 "name": "sender",
-                "docs": ["The sender of the withdraw transaction"],
+                "docs": [
+                  "The sender of the withdraw transaction"
+                ],
                 "type": "pubkey"
               },
               {
                 "name": "receiver",
-                "docs": ["The receiver of the funds"],
+                "docs": [
+                  "The receiver of the funds"
+                ],
                 "type": "pubkey"
               },
               {
                 "name": "asset",
-                "docs": ["The asset to withdraw"],
+                "docs": [
+                  "The asset to withdraw"
+                ],
                 "type": "pubkey"
               },
               {
                 "name": "withdraw_request",
-                "docs": ["The additional withdraw information"],
+                "docs": [
+                  "The additional withdraw information"
+                ],
                 "type": {
                   "defined": {
                     "name": "WithdrawCollateralAssetRequest"
@@ -4210,7 +6338,9 @@
             "fields": [
               {
                 "name": "new_owner",
-                "docs": ["The new owner of the SingleSignerCollateral account"],
+                "docs": [
+                  "The new owner of the SingleSignerCollateral account"
+                ],
                 "type": "pubkey"
               }
             ]
@@ -4220,17 +6350,23 @@
             "fields": [
               {
                 "name": "recipient",
-                "docs": ["The recipient of the withdrawal"],
+                "docs": [
+                  "The recipient of the withdrawal"
+                ],
                 "type": "pubkey"
               },
               {
                 "name": "asset",
-                "docs": ["The asset to withdraw (Pubkey::default() for SOL)"],
+                "docs": [
+                  "The asset to withdraw (Pubkey::default() for SOL)"
+                ],
                 "type": "pubkey"
               },
               {
                 "name": "amount",
-                "docs": ["The amount to withdraw"],
+                "docs": [
+                  "The amount to withdraw"
+                ],
                 "type": "u64"
               }
             ]
@@ -4421,12 +6557,16 @@
         "fields": [
           {
             "name": "statement_id",
-            "docs": ["The id of the statement that has been paid."],
+            "docs": [
+              "The id of the statement that has been paid."
+            ],
             "type": "string"
           },
           {
             "name": "amount_in_cents",
-            "docs": ["The amount paid in dollar cents."],
+            "docs": [
+              "The amount paid in dollar cents."
+            ],
             "type": "u64"
           }
         ]
@@ -4448,32 +6588,44 @@
         "fields": [
           {
             "name": "coordinator_account",
-            "docs": ["The coordinator account the statement was published in."],
+            "docs": [
+              "The coordinator account the statement was published in."
+            ],
             "type": "pubkey"
           },
           {
             "name": "collateral_account",
-            "docs": ["The collateral account the statement was published in."],
+            "docs": [
+              "The collateral account the statement was published in."
+            ],
             "type": "pubkey"
           },
           {
             "name": "statement_id",
-            "docs": ["The statement id."],
+            "docs": [
+              "The statement id."
+            ],
             "type": "string"
           },
           {
             "name": "team_id",
-            "docs": ["The id of the team the statement belongs to."],
+            "docs": [
+              "The id of the team the statement belongs to."
+            ],
             "type": "string"
           },
           {
             "name": "closing_account_balance_cents",
-            "docs": ["The total value to pay in dollar cents for the statement."],
+            "docs": [
+              "The total value to pay in dollar cents for the statement."
+            ],
             "type": "u64"
           },
           {
             "name": "liquidatable_after",
-            "docs": ["The date in seconds after which the statement can be liquidated."],
+            "docs": [
+              "The date in seconds after which the statement can be liquidated."
+            ],
             "type": "u64"
           }
         ]
@@ -4495,32 +6647,44 @@
         "fields": [
           {
             "name": "coordinator_account",
-            "docs": ["The coordinator account the statement is related to."],
+            "docs": [
+              "The coordinator account the statement is related to."
+            ],
             "type": "pubkey"
           },
           {
             "name": "collateral_account",
-            "docs": ["The collateral account the statement is related to."],
+            "docs": [
+              "The collateral account the statement is related to."
+            ],
             "type": "pubkey"
           },
           {
             "name": "statement_id",
-            "docs": ["The statement id."],
+            "docs": [
+              "The statement id."
+            ],
             "type": "string"
           },
           {
             "name": "team_id",
-            "docs": ["The id of the team the statement belongs to."],
+            "docs": [
+              "The id of the team the statement belongs to."
+            ],
             "type": "string"
           },
           {
             "name": "closing_account_balance_cents",
-            "docs": ["The total value to pay in dollar cents for the statement."],
+            "docs": [
+              "The total value to pay in dollar cents for the statement."
+            ],
             "type": "u64"
           },
           {
             "name": "liquidatable_after",
-            "docs": ["The date in seconds after which the statement can be liquidated."],
+            "docs": [
+              "The date in seconds after which the statement can be liquidated."
+            ],
             "type": "u64"
           }
         ]
@@ -4539,7 +6703,9 @@
         "fields": [
           {
             "name": "coordinator",
-            "docs": ["The coordinator account that owns the supported asset"],
+            "docs": [
+              "The coordinator account that owns the supported asset"
+            ],
             "type": "pubkey"
           },
           {
@@ -4552,7 +6718,9 @@
           },
           {
             "name": "bump",
-            "docs": ["The bump of the supported asset account"],
+            "docs": [
+              "The bump of the supported asset account"
+            ],
             "type": "u8"
           },
           {
@@ -4571,7 +6739,10 @@
               "matches with the given oracle. Can look for Feed Ids in https://www.pyth.network/developers/price-feed-ids."
             ],
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           },
           {
@@ -4620,39 +6791,53 @@
         "fields": [
           {
             "name": "coordinator_account",
-            "docs": ["The address of the coordinator that owns the supported asset."],
+            "docs": [
+              "The address of the coordinator that owns the supported asset."
+            ],
             "type": "pubkey"
           },
           {
             "name": "asset",
-            "docs": ["The address of the asset that is supported."],
+            "docs": [
+              "The address of the asset that is supported."
+            ],
             "type": "pubkey"
           },
           {
             "name": "oracle",
-            "docs": ["The address of the oracle to query the asset price."],
+            "docs": [
+              "The address of the oracle to query the asset price."
+            ],
             "type": "pubkey"
           },
           {
             "name": "feed_id",
-            "docs": ["The optional feed id corresponding to the price oracle."],
+            "docs": [
+              "The optional feed id corresponding to the price oracle."
+            ],
             "type": {
               "option": "string"
             }
           },
           {
             "name": "price_uncertainty_threshold",
-            "docs": ["The maximum price uncertainty allowed for the asset operations."],
+            "docs": [
+              "The maximum price uncertainty allowed for the asset operations."
+            ],
             "type": "u32"
           },
           {
             "name": "stale_threshold",
-            "docs": ["The threshold for the oracle to be considered stale."],
+            "docs": [
+              "The threshold for the oracle to be considered stale."
+            ],
             "type": "u32"
           },
           {
             "name": "fee_bps",
-            "docs": ["The fee in basis points."],
+            "docs": [
+              "The fee in basis points."
+            ],
             "type": "u16"
           }
         ]
@@ -4673,27 +6858,37 @@
         "fields": [
           {
             "name": "coordinator_account",
-            "docs": ["The address of the coordinator that not longer owns the supported asset."],
+            "docs": [
+              "The address of the coordinator that not longer owns the supported asset."
+            ],
             "type": "pubkey"
           },
           {
             "name": "asset",
-            "docs": ["The address of the asset that is no longer supported."],
+            "docs": [
+              "The address of the asset that is no longer supported."
+            ],
             "type": "pubkey"
           },
           {
             "name": "oracle",
-            "docs": ["The address of the oracle used to query the asset price."],
+            "docs": [
+              "The address of the oracle used to query the asset price."
+            ],
             "type": "pubkey"
           },
           {
             "name": "stale_threshold",
-            "docs": ["The threshold for the oracle to be considered stale."],
+            "docs": [
+              "The threshold for the oracle to be considered stale."
+            ],
             "type": "u32"
           },
           {
             "name": "fee_bps",
-            "docs": ["The fee in basis points used for the supported asset."],
+            "docs": [
+              "The fee in basis points used for the supported asset."
+            ],
             "type": "u16"
           }
         ]
@@ -4711,17 +6906,23 @@
         "fields": [
           {
             "name": "bump",
-            "docs": ["PDA bump"],
+            "docs": [
+              "PDA bump"
+            ],
             "type": "u8"
           },
           {
             "name": "coordinator",
-            "docs": ["Parent coordinator"],
+            "docs": [
+              "Parent coordinator"
+            ],
             "type": "pubkey"
           },
           {
             "name": "enabled",
-            "docs": ["When false, new requests are rejected (existing ones can still execute/cancel)"],
+            "docs": [
+              "When false, new requests are rejected (existing ones can still execute/cancel)"
+            ],
             "type": "bool"
           }
         ]
@@ -4937,19 +7138,25 @@
         "fields": [
           {
             "name": "new_name",
-            "docs": ["The new name of the Collateral account."],
+            "docs": [
+              "The new name of the Collateral account."
+            ],
             "type": "string"
           },
           {
             "name": "new_admins",
-            "docs": ["The new list of admins of the Collateral account."],
+            "docs": [
+              "The new list of admins of the Collateral account."
+            ],
             "type": {
               "vec": "pubkey"
             }
           },
           {
             "name": "new_admin_threshold",
-            "docs": ["The new admin threshold of the Collateral account."],
+            "docs": [
+              "The new admin threshold of the Collateral account."
+            ],
             "type": "u8"
           }
         ]
@@ -4970,22 +7177,30 @@
         "fields": [
           {
             "name": "statement_id",
-            "docs": ["The external ID of the statement to create or update."],
+            "docs": [
+              "The external ID of the statement to create or update."
+            ],
             "type": "string"
           },
           {
             "name": "team_id",
-            "docs": ["The ID of the team that owns the statement."],
+            "docs": [
+              "The ID of the team that owns the statement."
+            ],
             "type": "string"
           },
           {
             "name": "closing_balance_in_cents",
-            "docs": ["The total debt that must be paid in the statement by the borrower."],
+            "docs": [
+              "The total debt that must be paid in the statement by the borrower."
+            ],
             "type": "u64"
           },
           {
             "name": "liquidatable_after",
-            "docs": ["The date in seconds after which the collateral is liquidatable."],
+            "docs": [
+              "The date in seconds after which the collateral is liquidatable."
+            ],
             "type": "u64"
           }
         ]
@@ -5039,19 +7254,28 @@
         "fields": [
           {
             "name": "amount_of_asset",
-            "docs": ["The amount of the asset to withdraw."],
+            "docs": [
+              "The amount of the asset to withdraw."
+            ],
             "type": "u64"
           },
           {
             "name": "signature_expiration_time",
-            "docs": ["The time when the signature expires."],
+            "docs": [
+              "The time when the signature expires."
+            ],
             "type": "i64"
           },
           {
             "name": "coordinator_signature_salt",
-            "docs": ["The salt used to generate the coordinator's signature."],
+            "docs": [
+              "The salt used to generate the coordinator's signature."
+            ],
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           }
         ]
@@ -5059,7 +7283,9 @@
     },
     {
       "name": "WithdrawSingleSignerCollateralAssetRequest",
-      "docs": ["Structure for SingleSignerCollateral withdrawal requests (owner-signed, no threshold)."],
+      "docs": [
+        "Structure for SingleSignerCollateral withdrawal requests (owner-signed, no threshold)."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -5074,7 +7300,10 @@
           {
             "name": "coordinator_signature_salt",
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           }
         ]
@@ -5092,47 +7321,65 @@
         "fields": [
           {
             "name": "bump",
-            "docs": ["PDA bump"],
+            "docs": [
+              "PDA bump"
+            ],
             "type": "u8"
           },
           {
             "name": "collateral",
-            "docs": ["Parent collateral account"],
+            "docs": [
+              "Parent collateral account"
+            ],
             "type": "pubkey"
           },
           {
             "name": "requester",
-            "docs": ["Admin/owner who initiated (verified admin at request time)"],
+            "docs": [
+              "Admin/owner who initiated (verified admin at request time)"
+            ],
             "type": "pubkey"
           },
           {
             "name": "rent_collector",
-            "docs": ["Receives rent back when this account is closed."],
+            "docs": [
+              "Receives rent back when this account is closed."
+            ],
             "type": "pubkey"
           },
           {
             "name": "recipient",
-            "docs": ["Destination wallet address"],
+            "docs": [
+              "Destination wallet address"
+            ],
             "type": "pubkey"
           },
           {
             "name": "asset",
-            "docs": ["SPL mint (or Pubkey::default for native SOL)"],
+            "docs": [
+              "SPL mint (or Pubkey::default for native SOL)"
+            ],
             "type": "pubkey"
           },
           {
             "name": "amount",
-            "docs": ["Amount in native decimals"],
+            "docs": [
+              "Amount in native decimals"
+            ],
             "type": "u64"
           },
           {
             "name": "executable_from",
-            "docs": ["Unix timestamp when timelock expires"],
+            "docs": [
+              "Unix timestamp when timelock expires"
+            ],
             "type": "i64"
           },
           {
             "name": "created_at",
-            "docs": ["Request creation timestamp"],
+            "docs": [
+              "Request creation timestamp"
+            ],
             "type": "i64"
           },
           {
