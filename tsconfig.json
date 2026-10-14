@@ -14,7 +14,8 @@
       "@rain/program": ["./src/solana/program"],
       "@rain/v2_00": ["./src/solana/program/v2_00"],
       "@rain/v2_01": ["./src/solana/program/v2_01"],
-      "@rain/v2_02": ["./src/solana/program/v2_02"]
+      "@rain/v2_02": ["./src/solana/program/v2_02"],
+      "@rain/v2_05": ["./src/solana/program/v2_05"]
     }
   },
   "include": ["src/**/*"]

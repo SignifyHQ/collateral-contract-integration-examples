@@ -14,6 +14,7 @@ The project uses TypeScript path aliases to import the Solana collateral program
 | `@rain/v2_00` | `./src/solana/program/v2_00` | `IdlV2_00`, `MainV2_00` |
 | `@rain/v2_01` | `./src/solana/program/v2_01` | `IdlV2_01`, `MainV2_01` |
 | `@rain/v2_02` | `./src/solana/program/v2_02` | `IdlV2_02`, `MainV2_02` |
+| `@rain/v2_05` | `./src/solana/program/v2_05` | `IdlV2_05`, `MainV2_05` |
 
 ### Usage
 
@@ -36,7 +37,7 @@ import { IdlV2_02, MainV2_02 } from "@rain/v2_02";
 
 ## Program Version Comparison
 
-The collateral contract program has three IDL versions. Each defines the program interface (instructions, accounts, types). Use the version that matches the deployed program your integration targets.
+The collateral contract program has four IDL versions. Each defines the program interface (instructions, accounts, types). Use the version that matches the deployed program your integration targets.
 
 ### v2.00
 
@@ -59,4 +60,11 @@ The collateral contract program has three IDL versions. Each defines the program
 |--------|---------|
 | **Collateral types** | Multisig + SingleSigner |
 | **New features** | Adds support for `single signer` collateral accounts |
+
+### v2.05
+
+| Aspect | Details |
+|--------|---------|
+| **Collateral types** | Multisig + SingleSigner |
+| **New features** | Adds timelock (permissionless) withdrawals — request, execute after a 7-day delay and cancel without a Rain-issued signature (`request_permissionless_withdrawal`, `request_single_signer_permissionless_withdrawal`, `process_permissionless_withdrawal`, `cancel_permissionless_withdrawal`), plus the `RequestPermissionlessWithdrawal` signature submission type and the per-coordinator opt-in config (`create_timelock_config`, `update_timelock_config`; disabled by default). Timelock events are emitted via CPI (inner instructions, not program logs). Signature-based withdrawals remain unchanged and coexist. |
 
