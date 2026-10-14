@@ -172,4 +172,4 @@ Both example scripts expose a `list` action calling the tenant API:
 GET /v1/issuing/time-lock-withdrawals
 ```
 
-Query parameters: `cursor`, `limit` (1–100, default 20), `chainId` (`"900"` mainnet, `"901"` devnet), `assetAddress`, `status` (`PENDING` | `EXECUTED` | `CANCELLED`), `unlockAfter`, `unlockBefore`. Each entry reports the request identity, amount, recipient, `isUnlocked`/`unlockedAt`, and — once terminal — the execution or cancellation transaction hashes and the `cancellationReason` for Rain-side cancellations.
+Query parameters: `cursor`, `limit` (1–100, default 20), `chainId` (`"900"` mainnet, `"901"` devnet), `assetAddress`, `status` (`INITIATED` | `EXECUTED` | `CANCELLED`), `unlockAfter`, `unlockBefore`. Each entry reports the request identity, amount, recipient, `isUnlocked`/`unlockedAt`, and — once terminal — the execution or cancellation transaction hashes and the `cancellationReason` for Rain-side cancellations.

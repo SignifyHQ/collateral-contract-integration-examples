@@ -45,7 +45,7 @@
  * 2. GET /v1/issuing/time-lock-withdrawals
  *    Purpose: List the tenant's timelock withdrawal requests and their statuses
  *    Headers: Api-Key: {RAIN_API_KEY}
- *    Query Params: cursor, limit, chainId, assetAddress, status (PENDING|EXECUTED|CANCELLED),
+ *    Query Params: cursor, limit, chainId, assetAddress, status (INITIATED|EXECUTED|CANCELLED),
  *                  unlockAfter, unlockBefore
  *
  * Command Line Usage:
@@ -62,7 +62,7 @@
  * - amount: The amount to withdraw in the asset's base units (1 SOL = 1000000000, 1 USDC = 1000000)
  * - recipientAddress: The Solana public key that will receive the funds
  * - assetMint: The SPL token mint address, or the literal SOL for native SOL
- * - status: Optional list filter (PENDING, EXECUTED or CANCELLED)
+ * - status: Optional list filter (INITIATED, EXECUTED or CANCELLED)
  * - chainId: Optional list filter ("900" mainnet, "901" devnet)
  *
  * Flow & Expectations:
@@ -671,7 +671,7 @@ async function cancelWithdrawal(
 /**
  * Lists the tenant's timelock withdrawal requests from the Rain API
  *
- * @param status - Optional status filter (PENDING, EXECUTED or CANCELLED)
+ * @param status - Optional status filter (INITIATED, EXECUTED or CANCELLED)
  * @param chainId - Optional chain filter ("900" mainnet, "901" devnet)
  */
 async function listWithdrawals(status?: string, chainId?: string) {
@@ -714,7 +714,7 @@ function printUsage(): never {
   list    [status] [chainId]
 
   amount is in the asset's base units (1 SOL = 1000000000, 1 USDC = 1000000)
-  status is PENDING, EXECUTED or CANCELLED; chainId is "900" (mainnet) or "901" (devnet)`);
+  status is INITIATED, EXECUTED or CANCELLED; chainId is "900" (mainnet) or "901" (devnet)`);
   process.exit(1);
 }
 
@@ -731,7 +731,7 @@ const main = async () => {
 
   if (action === 'list') {
     const [status, chainId] = args;
-    if (status && !['PENDING', 'EXECUTED', 'CANCELLED'].includes(status)) {
+    if (status && !['INITIATED', 'EXECUTED', 'CANCELLED'].includes(status)) {
       printUsage();
     }
     requireEnv("RAIN_API_KEY");

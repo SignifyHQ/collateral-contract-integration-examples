@@ -1590,7 +1590,7 @@ The event CPI is why the six timelock instructions carry two trailing accounts, 
 #### Tracking requests via the Rain API
 
 ```bash
-curl --location 'https://api-dev.raincards.xyz/v1/issuing/time-lock-withdrawals?status=PENDING&chainId=901' \
+curl --location 'https://api-dev.raincards.xyz/v1/issuing/time-lock-withdrawals?status=INITIATED&chainId=901' \
 --header 'Api-Key: YOUR_API_KEY' \
 --header 'accept: application/json'
 ```
@@ -1603,7 +1603,7 @@ Query parameters:
 | `limit` | Page size, 1–100 (default 20) |
 | `chainId` | `"900"` mainnet, `"901"` devnet |
 | `assetAddress` | Filter by asset mint |
-| `status` | `PENDING`, `EXECUTED` or `CANCELLED` |
+| `status` | `INITIATED`, `EXECUTED` or `CANCELLED` |
 | `unlockAfter` / `unlockBefore` | Filter by unlock time (ISO date-time) |
 
 **Response Example:**
@@ -1619,7 +1619,7 @@ Query parameters:
         "assetAmountNative": "1500000",
         "recipientAddress": "CvXV3wxqcUT7h5iFd6MqQvNuGEYPuipcrt6ZMPgEBr3q",
         "requestedAt": "2026-07-31T12:00:00.000Z",
-        "status": "PENDING",
+        "status": "INITIATED",
         "intentTransactionHash": "5o1kj...",
         "isUnlocked": false,
         "unlockedAt": "2026-08-07T12:00:00.000Z"

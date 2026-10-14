@@ -65,7 +65,7 @@ OWNER_PK=your_collateral_owner_private_key_here
 | `amount` | Amount to withdraw in the asset's **base units** | 1 SOL = `1000000000`, 1 USDC = `1000000` (10^decimals) |
 | `recipientAddress` | Where to send the withdrawn funds | Your wallet's public key |
 | `assetMint` | SPL token mint address, or the literal `SOL` | Token mint address (e.g., USDC mint), `SOL` for native SOL |
-| `status` | Optional `list` filter | `PENDING`, `EXECUTED` or `CANCELLED` |
+| `status` | Optional `list` filter | `INITIATED`, `EXECUTED` or `CANCELLED` |
 | `chainId` | Optional `list` filter | `"901"` for devnet, `"900"` for mainnet |
 
 ## 🚀 How to Run
@@ -103,7 +103,7 @@ yarn solana:timelock-withdraw:single-signer:v2-05 process \
   SOL
 
 # List pending requests on devnet
-yarn solana:timelock-withdraw:single-signer:v2-05 list PENDING 901
+yarn solana:timelock-withdraw:single-signer:v2-05 list INITIATED 901
 ```
 
 ## 📖 Getting the Required Parameters
@@ -182,7 +182,7 @@ curl --location 'https://api-dev.raincards.xyz/v1/issuing/users/YOUR_USER_ID/con
 The `list` action calls the tenant API directly:
 
 ```bash
-curl --location 'https://api-dev.raincards.xyz/v1/issuing/time-lock-withdrawals?status=PENDING&chainId=901' \
+curl --location 'https://api-dev.raincards.xyz/v1/issuing/time-lock-withdrawals?status=INITIATED&chainId=901' \
 --header 'Api-Key: YOUR_API_KEY' \
 --header 'accept: application/json'
 ```
